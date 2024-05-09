@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    padding: 0;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('/Users/jonat/Downloads/blands_mid!.png'); /* Use forward slashes and absolute path */
+    background-size: cover;
+    background-position: center;
+}
+
+.description {
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    color: black;
+}
+
+header {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: space-between; /* Distribute items evenly along the main axis */
+    margin-top: 0vh;
+    background-color: #333;
+    padding: 1px;
+    overflow: hidden; /* Clear the floats */
+}
+
+.title {
+    display: inline-block;
+}
+
+.title-link {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* Increase font size for the title */
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.title-link:hover {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.title-link:focus {
+    outline: none;
+}
+
+.menu-button {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-button:focus {
+    outline: none;
+}
