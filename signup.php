@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="shared.css"/>
-    <link rel="stylesheet" href="index.css"/>
+    <link rel="stylesheet" href="signup.css"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MGE League</title>
@@ -19,22 +19,11 @@
         </div>
     </header>
     <h1 class="description">TF2's first ever MGE league</h1>
-    <div class="placeholder">Placeholder for displaying live player ELO</div>
     <div class="button-container">
-        <button class="tourney_button cup3" onClick="openInNewTab('https://brackethq.com/b/6lk1b/')">2v2 CUP 3 Results</button>
-        <button class="tourney_button cup2" onClick="openInNewTab('https://brackethq.com/b/8lovb/')">2v2 CUP 2 Results</button>
-        <button class="tourney_button cup1" onClick="openInNewTab('https://brackethq.com/b/5qorb/')">2v2 CUP 1 Results</button>
+        <button class="custom-button button-blue" onClick="alertButton()">1v1</button>
+        <button class="custom-button button-red" onClick="alertButton()">2v2</button>
     </div>
-
-    <script>
-        function alertButton() {
-            alert('Button clicked!');
-        }
-
-        function openInNewTab(url) {
-            var win = window.open(url, '_blank');
-            win.focus();
-        }
-    </script>
+    
+    <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,45 @@
+.placeholder {
+    width: 500px; /* Adjust width as needed */
+    height: 300px; /* Adjust height as needed */
+    background-color: white;
+    margin: 0 auto; /* Center horizontally */
+    margin-top: 20px; /* Add margin from the top */
+}
+
+.button-container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0); /* Add transparency to the container */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 5vh;
+    display: flex;
+    align-items: center; /* Align items vertically */
+    flex-direction: column; /* Stack items vertically */
+}
+
+.tourney_button {
+    color: white;
+    background-color: grey;
+    border: none;
+    padding: 10px 50px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px 0; /* Add some spacing between buttons */
+}
+
+/* Customize colors for individual buttons */
+.cup3 {
+    font-size: 50px;
+}
+
+.cup2 {
+    font-size: 50px;
+}
+
+.cup1 {
+    font-size: 50px;
+}
+
+.tourney_button:hover {
+    filter: brightness(0.8); /* Dim the button on hover */
+}
