@@ -9,13 +9,13 @@
 </head>
 <body>
     <header>
-        <h1 class="title"><a href="index.html" class="title-link">MGE LEAGUE</a></h1>
+        <h1 class="title"><a href="index.php" class="title-link">MGE LEAGUE</a></h1>
         <div class="menu">
-            <a class="menu-button home-button" href="index.html">Home</a>
-            <a class="menu-button rules-button" href="rules.html">Rules</a>
-            <a class="menu-button signup-button" href="signup.html">Signup</a>
-            <a class="menu-button league-button" href="league.html">League</a>
-            <a class="menu-button forum-button" href="forums.html">Forums</a>
+            <a class="menu-button home-button" href="index.php">Home</a>
+            <a class="menu-button rules-button" href="rules.php">Rules</a>
+            <a class="menu-button signup-button" href="signup.php">Signup</a>
+            <a class="menu-button league-button" href="league.php">League</a>
+            <a class="menu-button forum-button" href="forums.php">Forums</a>
         </div>
     </header>
     <h1 class="description">TF2's first ever MGE league</h1>

@@ -4,6 +4,10 @@
     font-size: 36px;
 }
 
+.subtitle {
+    text-align: center;
+}
+
 /* Style the content */
 .content {
     margin-top: 20px;
@@ -19,6 +23,8 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
+    width: 50%; /* Set the width to 80% of the parent container */
+    margin: auto; /* Center the textbox horizontally */
 }
 
 .textbox p {

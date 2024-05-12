@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('/Users/jonat/Downloads/blands_mid!.png'); /* Use forward slashes and absolute path */
+    background-image: url('https://wiki.teamfortress.com/w/images/2/22/Arena_badlands_mid.png'); /* Use forward slashes and absolute path */
     background-size: cover;
     background-position: center;
 }
