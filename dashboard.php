@@ -7,24 +7,40 @@ if(!$_SESSION['logged_in']){
 
 $username = $_SESSION['userData']['name'];
 $avatar = $_SESSION['userData']['avatar'];
+$steamID = $_SESSION['userData']['steam_id'];
 
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="./styles/output.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <?php include 'header.php'; ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="dashboard.css">
 </head>
 <body>
-    <div class="flex items-center justify-center h-screen bg-steam-lightGray text-white flex-col">
-        <div class="text-2xl">Welcome to the dashboard,</div>
-        <div class="text-4xl mt-3 flex items-center font-medium">
-            <img src='<?php echo $avatar;?>' class="rounded-full w-12 h-12 mr-3"/>
-            <?php echo $username;?></div>
-        <a href="logout.php" class="text-sm mt-5">Logout</a>
+    <div class="dashboard-container">
+        <h1>Welcome to the dashboard, <?php echo $username; ?></h1>
+        <img src='<?php echo $avatar; ?>' alt="Avatar">
+        <p>
+            Steam Profile: 
+            <a href="https://steamcommunity.com/profiles/<?php echo $steamID; ?>" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png" alt="Steam Logo">
+            </a>
+        </p>
+        <p>
+            Logs.tf Profile:
+            <a href="https://logs.tf/profile/<?php echo $steamID; ?>" target="_blank">
+                <img src="https://avatars.cloudflare.steamstatic.com/7bcc7b08e91659863bdbff2acf47ef5a25e9c3e9_full.jpg" alt="Logs.tf Logo">
+            </a>
+        </p>
+        <p>
+            RGL.gg Profile:
+            <a href="https://rgl.gg/Public/PlayerProfile?p=<?php echo $steamID; ?>&r=40" target="_blank">
+                <img src="https://liquipedia.net/commons/images/0/06/RGLgg_Blacktext.png" alt="RGL.tf Logo">
+            </a>
+        </p>
+        <a href="logout.php">Logout</a>
     </div>
-
 </body>
 </html>

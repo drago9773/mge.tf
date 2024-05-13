@@ -25,9 +25,9 @@
             </div>
             <a class="menu-button forum-button" href="forums.php">Forums</a>
             <!-- Add the signin button with login logo here -->
-            <a class="menu-button signin-button">
-                <a href="init-openId.php">
-                <span>Login with Steam</span>
+            <a class="menu-button signin-button" href="init-openId.php">
+                <img class="steam-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
+                LOGIN
             </a>
         </div>
     </header>
