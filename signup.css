@@ -15,6 +15,7 @@
     cursor: pointer;
     border-radius: 5px;
     margin: 0 40px; /* Add some spacing between buttons */
+    text-decoration: none; /* Remove underline */
 }
 
 /* Customize colors for individual buttons */

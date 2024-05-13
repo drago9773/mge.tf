@@ -1,3 +1,4 @@
+/* Existing CSS rules */
 body {
     margin: 0;
     padding: 0;
@@ -8,6 +9,7 @@ body {
     background-image: url('https://wiki.teamfortress.com/w/images/2/22/Arena_badlands_mid.png'); /* Use forward slashes and absolute path */
     background-size: cover;
     background-position: center;
+    z-index: 1;
 }
 
 .description {
@@ -22,9 +24,8 @@ header {
     align-items: center; /* Align items vertically */
     justify-content: space-between; /* Distribute items evenly along the main axis */
     margin-top: 0vh;
-    background-color: #333;
+    background-color: darkslategray;
     padding: 1px;
-    overflow: hidden; /* Clear the floats */
 }
 
 .title {
@@ -70,4 +71,28 @@ header {
 
 .menu-button:focus {
     outline: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: lightseagreen;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.dropdown-content a {
+    color: #fff;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }

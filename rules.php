@@ -1,23 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="shared.css"/>
+    <?php include 'header.php'; ?>
+    <link rel="stylesheet" href="header.css"/>
     <link rel="stylesheet" href="rules.css"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MGE League</title>
 </head>
 <body>
-    <header>
-        <h1 class="title"><a href="index.php" class="title-link">MGE LEAGUE</a></h1>
-        <div class="menu">
-            <a class="menu-button home-button" href="index.php">Home</a>
-            <a class="menu-button rules-button" href="rules.php">Rules</a>
-            <a class="menu-button signup-button" href="signup.php">Signup</a>
-            <a class="menu-button league-button" href="league.php">League</a>
-            <a class="menu-button forum-button" href="forums.php">Forums</a>
-        </div>
-    </header>
     <h1 class="description">RULES</h1>
     <div class="content">
         <!-- Add your text boxes or content here -->
