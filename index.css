@@ -1,45 +1,71 @@
+/* Placeholder for live player ELO */
 .placeholder {
-    width: 500px; /* Adjust width as needed */
-    height: 300px; /* Adjust height as needed */
+    width: 400px; /* Adjust width as needed */
+    height: 200px; /* Adjust height as needed */
     background-color: white;
     margin: 0 auto; /* Center horizontally */
     margin-top: 20px; /* Add margin from the top */
 }
 
-.button-container {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0); /* Add transparency to the container */
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 5vh;
+.tournaments-container {
     display: flex;
-    align-items: center; /* Align items vertically */
-    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Center the boxes horizontally */
+    margin-top: 50px;
+    padding: 0px;
 }
 
+.tourney-section {
+    display: flex;
+    justify-content: center; /* Center the boxes horizontally */
+    margin-top: 0px; /* Remove margin space between title and container top */
+    background-color: rgb(48, 45, 45); /* Add transparency to the container */
+    padding: 0px; /* Remove padding around the container */
+    border-radius: 0; /* Remove border radius */
+    width: 20%; /* Adjust width as needed */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    align-items: center; /* Center items horizontally */
+    margin: 0px 40px 0px 40px; /* Add margin to separate the boxes */
+}
+
+.tourney-title{
+    background-color: gray;
+    margin-top: 0px;
+    padding: 0px;
+    margin: 0px 0px 0px 0px; /* Add margin to separate the boxes */
+}
+
+/* Style for tournament button containers */
+.button-container {
+    color: white;
+    border: none;
+    padding: 0px; /* Adjust padding */
+    border-radius: 1px;
+    text-decoration: none; /* Remove underline */
+    margin: 0px 00px 0px 00px; /* Add margin to separate the boxes */
+}
+
+/* Style for tournament buttons */
 .tourney_button {
     color: white;
     background-color: grey;
     border: none;
-    padding: 10px 50px;
+    padding: 10px;
+    margin-top: 0px;
     cursor: pointer;
-    border-radius: 5px;
-    margin: 10px 0; /* Add some spacing between buttons */
+    border-radius: 0px;
+    margin: 10px; /* Add some spacing around buttons */
+}
+.new1, .new2{
+    font-size: 24px; /* Adjust font size as needed */
 }
 
-/* Customize colors for individual buttons */
-.cup3 {
-    font-size: 50px;
+/* Customize font size for individual buttons */
+.cup3, .cup2, .cup1 {
+    font-size: 24px; /* Adjust font size as needed */
 }
 
-.cup2 {
-    font-size: 50px;
-}
-
-.cup1 {
-    font-size: 50px;
-}
-
-.tourney_button:hover {
+/* Style for tournament buttons on hover */
+.tourney_button:hover, .upcoming_button:hover {
     filter: brightness(0.8); /* Dim the button on hover */
 }
