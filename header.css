@@ -96,3 +96,27 @@ header {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+/* CSS for signin button */
+.signin-button {
+    color: #fff;
+    background-color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.signin-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* CSS for login logo */
+.login-logo {
+    width: 20px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 5px; /* Add space between logo and text */
+}

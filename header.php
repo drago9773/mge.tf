@@ -24,6 +24,11 @@
                 </div>
             </div>
             <a class="menu-button forum-button" href="forums.php">Forums</a>
+            <!-- Add the signin button with login logo here -->
+            <a class="menu-button signin-button" href="signin.php">
+                <a href="init-openID.php" img src="login_logo.png" alt="Login" class="login-logo">
+                Signin
+            </a>
         </div>
     </header>
 </body>
