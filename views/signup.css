@@ -1,10 +1,33 @@
-.button-container {
+.signup-button-container {
     text-align: center;
-    background-color: rgba(255, 255, 255, 0); /* Add transparency to the container */
+    background-color: rgba(255, 255, 255, 0);
     padding: 20px;
     border-radius: 10px;
     margin-top: 20vh;
     display: flex;
-    justify-content: center; /* Keep this if you want to center the buttons horizontally */
+    justify-content: center;
 }
 
+.custom-button {
+    color: white;
+    border: none;
+    padding: 160px 110px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 40px; /* Horizontal margin to space the buttons */
+    text-decoration: none;
+}
+
+.button-blue {
+    font-size: 50px;
+    background-color: rgb(42, 26, 189);
+}
+
+.button-red {
+    font-size: 50px;
+    background-color: rgb(170, 37, 37);
+}
+
+.custom-button:hover {
+    filter: brightness(0.8);
+}

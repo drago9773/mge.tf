@@ -13,9 +13,8 @@
     margin-top: 20px;
     padding: 20px;
     display: flex;
-    justify-content: center; /* Horizontally center the content */
-    align-items: center; /* Vertically center the content */
-    /* height: 100vh; /* Set the height to 100% of the viewport height */
+    justify-content: center; 
+    align-items: center; 
 }
 
 .textbox {
@@ -23,8 +22,8 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
-    width: 50%; /* Set the width to 80% of the parent container */
-    margin: auto; /* Center the textbox horizontally */
+    width: 50%; 
+    margin: auto;
 }
 
 .textbox p {
