@@ -69,3 +69,43 @@
 .tourney_button:hover, .upcoming_button:hover {
     filter: brightness(0.8); /* Dim the button on hover */
 }
+
+.textbox {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: 50%; /* Set the width to 80% of the parent container */
+    margin: auto; /* Center the textbox horizontally */
+}
+
+.textbox p {
+    font-size: 16px;
+    color: #333;
+}
+
+
+.custom-button {
+    color: white;
+    border: none;
+    padding: 160px 110px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 40px; /* Add some spacing between buttons */
+    text-decoration: none; /* Remove underline */
+}
+
+/* Customize colors for individual buttons */
+.button-blue {
+    font-size: 50px;
+    background-color: rgb(42, 26, 189);
+}
+
+.button-red {
+    font-size: 50px;
+    background-color: rgb(170, 37, 37);
+}
+
+.custom-button:hover {
+    filter: brightness(0.8); /* Dim the button on hover */
+}
