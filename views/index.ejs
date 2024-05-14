@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="index.css"/>
     <link rel="stylesheet" href="header.css"/>
     <script src="script.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
 <body>
     <header>
-        <h1 class="title"><a href="index.php" class="title-link">MGE LEAGUE</a></h1>
+        <h1 class="title"><a hx-get="/main.ejs" hx-swap="innerHtml" hx-target="#main" class="title-link">MGE LEAGUE</a></h1>
         <div class="menu">
-            <a class="menu-button home-button" href="index.php">Home</a>
-            <a class="menu-button rules-button" href="rules.php">Rules</a>
+            <a class="menu-button home-button" hx-get="/main.ejs" hx-target="#main" hx-swap="innerHtml">Home</a>
+            <a class="menu-button rules-button" hx-get="/rules.ejs" hx-target="#main" hx-swap="innerHtml">Rules</a>
             <div class="dropdown">
                 <a class="menu-button signup-button" href="signup.php">Signup</a>
                 <div class="dropdown-content">
@@ -31,5 +33,9 @@
             </a>
         </div>
     </header>
+    <div id="main">
+        <!-- ejs import main.html --> 
+        <%- include('main') %>
+    </div>
 </body>
 </html>
