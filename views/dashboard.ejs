@@ -1,0 +1,26 @@
+<div class="dashboard-container">
+    <!-- link dashboard.css -->
+    <link rel="stylesheet" href="dashboard.css" />
+    <h1>Welcome to the dashboard, <%= session.user.username %></h1>
+    <img src='<%= session.user.avatar.small %>' alt="Avatar">
+    <p>
+        Steam Profile:
+        <a href="https://steamcommunity.com/profiles/<%= session.user.steamid %>" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png" alt="Steam Logo">
+        </a>
+    </p>
+    <p>
+        Logs.tf Profile:
+        <a href="https://logs.tf/profile/<%= session.user.steamid %>" target="_blank">
+            <img src="https://avatars.cloudflare.steamstatic.com/7bcc7b08e91659863bdbff2acf47ef5a25e9c3e9_full.jpg"
+            alt="Logs.tf Logo">
+        </a>
+    </p>
+    <p>
+        RGL.gg Profile:
+        <a href="https://rgl.gg/Public/PlayerProfile?p=<%= session.user.steamid %>&r=40" target="_blank">
+            <img src="https://liquipedia.net/commons/images/0/06/RGLgg_Blacktext.png" alt="RGL.tf Logo">
+        </a>
+    </p>
+    <a href="/logout">Logout</a>
+</div>

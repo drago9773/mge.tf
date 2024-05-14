@@ -27,10 +27,21 @@
             </div>
             <a class="menu-button forum-button" hx-get="/forums.ejs" hx-swap="innerHtml" hx-target="#main">Forums</a>
             <!-- Add the signin button with login logo here -->
-            <a class="menu-button signin-button" href="init-openId.php">
-                <img class="steam-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
+            <!-- only show if session.user is empty -->
+            <% if (!req.session.user) { %>
+            <a class="menu-button signin-button" href="/init-openid">
+                <img class="steam-logo
+                " src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
                 LOGIN
             </a>
+            <% } %>
+            <!-- only show if session.user is not empty -->
+            <% if (req.session.user) { %>
+            <a class="menu-button signin-button" hx-target="#main" hx-swap="innerHtml" hx-get="/dashboard">
+                <img class="steam-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
+                PROFILE
+            </a>
+            <% } %>
         </div>
     </header>
     <div id="main">
