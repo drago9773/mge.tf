@@ -2,14 +2,14 @@
 body {
     margin: 0;
     padding: 0;
-    /* display: flex; */
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('https://wiki.teamfortress.com/w/images/2/22/Arena_badlands_mid.png'); /* Use forward slashes and absolute path */
+    background-image: url('https://wiki.teamfortress.com/w/images/2/22/Arena_badlands_mid.png');
     background-size: cover;
     background-position: center;
     z-index: 1;
+    font-family: Verdana;
 }
 
 .description {
@@ -21,11 +21,31 @@ body {
 
 header {
     display: flex;
-    align-items: center; /* Align items vertically */
-    justify-content: space-between; /* Distribute items evenly along the main axis */
-    margin-top: 0vh;
+    align-items: center;
     background-color: darkslategray;
-    padding: 1px;
+    padding: 0px;
+}
+
+.left-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-left: 100px;
+}
+
+.middle-section {
+    flex: 3;
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+}
+
+.right-section {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 100px;
 }
 
 .title {
@@ -39,7 +59,7 @@ header {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 24px; /* Increase font size for the title */
+    font-size: 24px;
     font-weight: bold;
     transition: background-color 0.3s;
 }
@@ -52,8 +72,28 @@ header {
     outline: none;
 }
 
+.logo {
+    width: 19px;
+    height: auto;
+    margin-top: 0px;
+    vertical-align: middle;
+}
+
+.home-button {
+    width: 37px;
+}
+
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .menu-button {
-    display: inline-block;
     padding: 10px 20px;
     text-decoration: none;
     color: #fff;
@@ -66,7 +106,8 @@ header {
 }
 
 .menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    color: rgb(0, 0, 0);
+    transition: color 0.15s ease-in-out; /* Adding transition for color change */;
 }
 
 .menu-button:focus {
@@ -79,16 +120,18 @@ header {
 }
 
 .dropdown-content {
+    margin-top: 10px;
     display: none;
     position: absolute;
-    background-color: lightseagreen;
-    min-width: 160px;
+    background-color: rgb(34, 68, 68);
+    border: 1px solid rgb(36, 68, 68);
+    max-width: 100%; /* Ensure the link doesn't exceed the dropdown width */
     z-index: 1000;
 }
 
 .dropdown-content a {
     color: #fff;
-    padding: 12px 16px;
+    padding: 12px 12px;
     text-decoration: none;
     display: block;
 }
@@ -97,7 +140,10 @@ header {
     display: block;
 }
 
-/* CSS for signin button */
+.dropdown-option:hover {
+    color: black;
+}
+
 .signin-button {
     color: #fff;
     padding: 10px 10px;
@@ -114,6 +160,76 @@ header {
 }
 
 .steam-logo {
-    width: 30px; /* Adjust the width as needed */
-    height: auto; /* Maintain aspect ratio */
+    width: 30px;
+    height: auto;
+}
+
+.tournaments-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+}
+
+.tournaments-overlay {
+    position: absolute;
+    top: 250px; 
+    right: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1000; 
+    background-color: darkslategray;
+    padding: 0px;
+    border: 0px solid darkslategray; /* Add an outline with white color */
+
+}
+
+.tourney-section {
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 330px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.tourney-title {
+    color: white;
+    margin: 0px;
+    padding: 5px 0px;
+    width: 100%;
+    text-align: center;
+}
+
+.tournament-scroll {
+    overflow-y: auto;
+    max-height: 200px;
+    width: 100%;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.tourney_button {
+    width: 100%;
+    color: white;
+    background-color: darkslategray;
+    
+    padding: 7px 0px;
+    margin-top: 1px;
+    cursor: pointer;
+    border-radius: 0;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.tourney_button:hover {
+    filter: brightness(0.8);
 }
