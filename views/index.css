@@ -1,8 +1,8 @@
 /* Placeholder for live player ELO */
 .placeholder {
-    width: 400px; /* Adjust width as needed */
-    height: 200px; /* Adjust height as needed */
+    width: 400px;
+    height: 200px; 
     background-color: white;
-    margin: 0 auto; /* Center horizontally */
-    margin-top: 20px; /* Add margin from the top */
+    margin: 0 auto;
+    margin-top: 20px;
 }

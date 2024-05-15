@@ -11,38 +11,31 @@
     <header>
         <div class="left-section">
             <h1 class="title"><a hx-get="/main.ejs" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
-            <img class="logo" src="https://steamuserimages-a.akamaihd.net/ugc/1007060479515744416/A644BE9AE601CA24A685C155DDF9E939DF60B612/?imw=512&imh=512&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true">
+            <img class="logo" src="">
         </div>
         <div class="middle-section">
             <div class="menu">
-                <a hx-get="/main.ejs" hx-target="#main" hx-swap="innerHtml">
-                    <img class="menu-button home-button" src="https://e7.pngegg.com/pngimages/703/597/png-clipart-logo-house-home-house-angle-building-thumbnail.png">
-                </a>
+                <a class="menu-button home-button" hx-get="/main.ejs" hx-target="#main" hx-swap="innerHtml">Home</a>
                 <a class="menu-button rules-button" hx-get="/rules.ejs" hx-target="#main" hx-swap="innerHtml">Rules</a>
                 <div class="dropdown">
-                    <a class="menu-button signup-button" hx-get="/signup.ejs" hx-target="#main" hx-swap="innerHtml">Signup ▼</a>
-                    <div class="dropdown-content">
-                        <a class="dropdown-option" hx-get="/1v1signup.ejs" hx-swap="innerHtml" hx-target="#main">1v1</a>
-                        <a class="dropdown-option" hx-get="/2v2signup.ejs" hx-swap="innerHtml" hx-target="#main">2v2</a>
-                    </div>
+                    <a class="menu-button money-match" hx-get="/money-match.ejs" hx-target="#main" hx-swap="innerHtml">Money-Match</a>
                 </div>
                 <div class="dropdown">
-                    <a class="menu-button league-button" hx-get="/league.ejs" hx-swap="innerHtml" hx-target="#main">League ▼</a>
+                    <a class="menu-button league-button" hx-get="/league.ejs" hx-target="#main" hx-swap="innerHtml">League ▼</a>
                     <div class="dropdown-content">
-                        <a class="dropdown-option" hx-get="/season.ejs" hx-swap="innerHtml" hx-target="#main">Season 1</a>
+                        <a class="dropdown-option" hx-get="/league.ejs" hx-target="#main" hx-swap="innerHtml">League Home</a>
+                        <a class="dropdown-option" hx-get="/signup.ejs" hx-target="#main" hx-swap="innerHtml">Signups</a>
+                        <a class="dropdown-option" hx-get="/season.ejs" hx-target="#main" hx-swap="innerHtml">Season 1</a>
                     </div>
                 </div>
                 <a class="menu-button forum-button" hx-get="/forums.ejs" hx-swap="innerHtml" hx-target="#main">Forums</a>
             </div>
         </div>
         <div class="right-section">
-            <!-- Add the signin button with login logo here -->
             <!-- only show if session.user is empty -->
             <% if (!req.session.user) { %>
             <a class="menu-button signin-button" href="/init-openid">
-                <img class="steam-logo
-                " src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
-                LOGIN
+                <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
             </a>
             <% } %>
             <!-- only show if session.user is not empty -->

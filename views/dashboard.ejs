@@ -2,25 +2,25 @@
     <!-- link dashboard.css -->
     <link rel="stylesheet" href="dashboard.css" />
     <h1>Welcome to the dashboard, <%= session.user.username %></h1>
-    <img src='<%= session.user.avatar.small %>' alt="Avatar">
-    <p>
-        Steam Profile:
-        <a href="https://steamcommunity.com/profiles/<%= session.user.steamid %>" target="_blank">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png" alt="Steam Logo">
-        </a>
-    </p>
-    <p>
-        Logs.tf Profile:
-        <a href="https://logs.tf/profile/<%= session.user.steamid %>" target="_blank">
-            <img src="https://avatars.cloudflare.steamstatic.com/7bcc7b08e91659863bdbff2acf47ef5a25e9c3e9_full.jpg"
-            alt="Logs.tf Logo">
-        </a>
-    </p>
-    <p>
-        RGL.gg Profile:
-        <a href="https://rgl.gg/Public/PlayerProfile?p=<%= session.user.steamid %>&r=40" target="_blank">
-            <img src="https://liquipedia.net/commons/images/0/06/RGLgg_Blacktext.png" alt="RGL.tf Logo">
-        </a>
-    </p>
+    <img src='<%= session.user.avatar.small %>' alt="Avatar" class="profile-pic">
+
+    <div class="logos-container">
+        <div class="logo">
+            <a href="https://steamcommunity.com/profiles/<%= session.user.steamid %>" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
+            </a>
+        </div>
+        <div class="logo">
+            <a href="https://logs.tf/profile/<%= session.user.steamid %>" target="_blank">
+                <img src="images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
+            </a>
+        </div>
+        <div class="logo rgl-logo">
+            <a href="https://rgl.gg/Public/PlayerProfile?p=<%= session.user.steamid %>&r=40" target="_blank">
+                <img src="images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
+            </a>
+        </div>
+    </div>
+    
     <a href="/logout">Logout</a>
 </div>
