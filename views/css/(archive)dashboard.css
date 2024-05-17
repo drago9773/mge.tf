@@ -34,16 +34,19 @@
 .steam-profile-logo{
     width: auto;
     height: auto;
+    max-width: 100px;
     max-height: 40px;
 }
 
 .logs-profile-logo {
     width: auto;
     height: auto;
-    max-height: 35px;
+    max-width: 100px;
+    max-height: 40px;
 }
 .rgl-profile-logo {
     width: auto;
     height: auto;
-    max-height: 40px; 
+    max-width: 100px;
+    max-height: 40px;
 }

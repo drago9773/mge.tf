@@ -1,0 +1,62 @@
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+}
+
+#userSearch {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.users_display {
+    width: 100%;
+    max-width: 600px;
+    height: 600px;
+    margin: 100px auto 20px auto;
+    overflow-y: auto;
+    /* background-image: url("../images/paper-background.png"); */
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    background-position: center;
+}
+
+.users_container {
+    background-color: #bbb;
+    border: 2px solid #ccc;
+    margin: 10px 0;
+    padding: 10px;
+    color: white;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.users_container:hover {
+    cursor: pointer;
+    background-color: #777;
+}
+
+.users_avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.users_username {
+    font-size: 24px;
+    text-decoration: none;
+    margin-left: 10px;
+    color: #ffffff;
+    flex-grow: 1;
+}
+
+.users_steam_id {
+    color: white;
+    margin-left: 10px;
+}

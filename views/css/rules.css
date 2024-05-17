@@ -49,7 +49,7 @@
     justify-content: center;
 }
 
-.textbox {
+.rules-textbox {
     width: 30%;
     max-width: 35%;
     height: 500px; 
@@ -62,27 +62,23 @@
     background-position: center;
 }
 
-.textbox p {
+.rules-textbox p {
     font-size: 16px;
     color: #333;
 }
 
-/* Customize the scrollbar */
-.textbox::-webkit-scrollbar {
+.rules-textbox::-webkit-scrollbar {
     width: 10px; 
 }
 
-/* Track */
-.textbox::-webkit-scrollbar-track {
+.rules-textbox::-webkit-scrollbar-track {
 }
 
-/* Handle */
-.textbox::-webkit-scrollbar-thumb {
+.rules-textbox::-webkit-scrollbar-thumb {
     background: #777; 
     border-radius: 5px;
 }
 
-/* Handle on hover */
-.textbox::-webkit-scrollbar-thumb:hover {
+.rules-textbox::-webkit-scrollbar-thumb:hover {
     background: #555;
 }

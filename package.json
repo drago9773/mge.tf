@@ -4,14 +4,19 @@
   "description": "Website for mge.tf",
   "main": "app.js",
   "scripts": {
+    "start": "node -r esm app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.10",
+    "esm": "^3.2.25",
     "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
-    "node-steam-openid": "^1.2.3"
+    "node-fetch": "^2.6.1",
+    "node-steam-openid": "^1.2.3",
+    "sqlite3": "^5.1.7"
   }
 }

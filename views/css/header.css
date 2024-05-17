@@ -54,6 +54,7 @@ header {
 }
 
 .title {
+    margin-top: 5px;
     display: inline-block;
 }
 
@@ -147,30 +148,43 @@ header {
 .signin-button {
     padding: 10px 12px;
 }
-.signin-button:hover {
+
+.signin-button:hover{
     background-color: rgba(0, 0, 0, 0.2); 
 }
 
 .steam-login-logo {
     width: 160px;
+    height: auto;
     padding: 2px;
     background-color: #777;
     cursor: pointer;
     border-radius: 3px; 
 }
-
-.steam-logo {
-    width: 30px;
-    height: auto;
-}
-.steam-login-logo{
-    height: auto;
+.profile-container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
+.profile-container:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic {
+    margin-right: 10px; 
+}
+
+.logged-in-username {
+    color: white;
+    font-size: 20px;
+    text-decoration: none; 
+}
 .strip {
     width: 100%;
-    height: 20px;
-    background-color: rgb(20, 34, 34);
+    height: 25px;
+    background-color: rgb(20,34,34);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -178,27 +192,52 @@ header {
 
 .connectinfo{
     color: white;
-    padding-right: 100px;
+}
+.join-server{
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 50px;
+    padding: 0px 3px;
+    color: white;
+    background-color: green;
+    border: 1px solid rgb(0,78,0);
+    border-radius: 5px;
 }
 
-.discord {
+.discordinfo{
+    margin-left: 50px;
+    margin-right: 10px;
     color: white;
-    cursor: pointer;
 }
-.discord:hover {
-    color: brightness(0.1);
+.join-discord{
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0px 5px;
+    color: white;
+    background-color: rgb(122,113,207);
+    border: 1px solid rgb(84,77,145);
+    border-radius: 5px;
+}
+.join-server:hover {
+    background-color: rgba(0,78,0,1);
+}
+.join-discord:hover {
+    background-color: rgb(84,77,145,1);
 }
 
 .tournaments-container {
+    top: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; 
+    align-items: flex-end;
 }
 
 .tournaments-overlay {
     position: absolute;
     top: 250px; 
-    right: 0px;
+    right: 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -206,7 +245,7 @@ header {
     background-color: rgb(20, 34, 34);
     padding: 0px;
     border: 1px solid white;
-
+    position: fixed;
 }
 
 .tourney-section {

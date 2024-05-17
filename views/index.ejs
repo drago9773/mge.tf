@@ -1,58 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="index.css"/>
-    <link rel="stylesheet" href="header.css"/>
-    
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="css/index.css"/>
+    <link rel="stylesheet" href="css/header.css"/>
+
+    <script src="/js/script.js" defer></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
 <body>
     <header>
         <div class="left-section">
-            <h1 class="title"><a hx-get="/main.ejs" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
+            <h1 class="title"><a hx-get="/load?page=main" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
             <img class="logo" src="">
         </div>
         <div class="middle-section">
             <div class="menu">
-                <a class="menu-button home-button" hx-get="/main.ejs" hx-target="#main" hx-swap="innerHtml">Home</a>
-                <a class="menu-button rules-button" hx-get="/rules.ejs" hx-target="#main" hx-swap="innerHtml">Rules</a>
+                <a class="menu-button home-button" hx-get="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
+                <a class="menu-button rules-button" hx-target="#main" hx-swap="innerHTML" hx-get="/load?page=rules">Rules</a>
                 <div class="dropdown">
-                    <a class="menu-button money-match" hx-get="/money-match.ejs" hx-target="#main" hx-swap="innerHtml">Money-Match</a>
+                    <a class="menu-button money-match" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
                 </div>
                 <div class="dropdown">
-                    <a class="menu-button league-button" hx-get="/league.ejs" hx-target="#main" hx-swap="innerHtml">League ▼</a>
+                    <a class="menu-button league-button" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League ▼</a>
                     <div class="dropdown-content">
-                        <a class="dropdown-option" hx-get="/league.ejs" hx-target="#main" hx-swap="innerHtml">League Home</a>
-                        <a class="dropdown-option" hx-get="/signup.ejs" hx-target="#main" hx-swap="innerHtml">Signups</a>
-                        <a class="dropdown-option" hx-get="/season.ejs" hx-target="#main" hx-swap="innerHtml">Season 1</a>
+                        <a class="dropdown-option" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League Home</a>
+                        <a class="dropdown-option" hx-get="/load?page=signup" hx-target="#main" hx-swap="innerHtml">Signups</a>
+                        <a class="dropdown-option" hx-get="/load?page=season" hx-target="#main" hx-swap="innerHtml">Season 1</a>
                     </div>
                 </div>
-                <a class="menu-button forum-button" hx-get="/forums.ejs" hx-swap="innerHtml" hx-target="#main">Forums</a>
+                <a class="menu-button forum-button" hx-get="/load?page=forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
             </div>
         </div>
         <div class="right-section">
-            <!-- only show if session.user is empty -->
-            <% if (!req.session.user) { %>
+            <% if (!session.user) { %>
             <a class="menu-button signin-button" href="/init-openid">
                 <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
             </a>
-            <% } %>
-            <!-- only show if session.user is not empty -->
-            <% if (req.session.user) { %>
-            <a class="menu-button signin-button" hx-target="#main" hx-swap="innerHtml" hx-get="/dashboard">
-                <img class="steam-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/2048px-Steam_icon_logo.svg.png" alt="Steam Logo">
-                PROFILE
+            <% } else { %>
+            <a class="menu-button profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
+                <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
+                <% 
+                    const maxLength = 15;
+                    let displayName = session.user.username;
+                    if (displayName.length > maxLength) {
+                        displayName = displayName.slice(0, maxLength) + '...';
+                    }
+                %>
+                <span class="logged-in-username"><%= displayName %></span>
             </a>
             <% } %>
         </div>
     </header>
     <div class="strip">
         <a class="connectinfo">Server IP: connect mge.tf</a>
-        <a class="discord" id="discordInvite">Join the discord: discord.gg</a>
+        <a a href="steam://connect/45.76.26.238:27015" class="join-server">connect</a>
+        <a class="discordinfo">Join the discord:</a>
+        <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
     </div>
 
-    <!-- Tournaments Box -->
     <div class="tournaments-overlay">
         <div class="tourney-section">
             <h3 class="tourney-title">UPCOMING</h3>
@@ -76,7 +81,6 @@
         </div>
     </div>
     <div id="main">
-        <!-- ejs import main.html --> 
         <%- include('main') %>
     </div>
 </body>
