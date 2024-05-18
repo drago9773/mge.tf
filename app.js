@@ -45,7 +45,14 @@ const db = new sqlite3.Database('users.db', (err) => {
 });
 
 app.get('/', (req, res) => {
-    res.render('index', { session: req.session });
+    const result = eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
+        if (err) {
+            console.error("Error querying database: " + err.message);
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.render('index', { session: req.session, elo: rows });
+        }
+    });
 });
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
@@ -110,9 +117,22 @@ app.get('/users', (req, res) => {
     });
 });
 
+app.get('/click_user_steamid')
+
 app.get('/load', (req, res) => {
     const { page } = req.query;
-    res.render(page);
+    if (page === 'main') {
+        eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
+            if (err) {
+                console.error("Error querying database: " + err.message);
+                res.status(500).send("Internal Server Error");
+            } else {
+                return res.render('main', { elo: rows });
+            }
+        });
+    } else {
+        res.render(page);
+    }
 });
 
 app.get('/logout', (req, res) => {
