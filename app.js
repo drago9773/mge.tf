@@ -56,10 +56,11 @@ app.get('/', (req, res) => {
 });
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
+const domain = process.env.DOMAIN || 'http://localhost:3005/';
 
 const steam = new SteamAuth({
-    realm: 'http://localhost:3005/',
-    returnUrl: 'http://localhost:3005/verify',
+    realm: domain,
+    returnUrl: domain + 'verify',
     apiKey: API_KEY,
 });
 
