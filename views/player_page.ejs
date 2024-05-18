@@ -1,0 +1,28 @@
+<div class="dashboard-container">
+    <link rel="stylesheet" href="css/player-page.css" />
+    <title>User Profile</title>
+
+    <h1><%= user.steam_username %></h1>
+    <img src='<%= user.steam_avatar %>' alt="Avatar" class="player-page-profile-pic">
+
+    <div class="logos-container">
+        <div class="logo">
+            <a href="https://steamcommunity.com/profiles/<%= user.steam_id %>" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
+            </a>
+        </div>
+        <div class="logo">
+            <a href="https://logs.tf/profile/<%= user.steam_id %>" target="_blank">
+                <img src="images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
+            </a>
+        </div>
+        <div class="logo rgl-logo">
+            <a href="https://rgl.gg/Public/PlayerProfile?p=<%= user.steam_id %>&r=40" target="_blank">
+                <img src="images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
+            </a>
+        </div>
+    </div>
+    
+    <a href="/logout">Logout</a>
+</div>
+

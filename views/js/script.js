@@ -1,6 +1,5 @@
 function openInNewTab(url) {
-    var win = window.open(url, '_blank');
-    win.focus();
+    window.open(url, '_blank').focus();
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -18,5 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     document.getElementById("new2Button").addEventListener("click", function() {
         openInNewTab('https://university.com');
+    });
+    document.getElementById("discordInvite").addEventListener("click", function() {
+        openInNewTab('discord.gg/j6kDYSpYbs');
     });
 });

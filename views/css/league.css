@@ -1,0 +1,33 @@
+.page-title {
+    text-align: center;
+    font-size: 36px;
+}
+
+.subtitle {
+    text-align: center;
+}
+
+.content {
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.textbox {
+    width: 50%; 
+    max-width: 35%; 
+    overflow-y: auto; 
+    background-image: url("../images/paper-background.png");
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    background-position: center;
+}
+
+.textbox p {
+    font-size: 16px;
+    color: #000000;
+}

@@ -14,9 +14,10 @@
     width: 200px;
     background-color: #333;
     color: white;
+    border: 1px solid white;
     padding: 10px;
     position: fixed;
-    top: 25%;
+    top: 250px;
     left: 20%;
 }
 
@@ -45,20 +46,39 @@
 .rules-content {
     flex: 1;
     display: flex;
-    justify-content: center; /* Center the textbox horizontally */
+    justify-content: center;
 }
 
-.textbox {
-    width: 35%; /* Adjust the width as needed */
-    max-width: 35%; /* Set a max-width to prevent it from being too wide */
-    background-color: #ffefdb;
-    border: 5px solid #ffefdb;
+.rules-textbox {
+    width: 30%;
+    max-width: 35%;
+    height: 500px; 
+    overflow-y: auto;
+    background-image: url("../images/paper-background.png");
     border-radius: 5px;
-    padding: 20px; /* Adjust padding for better spacing */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow for better visibility */
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    background-size: cover;
+    background-position: center;
 }
 
-.textbox p {
+.rules-textbox p {
     font-size: 16px;
     color: #333;
+}
+
+.rules-textbox::-webkit-scrollbar {
+    width: 10px; 
+}
+
+.rules-textbox::-webkit-scrollbar-track {
+}
+
+.rules-textbox::-webkit-scrollbar-thumb {
+    background: #777; 
+    border-radius: 5px;
+}
+
+.rules-textbox::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

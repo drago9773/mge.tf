@@ -1,0 +1,52 @@
+.dashboard-container {
+    width: 60%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.dashboard-container h1 {
+    font-size: 24px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.logos-container {
+    padding: 0px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.logo {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.steam-profile-logo{
+    width: auto;
+    height: auto;
+    max-width: 100px;
+    max-height: 40px;
+}
+
+.logs-profile-logo {
+    width: auto;
+    height: auto;
+    max-width: 100px;
+    max-height: 40px;
+}
+.rgl-profile-logo {
+    width: auto;
+    height: auto;
+    max-width: 100px;
+    max-height: 40px;
+}

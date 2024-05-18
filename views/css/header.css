@@ -1,11 +1,10 @@
-/* Existing CSS rules */
 body {
     margin: 0;
     padding: 0;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('https://wiki.teamfortress.com/w/images/2/22/Arena_badlands_mid.png');
+    background-image: url('../images/badlands-mid.png');
     background-size: cover;
     background-position: center;
     z-index: 1;
@@ -16,8 +15,14 @@ body {
     text-align: center;
     font-size: 50px;
     font-weight: bold;
-    color: black;
+    color: white;
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
+
 
 header {
     display: flex;
@@ -49,6 +54,7 @@ header {
 }
 
 .title {
+    margin-top: 5px;
     display: inline-block;
 }
 
@@ -79,10 +85,6 @@ header {
     vertical-align: middle;
 }
 
-.home-button {
-    width: 37px;
-}
-
 .menu {
     display: flex;
     justify-content: center;
@@ -103,7 +105,7 @@ header {
 
 .menu-button:hover {
     color: rgb(0, 0, 0);
-    transition: color 0.15s ease-in-out; /* Adding transition for color change */;
+    transition: color 0.15s ease-in-out; 
 }
 
 .menu-button:focus {
@@ -116,13 +118,14 @@ header {
 }
 
 .dropdown-content {
-    margin-top: 10px;
+    font-size: 12px;
+    margin-top: 9px;
     display: none;
     position: absolute;
     background-color: rgb(34, 68, 68);
-    border: 1px solid rgb(36, 68, 68);
-    min-width: 100;
-    max-width: 110%; /* Ensure the link doesn't exceed the dropdown width */
+    border: 1px solid rgb(255, 255, 255);
+    min-width: 140px;
+    max-width: 400px; 
     z-index: 1000;
     cursor: pointer;
 }
@@ -143,29 +146,45 @@ header {
 }
 
 .signin-button {
-    color: #fff;
-    padding: 10px 10px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    padding: 10px 12px;
 }
 
-.signin-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+.signin-button:hover{
+    background-color: rgba(0, 0, 0, 0.2); 
 }
 
-.steam-logo {
-    width: 30px;
+.steam-login-logo {
+    width: 160px;
     height: auto;
+    padding: 2px;
+    background-color: #777;
+    cursor: pointer;
+    border-radius: 3px; 
+}
+.profile-container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
+.profile-container:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic {
+    margin-right: 10px; 
+}
+
+.logged-in-username {
+    color: white;
+    font-size: 20px;
+    text-decoration: none; 
+}
 .strip {
     width: 100%;
-    height: 20px;
-    background-color: rgb(20, 34, 34);
+    height: 25px;
+    background-color: rgb(20,34,34);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -173,35 +192,60 @@ header {
 
 .connectinfo{
     color: white;
-    padding-right: 100px;
+}
+.join-server{
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 50px;
+    padding: 0px 3px;
+    color: white;
+    background-color: green;
+    border: 1px solid rgb(0,78,0);
+    border-radius: 5px;
 }
 
-.discord {
+.discordinfo{
+    margin-left: 50px;
+    margin-right: 10px;
     color: white;
-    cursor: pointer;
 }
-.discord:hover {
-    color: brightness(0.1);
+.join-discord{
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0px 5px;
+    color: white;
+    background-color: rgb(122,113,207);
+    border: 1px solid rgb(84,77,145);
+    border-radius: 5px;
+}
+.join-server:hover {
+    background-color: rgba(0,78,0,1);
+}
+.join-discord:hover {
+    background-color: rgb(84,77,145,1);
 }
 
 .tournaments-container {
+    top: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; 
+    align-items: flex-end;
 }
 
 .tournaments-overlay {
     position: absolute;
     top: 250px; 
-    right: 0px;
+    right: 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     z-index: 1000; 
     background-color: rgb(20, 34, 34);
     padding: 0px;
-    border: 0px solid darkslategray; /* Add an outline with white color */
-
+    border: 1px solid white;
+    position: fixed;
 }
 
 .tourney-section {
@@ -251,4 +295,13 @@ header {
 
 .tourney_button:hover {
     filter: brightness(0.8);
+}
+
+.background-page {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #292929;
+    z-index: -1; 
 }
