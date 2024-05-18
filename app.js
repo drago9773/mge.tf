@@ -16,10 +16,16 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({
-	secret: 'your-secret-key', 
-	resave: false,
-	saveUninitialized: true
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
 }));
+
+const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
+    if (err) {
+        console.error('cannot open elo database');
+    }
+});
 
 // user database
 const db = new sqlite3.Database('users.db', (err) => {
@@ -39,44 +45,44 @@ const db = new sqlite3.Database('users.db', (err) => {
 });
 
 app.get('/', (req, res) => {
-	res.render('index', { session: req.session });
+    res.render('index', { session: req.session });
 });
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
 
 const steam = new SteamAuth({
-	realm: 'http://localhost:3005/',
-	returnUrl: 'http://localhost:3005/verify',
-	apiKey: API_KEY,
+    realm: 'http://localhost:3005/',
+    returnUrl: 'http://localhost:3005/verify',
+    apiKey: API_KEY,
 });
 
 app.get('/init-openid', async (req, res) => {
-	const redirectUrl = await steam.getRedirectUrl();
-	return res.redirect(redirectUrl);
+    const redirectUrl = await steam.getRedirectUrl();
+    return res.redirect(redirectUrl);
 });
 
 app.get('/verify', async (req, res) => {
-	try {
-		const user = await steam.authenticate(req);
-		req.session.user = user;
-		
-		// check if first time login
-		db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
-			if (err) {
-				console.error("Error querying database: " + err.message);
-			} else if (!row) {
-				// add if first time
-				db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)', [user.steamid, user.username, user.avatar.small], (err) => {
-					if (err) {
-						console.error("Error inserting into database: " + err.message);
-					}
-				});
-			}
-		});
-	} catch (err) {
-		console.error("Authentication error: " + err.message);
-	}
-	return res.redirect('/');
+    try {
+        const user = await steam.authenticate(req);
+        req.session.user = user;
+
+        // check if first time login
+        db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
+            if (err) {
+                console.error("Error querying database: " + err.message);
+            } else if (!row) {
+                // add if first time
+                db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)', [user.steamid, user.username, user.avatar.small], (err) => {
+                    if (err) {
+                        console.error("Error inserting into database: " + err.message);
+                    }
+                });
+            }
+        });
+    } catch (err) {
+        console.error("Authentication error: " + err.message);
+    }
+    return res.redirect('/');
 });
 
 app.get('/player_page/:steamid', (req, res) => {
@@ -106,16 +112,16 @@ app.get('/users', (req, res) => {
 
 app.get('/load', (req, res) => {
     const { page } = req.query;
-    res.render(page); 
+    res.render(page);
 });
 
 app.get('/logout', (req, res) => {
-	req.session = null;
-	return res.redirect('/');
+    req.session = null;
+    return res.redirect('/');
 });
 
 const PORT = process.env.PORT || 3005;
 
 app.listen(PORT, () => {
-	console.log(`Service endpoint = http://localhost:${PORT}`);
+    console.log(`Service endpoint = http://localhost:${PORT}`);
 });
