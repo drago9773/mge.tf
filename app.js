@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const SteamAuth = require("node-steam-openid");
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
+const SteamID = require('steamid');
 
 const app = express();
 app.use(express.json());
@@ -94,13 +95,16 @@ app.get('/verify', async (req, res) => {
 });
 
 app.get('/player_page/:steamid', (req, res) => {
-    const steamid = req.params.steamid;
+    const qid = req.params.steamid;
+    const steamid = new SteamID(qid).getSteamID64();
+
     db.get('SELECT * FROM users WHERE steam_id = ?', [steamid], (err, row) => {
         if (err) {
             console.error("Error querying database: " + err.message);
             res.status(500).send("Internal Server Error");
         } else if (!row) {
-            res.status(404).send("User not found");
+            const name = req.query.name;
+            res.render('empty_player_page', { steamid, name });
         } else {
             res.render('player_page', { user: row });
         }
@@ -117,8 +121,6 @@ app.get('/users', (req, res) => {
         }
     });
 });
-
-app.get('/click_user_steamid')
 
 app.get('/load', (req, res) => {
     const { page } = req.query;

@@ -9,9 +9,9 @@
             <th>Losses</th>
         </tr>
         <% elo.forEach((player, index) => { %>
-            <tr class="elo-row">
+            <tr style="cursor:pointer" hx-target="#main" hx-get=<%= "/player_page/" + player.steamid + "?name=" + player.name %> class="elo-row">
                 <td><%= index + 1 %></td>
-                <td><%= player.name %></td>
+                <td ><%= player.name %></a></td>
                 <td><%= player.rating %></td>
                 <td><%= player.wins %></td>
                 <td><%= player.losses %></td>
