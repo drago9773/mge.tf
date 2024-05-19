@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const SteamAuth = require("node-steam-openid");
 const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
+const SteamID = require('steamid');
 
 const app = express();
 app.use(express.json());
@@ -16,11 +17,16 @@ app.use(express.static(path.join(__dirname, 'views')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({
-	secret: 'your-secret-key', 
-	resave: false,
-	saveUninitialized: true
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
 }));
 
+const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
+    if (err) {
+        console.error('cannot open elo database');
+    }
+});
 // user database
 const users_db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -123,8 +129,8 @@ const steam = new SteamAuth({
 
 
 app.get('/init-openid', async (req, res) => {
-	const redirectUrl = await steam.getRedirectUrl();
-	return res.redirect(redirectUrl);
+    const redirectUrl = await steam.getRedirectUrl();
+    return res.redirect(redirectUrl);
 });
 
 app.get('/verify', async (req, res) => {
@@ -158,7 +164,8 @@ app.get('/player_page/:steamid', (req, res) => {
             console.error("Error querying database: " + err.message);
             res.status(500).send("Internal Server Error");
         } else if (!row) {
-            res.status(404).send("User not found");
+            const name = req.query.name;
+            res.render('empty_player_page', { steamid, name });
         } else {
             res.render('player_page', { user: row });
         }
@@ -206,5 +213,5 @@ app.get('/logout', (req, res) => {
 const PORT = process.env.PORT || 3005;
 
 app.listen(PORT, () => {
-	console.log(`Service endpoint = http://localhost:${PORT}`);
+    console.log(`Service endpoint = http://localhost:${PORT}`);
 });
