@@ -1,6 +1,6 @@
 function postContent() {
     var message = document.getElementById("content").value;
-    var title = "Placeholder Title";
+    var title = document.getElementById("title").value;;
     
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/postContent", true);

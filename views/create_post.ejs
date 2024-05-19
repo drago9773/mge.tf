@@ -1,10 +1,17 @@
+<div class="create-post-container">
 <link rel="stylesheet" href="css/header.css"/>
-<link rel="stylesheet" href="css/create_post.css"/>
-<div class="forum-posts">
-    <h1>test Posts</h1>
-    <ul>
-    <% create_post.forEach(content => { %>
-        <li><%= content %></li>
-    <% }); %>
-    <button class="forum-button" hx-get="/load?page=forums" hx-swap="innerHtml" hx-target="#main">Forum</button>
+    <h1>Create Post</h1>
+
+    <form id="postForm">
+        <label for="title">Enter Title:</label><br>
+        <input type="text" id="title" name="title"><br><br>
+        <label for="content">Enter Your Message:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <button type="button" onclick="postContent()">Post Message</button>
+    </form>
+
+    <button hx-get="/forums" hx-target="#main" hx-swap="innerHtml">Forums Page</button>
+
 </div>
+
+<script src="/js/create_post.js"></script>

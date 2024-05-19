@@ -20,4 +20,4 @@ INSERT INTO forums (steam_id, steam_username, steam_avatar, title, content) VALU
 
 SELECT steam_username FROM users;
 
-SELECT content FROM forums;
+SELECT forums_id, steam_id, title, content FROM forums;

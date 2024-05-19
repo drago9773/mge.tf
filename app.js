@@ -21,12 +21,6 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
-const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
-    if (err) {
-        console.error('cannot open elo database');
-    }
-});
 // user database
 const users_db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -71,14 +65,17 @@ app.post('/postContent', (req, res) => {
     const user = req.session.user;
 
     if (!user) {
-        return res.status(401).json({ error: 'error 404: Login to create post'});
+        return res.status(401).json({ error: 'Login to create post' });
     }
 
-    forums_db.run('INSERT INTO forums (steam_id, steam_username, steam_avatar, title, content) VALUES (?, ?, ?, ?, ?)', 
-        [user.steamid, user.username, user.avatar.small, title, content], 
+    if (!content || !title) {
+        return res.status(400).json({ error: 'Content and title are required' });
+    }
+
+    forums_db.run('INSERT INTO forums (steam_id, steam_username, steam_avatar, title, content, created_at) VALUES (?, ?, ?, ?, ?, ?)', 
+        [user.steamid, user.username, user.avatar.small, title, content, new Date().toISOString().slice(0, 16)], 
         (err) => {
             if (err) {
-                alert("Please sign in");
                 console.error(err.message);
                 return res.status(500).json({ error: 'Failed to post content.' });
             } else {
@@ -89,19 +86,35 @@ app.post('/postContent', (req, res) => {
     );
 });
 
-// Define route to fetch and display usernames
-app.get('/create_post', (req, res) => {
-    const sql = 'SELECT content FROM forums';
+// Define route to fetch and display forums
+app.get('/forums', (req, res) => {
+    const sql = 'SELECT forums_id, steam_id, steam_username, steam_avatar, title, content, created_at FROM forums';
     forums_db.all(sql, [], (err, rows) => {
         if (err) {
             console.error(err.message);
             res.status(500).json({ error: 'Failed to fetch post.' });
         } else {
-            const create_post = rows.map(row => row.content);
-            res.render('create_post', { create_post });
+            res.render('forums', { forums: rows });
         }
     });
 });
+
+// Define route to remove a post
+app.post('/remove_post', (req, res) => {
+    const postId = req.body.post_id; // Get the post ID from the request
+    // Perform deletion in the database based on postId
+    const sql = 'DELETE FROM forums WHERE forums_id = ?';
+    forums_db.run(sql, [postId], (err) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).json({ error: 'Failed to remove post.' });
+        } else {
+            res.redirect('/'); // Redirect back to the forums page
+        }
+    });
+});
+
+
 const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
     if (err) {
         console.error('cannot open elo database');
