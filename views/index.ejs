@@ -28,16 +28,16 @@
                         <a class="dropdown-option" hx-get="/load?page=season" hx-target="#main" hx-swap="innerHtml">Season 1</a>
                     </div>
                 </div>
-                <a class="menu-button forum-button" hx-get="/load?page=forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
+                <a class="menu-button forum-button" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
             </div>
         </div>
         <div class="right-section">
             <% if (!session.user) { %>
-            <a class="menu-button signin-button" href="/init-openid">
+            <a class="signin-button" href="/init-openid">
                 <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
             </a>
             <% } else { %>
-            <a class="menu-button profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
+            <a class="profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
                 <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
                 <% 
                     const maxLength = 15;
@@ -81,7 +81,7 @@
         </div>
     </div>
     <div id="main">
-        <%- include('main') %>
+        <%- include('main', {elo: elo}) %>
     </div>
 </body>
 </html>

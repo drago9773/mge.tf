@@ -7,7 +7,14 @@
     <% users.forEach(user => { %>
         <div class="users_container" hx-get="/player_page/<%= user.steam_id %>" hx-target="#main" hx-swap="innerHtml">
             <img class="users_avatar" src="<%= user.steam_avatar %>" alt="Avatar">
-            <a class="users_username" href="#"><%= user.steam_username %></a>
+            <% 
+                const maxLength = 30;
+                let displayName = user.steam_username;
+                if (displayName.length > maxLength) {
+                    displayName = displayName.slice(0, maxLength) + '...';
+                }
+            %>
+            <a class="users_username" href="#"><%= displayName %></a>
             <span class="users_steam_id"><%= user.steam_id %></span>
         </div>
     <% }); %>

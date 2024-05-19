@@ -1,4 +1,23 @@
-<link rel="stylesheet" href="css/forums.css">
-<link rel="stylesheet" href="css/header.css">
+<div>
+    <link rel="stylesheet" href="css/header.css"/>
+    <link rel="stylesheet" href="css/forums.css"/>
 
-<h1>Forum</h1>
+    <h1 class="description">Forum Posts</h1>
+    <div class="forum-posts">
+        <button class="create_post" hx-get="/load?page=create_post" hx-swap="innerHtml" hx-target="#main">Create Post</button>
+
+            <% forums.forEach(forum => { %>
+                <a class="forum-strip">
+                    <ul>
+                        <p class="steam-username"><%= forum.steam_username + ' created at ' + forum.created_at %></p>
+                        <p class="title"><%= forum.title %></p>
+                        <p class="content"><%= forum.content %></p>
+                        <form action="/remove_post" method="post">
+                            <input type="hidden" name="post_id" value="<%= forum.forums_id %>">
+                            <button type="submit">Remove Post</button>
+                        </form>
+                    </ul>
+                </a>
+            <% }); %>
+    </div>
+</div>

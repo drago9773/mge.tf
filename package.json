@@ -17,6 +17,7 @@
     "express-session": "^1.18.0",
     "node-fetch": "^2.6.1",
     "node-steam-openid": "^1.2.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "steamid": "^2.0.0"
   }
 }

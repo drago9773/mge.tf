@@ -1,0 +1,17 @@
+<div class="create-post-container">
+<link rel="stylesheet" href="css/header.css"/>
+    <h1>Create Post</h1>
+
+    <form id="postForm">
+        <label for="title">Enter Title:</label><br>
+        <input type="text" id="title" name="title"><br><br>
+        <label for="content">Enter Your Message:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <button type="button" onclick="postContent()">Post Message</button>
+    </form>
+
+    <button hx-get="/forums" hx-target="#main" hx-swap="innerHtml">Forums Page</button>
+
+</div>
+
+<script src="/js/create_post.js"></script>

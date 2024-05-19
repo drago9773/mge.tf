@@ -1,0 +1,40 @@
+.forum-posts {
+    border-radius: 5px;
+    background-image: url("../images/paper-background.png");
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Vertically center */
+    width: 700px; /* Fixed width */
+    height: 600px; /* Adjusted to fit content */
+    margin: 0 auto; /* Horizontally center the container */
+}
+.forum-strip {
+    width: 600px;
+    max-height: 200px; /* Set a maximum height for the container */
+    overflow: hidden; /* Hide overflowing content */
+    border-radius: 5px;
+    border: 3px solid rgb(52, 62, 65);
+    background-color: rgb(98, 98, 99);
+    margin-bottom: 20px; /* Add some vertical spacing between strips */
+}   
+
+.forum-strip li {
+    margin-bottom: 20px; /* Add some vertical spacing between posts */
+}
+
+.forum-strip p {
+    margin: 0; /* Remove default margin */
+}
+
+.forum-strip p.steam-username,
+.forum-strip p.title {
+    font-size: 16px; /* Adjust size as needed */
+    font-weight: bold;
+}
+
+.forum-strip p.content {
+    font-size: 16px; /* Adjust size as needed */
+    overflow: hidden; /* Hide overflowing content */
+    text-overflow: ellipsis; /* Show ellipsis (...) for overflowing text */
+    white-space: nowrap; /* Prevent wrapping */
+}
