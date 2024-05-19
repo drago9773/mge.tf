@@ -1,4 +1,17 @@
-<link rel="stylesheet" href="css/forums.css">
-<link rel="stylesheet" href="css/header.css">
+<div class="forum-container">
+<link rel="stylesheet" href="css/header.css"/>
+    <h1>Forum</h1>
 
-<h1>Forum</h1>
+    <form id="postForm">
+        <label for="title">Enter Title:</label><br>
+        <input type="text" id="title" name="title"><br><br>
+        <label for="content">Enter Your Message:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <button type="button" onclick="postContent()">Post Message</button>
+    </form>
+
+    <button hx-get="/create_post" hx-target="#main" hx-swap="innerHtml">Forums Page</button>
+
+</div>
+
+<script src="/js/forums.js"></script>

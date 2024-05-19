@@ -1,5 +1,6 @@
 .placeholder {
-    background-image: url("../images/elo-background.png");
+    /* background-image: url("../images/elo-background.png"); */
+    background-color: rgba(0,0,0,0.8);
     width: 400px;
     height: 250px;
     color: black;
@@ -29,6 +30,6 @@
     color: white;
 }
 
-p {
+.elo-row {
     color: rgb(0, 119, 255);
 }

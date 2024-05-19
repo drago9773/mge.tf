@@ -22,11 +22,11 @@ app.use(session({
 }));
 
 // user database
-const db = new sqlite3.Database('users.db', (err) => {
+const users_db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-        console.error("Error opening database: " + err.message);
+        console.error(err.message);
     } else {
-        db.run(`CREATE TABLE IF NOT EXISTS users (
+        users_db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             steam_id TEXT NOT NULL,
             steam_username TEXT NOT NULL
@@ -37,18 +37,90 @@ const db = new sqlite3.Database('users.db', (err) => {
         });
     }
 });
+// forums database
+const forums_db = new sqlite3.Database('forums.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        console.error(err.message);
+    } else {
+        forums_db.run(`CREATE TABLE IF NOT EXISTS forums (
+            forums_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            steam_id TEXT NOT NULL,
+            steam_username TEXT NOT NULL,
+            steam_avatar TEXT
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (steam_id) REFERENCES users(steam_id)
+        )`, (err) => {
+            if (err) {
+                console.error("Error creating forums table: " + err.message);
+            }
+        });
+    }
+});
 
+// Define route to fetch and display usernames
+app.post('/postContent', (req, res) => {
+    const { content, title } = req.body;
+    const user = req.session.user;
+
+    if (!user) {
+        return res.status(401).json({ error: 'error 404: Login to create post'});
+    }
+
+    forums_db.run('INSERT INTO forums (steam_id, steam_username, steam_avatar, title, content) VALUES (?, ?, ?, ?, ?)', 
+        [user.steamid, user.username, user.avatar.small, title, content], 
+        (err) => {
+            if (err) {
+                alert("Please sign in");
+                console.error(err.message);
+                return res.status(500).json({ error: 'Failed to post content.' });
+            } else {
+                console.log(`Forum Post "${content}" saved to the database.`);
+                return res.status(200).json({ message: 'Post saved successfully.' });
+            }
+        }
+    );
+});
+
+// Define route to fetch and display usernames
+app.get('/create_post', (req, res) => {
+    const sql = 'SELECT content FROM forums';
+    forums_db.all(sql, [], (err, rows) => {
+        if (err) {
+            console.error(err.message);
+            res.status(500).json({ error: 'Failed to fetch post.' });
+        } else {
+            const create_post = rows.map(row => row.content);
+            res.render('create_post', { create_post });
+        }
+    });
+});
+const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
+    if (err) {
+        console.error('cannot open elo database');
+    }
+});
 app.get('/', (req, res) => {
-	res.render('index', { session: req.session });
+    const result = eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
+        if (err) {
+            console.error("Error querying database: " + err.message);
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.render('index', { session: req.session, elo: rows });
+        }
+    });
 });
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
+const domain = process.env.DOMAIN || 'http://localhost:3005/';
 
 const steam = new SteamAuth({
-	realm: 'http://localhost:3005/',
-	returnUrl: 'http://localhost:3005/verify',
-	apiKey: API_KEY,
+    realm: domain,
+    returnUrl: domain + 'verify',
+    apiKey: API_KEY,
 });
+
 
 app.get('/init-openid', async (req, res) => {
 	const redirectUrl = await steam.getRedirectUrl();
@@ -61,12 +133,12 @@ app.get('/verify', async (req, res) => {
 		req.session.user = user;
 		
 		// check if first time login
-		db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
+		users_db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
 			if (err) {
 				console.error("Error querying database: " + err.message);
 			} else if (!row) {
 				// add if first time
-				db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)', [user.steamid, user.username, user.avatar.small], (err) => {
+				users_db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)', [user.steamid, user.username, user.avatar.small], (err) => {
 					if (err) {
 						console.error("Error inserting into database: " + err.message);
 					}
@@ -81,7 +153,7 @@ app.get('/verify', async (req, res) => {
 
 app.get('/player_page/:steamid', (req, res) => {
     const steamid = req.params.steamid;
-    db.get('SELECT * FROM users WHERE steam_id = ?', [steamid], (err, row) => {
+    users_db.get('SELECT * FROM users WHERE steam_id = ?', [steamid], (err, row) => {
         if (err) {
             console.error("Error querying database: " + err.message);
             res.status(500).send("Internal Server Error");
@@ -94,7 +166,7 @@ app.get('/player_page/:steamid', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-    db.all('SELECT * FROM users', [], (err, rows) => {
+    users_db.all('SELECT * FROM users', [], (err, rows) => {
         if (err) {
             console.error("Error querying database: " + err.message);
             res.status(500).send("Internal Server Error");
@@ -104,14 +176,31 @@ app.get('/users', (req, res) => {
     });
 });
 
+app.get('/click_user_steamid')
+
 app.get('/load', (req, res) => {
     const { page } = req.query;
-    res.render(page); 
+    if (page === 'main') {
+        eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
+            if (err) {
+                console.error("Error querying database: " + err.message);
+                res.status(500).send("Internal Server Error");
+            } else {
+                return res.render('main', { elo: rows });
+            }
+        });
+    } else {
+        res.render(page);
+    }
 });
 
 app.get('/logout', (req, res) => {
-	req.session = null;
-	return res.redirect('/');
+    req.session.destroy(err => {
+        if (err) {
+            console.error("Error destroying session: " + err.message);
+        }
+        res.redirect('/');
+    });
 });
 
 const PORT = process.env.PORT || 3005;

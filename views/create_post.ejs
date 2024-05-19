@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="css/header.css"/>
+<link rel="stylesheet" href="css/create_post.css"/>
+<div class="forum-posts">
+    <h1>test Posts</h1>
+    <ul>
+    <% create_post.forEach(content => { %>
+        <li><%= content %></li>
+    <% }); %>
+    <button class="forum-button" hx-get="/load?page=forums" hx-swap="innerHtml" hx-target="#main">Forum</button>
+</div>

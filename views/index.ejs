@@ -28,7 +28,7 @@
                         <a class="dropdown-option" hx-get="/load?page=season" hx-target="#main" hx-swap="innerHtml">Season 1</a>
                     </div>
                 </div>
-                <a class="menu-button forum-button" hx-get="/load?page=forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
+                <a class="menu-button forum-button" hx-get="/create_post" hx-swap="innerHtml" hx-target="#main">Forums</a>
             </div>
         </div>
         <div class="right-section">
@@ -81,7 +81,7 @@
         </div>
     </div>
     <div id="main">
-        <%- include('main') %>
+        <%- include('main', {elo: elo}) %>
     </div>
 </body>
 </html>
