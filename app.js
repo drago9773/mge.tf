@@ -59,7 +59,6 @@ const forums_db = new sqlite3.Database('forums.db', sqlite3.OPEN_READWRITE, (err
     }
 });
 
-// Define route to fetch and display usernames
 app.post('/postContent', (req, res) => {
     const { content, title } = req.body;
     const user = req.session.user;
@@ -86,7 +85,6 @@ app.post('/postContent', (req, res) => {
     );
 });
 
-// Define route to fetch and display forums
 app.get('/forums', (req, res) => {
     const sql = 'SELECT forums_id, steam_id, steam_username, steam_avatar, title, content, created_at FROM forums';
     forums_db.all(sql, [], (err, rows) => {
@@ -99,17 +97,16 @@ app.get('/forums', (req, res) => {
     });
 });
 
-// Define route to remove a post
 app.post('/remove_post', (req, res) => {
-    const postId = req.body.post_id; // Get the post ID from the request
-    // Perform deletion in the database based on postId
+    const postId = req.body.post_id; 
+
     const sql = 'DELETE FROM forums WHERE forums_id = ?';
     forums_db.run(sql, [postId], (err) => {
         if (err) {
             console.error(err.message);
             res.status(500).json({ error: 'Failed to remove post.' });
         } else {
-            res.redirect('/'); // Redirect back to the forums page
+            res.redirect('/'); 
         }
     });
 });
