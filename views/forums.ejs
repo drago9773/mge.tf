@@ -7,7 +7,7 @@
         <button class="create_post" hx-get="/load?page=create_post" hx-swap="innerHtml" hx-target="#main">Create Post</button>
 
             <% forums.forEach(forum => { %>
-                <a class="forum-strip">
+                <a class="forum-strip" hx-get="/post/<%= forum.forums_id %>" hx-target="#main" hx-swap="innerHtml">
                     <ul>
                         <p class="steam-username"><%= forum.steam_username + ' created at ' + forum.created_at %></p>
                         <p class="title"><%= forum.title %></p>

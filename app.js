@@ -181,6 +181,17 @@ app.get('/player_page/:steamid', (req, res) => {
         }
     });
 });
+app.get('/post/:forumid', (req, res) => {
+    const forumid = req.params.forumid;
+    forums_db.get('SELECT * FROM forums WHERE forums_id = ?', [forumid], (err, row) => {
+        if (err) {
+            console.error("Error querying database: " + err.message);
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.render('post', { forum: row });
+        }
+    });
+});
 
 app.get('/users', (req, res) => {
     users_db.all('SELECT * FROM users', [], (err, rows) => {
