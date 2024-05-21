@@ -1,0 +1,33 @@
+<div class="post">
+    <link rel="stylesheet" href="css/post.css" />
+    <title>Thread</title>
+
+    <div class="post-background">
+        <button hx-get="/forums" hx-target="#main"> <%= "<<--" %> back to threads</button>
+        <div class="post-container">
+            <div class="post-profile-container" hx-get="/player_page/<%= thread.steam_id %>" hx-target="#main" hx-swap="innerHtml">
+                <img class="post-avatar" src="<%= thread.steam_avatar %>" alt="Post Avatar">
+                <a class="post-username"><%= thread.steam_username %></a>
+            </div>
+
+            <a class="post-title"><%= thread.title %></a>
+            <p class="post-content"><%= thread.content %></p>
+            <p class="post-id"><%= thread.forums_id %></p>
+        </div>
+        <% posts.forEach(post => { %>
+            <div class="post-container">
+                <div class="post-profile-container" hx-get="/player_page/<%= post.steam_id %>" hx-target="#main" hx-swap="innerHtml">
+                    <img class="post-avatar" src="<%= post.steam_avatar %>" alt="Post Avatar">
+                    <a class="post-username"><%= post.steam_username %></a>
+                </div>
+                <p class="post-content"><%= post.content %></p>
+            </div>
+        <% }); %>
+        <form hx-post="/posts" hx-target="#main">
+            <input type="hidden" name="thread_id" value="<%= thread.thread_id %>">
+            <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+            <button class="post-reply" type="submit">Post Reply</button>
+        </form>
+    </div>
+</div>
+

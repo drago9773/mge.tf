@@ -4,18 +4,21 @@
 
     <h1 class="description">Forum Posts</h1>
     <div class="forum-posts">
-        <button class="create_post" hx-get="/load?page=create_post" hx-swap="innerHtml" hx-target="#main">Create Post</button>
+        <button class="create_post" hx-get="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
 
             <% forums.forEach(forum => { %>
-                <a class="forum-strip" hx-get="/post/<%= forum.forums_id %>" hx-target="#main" hx-swap="innerHtml">
+                <% console.log(forum) %>
+                <a class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main" hx-swap="innerHtml">
                     <ul>
                         <p class="steam-username"><%= forum.steam_username + ' created at ' + forum.created_at %></p>
                         <p class="title"><%= forum.title %></p>
                         <p class="content"><%= forum.content %></p>
-                        <form action="/remove_post" method="post">
-                            <input type="hidden" name="post_id" value="<%= forum.forums_id %>">
-                            <button class="remove-post" type="submit">Remove Post</button>
-                        </form>
+                        <% if (forum.steamid === session.steamid) { %>
+                            <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
+                                <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
+                                <button class="remove-post" type="submit">Remove Post</button>
+                            </form>
+                        <% } %>
                     </ul>
                 </a>
             <% }); %>

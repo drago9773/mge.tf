@@ -3,16 +3,13 @@
     background-image: url("../images/paper-background.png");
     text-align: left;
     width: 700px; 
-    max-height: calc(100vh - 200px); /* Adjust this value as needed */
-    overflow-y: auto;
     margin: 100px auto;
 }
 .post-container {
+    margin-top: 50px;
     padding: 10px;
     border-radius: 20px;
     margin: auto;
-    position: relative;
-    top: 50px; /* Adjust this value as needed */
     width: 500px;
     background-color: rgba(0, 0, 0, 0.3); 
 }
