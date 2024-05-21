@@ -30,4 +30,5 @@
 .textbox p {
     font-size: 16px;
     color: #000000;
+    transition: color 0.5s;
 }

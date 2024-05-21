@@ -111,12 +111,12 @@ app.post('/remove_post', (req, res) => {
     });
 });
 
-
 const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
     if (err) {
         console.error('cannot open elo database');
     }
 });
+
 app.get('/', (req, res) => {
     const result = eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
         if (err) {

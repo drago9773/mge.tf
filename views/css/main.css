@@ -1,0 +1,137 @@
+.main-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/badlands-mid.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 1001; /* Ensure the overlay is on top of other content */
+    justify-content: center;
+    align-items: center;
+}
+.mge-title{
+    text-align: center;
+    font-size: 80px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 
+        -8px -8px 0 #000,  
+        0px 0px 0 #000,
+        0px 0px 0 #000,
+        0px 0px 0 #000;
+}
+.placeholder {
+    background-color: rgba(0,0,0,0.8);
+    width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    margin-top: 50px;
+    border: 5px solid rgb(255, 255, 255);
+    padding: 10px 10px;
+    overflow-y: auto; 
+    border-radius: 10px;
+    font-weight: none;
+}
+
+.placeholder::-webkit-scrollbar {
+    width: 10px; 
+}
+
+.placeholder::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px;   
+}
+
+.placeholder::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.elo-title th{
+    border-spacing: 20px 0;
+    font-weight: normal;
+    text-align: left;
+    font-size: 20px;
+    color: rgb(0, 255, 242);
+}
+
+.elo-row {
+    font-weight: none;
+    color: rgb(0, 119, 255);
+}
+.elo-row:hover {
+    color: rgb(255, 255, 255);
+}
+
+table {
+    border-spacing: 20px 0;
+}
+
+table td.name-column {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 270px;
+}
+
+.main-menu {
+    margin-top: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-menu-button {
+    text-overflow: wrap;
+    border-radius: 3px;
+    padding: 40px 50px;
+    margin-inline: 8px;
+    text-decoration: none;
+    color: #fff;
+    border: 3px solid white;
+    cursor: pointer;
+    font-size: 30px;
+    transition: background-color 0.8s;
+}
+.main-1{
+    background-color: rgba(255, 0, 0, 0.6);
+}
+.main-2{
+    background-color: rgba(145, 255, 0, 0.6);
+}
+.main-3{
+    background-color: rgba(0, 255, 255, 0.6);   
+}
+.main-4{
+    background-color: rgba(255, 0, 183, 0.6);
+    
+}
+
+.main-menu-button:hover{
+    background-color: white;
+    color: black;
+}
+.main-connect-info{
+    border-radius: 5px;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 30px;
+    background-color: darkslategray;
+    color: white;
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.main-discord-info{
+    border-radius: 5px;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 30px;
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

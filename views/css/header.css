@@ -8,7 +8,7 @@ body {
     background-size: cover;
     background-position: center;
     z-index: 1;
-    font-family: Verdana;
+    font-family: 'Lucida Console';
 }
 
 .description {
@@ -24,7 +24,7 @@ body {
 }
 
 
-header {
+.overlay {
     display: flex;
     align-items: center;
     background-color: darkslategray;

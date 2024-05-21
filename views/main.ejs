@@ -1,21 +1,37 @@
-<h1 class="description">Where Anyone Can Make A Name</h1>
-<div class="placeholder">
-    <table>
-        <tr class="elo-title">
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Elo</th>
-            <th>Wins</th>
-            <th>Losses</th>
-        </tr>
-        <% elo.forEach((player, index) => { %>
-            <tr style="cursor:pointer" hx-target="#main" hx-get=<%= "/player_page/" + player.steamid + "?name=" + player.name %> class="elo-row">
-                <td><%= index + 1 %></td>
-                <td class="name-column"><%= player.name %></a></td>
-                <td><%= player.rating %></td>
-                <td><%= player.wins %></td>
-                <td><%= player.losses %></td>
+<div class="main-overlay">
+    <h1 class="mge-title">Rewriting MGE</h1>
+    <div class="placeholder">
+        <link rel="stylesheet" href="css/main.css" />
+        <table>
+            <tr class="elo-title">
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Elo</th>
+                <th>Wins</th>
+                <th>Losses</th>
             </tr>
-        <% }) %>
-    </table>
+            <% elo.forEach((player, index) => { %>
+                <tr style="cursor:pointer" hx-target="#main" hx-get=<%= "/player_page/" + player.steamid + "?name=" + player.name %> class="elo-row">
+                    <td><%= index + 1 %></td>
+                    <td class="name-column"><%= player.name %></a></td>
+                    <td><%= player.rating %></td>
+                    <td><%= player.wins %></td>
+                    <td><%= player.losses %></td>
+                </tr>
+            <% }) %>
+        </table>
+    </div>
+        <div class="main-menu">
+        <div class="main-menu-buttons">
+            <a class="main-menu-button main-1" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
+            <a class="main-menu-button main-2" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">Money Match</a>
+            <a class="main-menu-button main-3" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League</a>
+            <a class="main-menu-button main-4" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
+        </div>
+    </div>
+    <div class="main-connect-info">Official TF2 MGE Server: 'connect mge.tf'
+    </div>
+    <div class="main-discord-info">Official TF2 MGE Discord: 'discord.gg/mge'
+    </div>
+
 </div>
