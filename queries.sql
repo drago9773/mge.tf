@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     steam_username TEXT NOT NULL,
     steam_avatar TEXT
 );
+
 CREATE TABLE IF NOT EXISTS forums (
     forums_id INTEGER PRIMARY KEY AUTOINCREMENT,
     steam_id TEXT,
