@@ -1,12 +1,12 @@
 <div class="create-post-container">
     <link rel="stylesheet" href="css/header.css"/>
+    <link rel="stylesheet" href="css/create_post.css">
     <form id="postForm" hx-post="/postContent" hx-target="#main">
-        <label for="title">Enter Thread Title:</label><br>
+        <label class="thread-title" for="title">Enter Thread Title:</label><br>
         <input type="text" id="title" name="title"><br><br>
         <label for="content">Enter Thread Body:</label><br>
-        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <textarea class="post-text-area" id="content" name="content" rows="15" cols="60"></textarea><br><br>
         <button type="submit">Post Message</button>
     </form>
 </div>
-
 <script src="/js/create_post.js"></script>

@@ -3,6 +3,25 @@ function openInNewTab(url) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    // sidebar logic
+    const sidebarTrigger = document.querySelector('.sidebar-trigger');
+    const overlay = document.querySelector('.overlay');
+
+    sidebarTrigger.addEventListener('mouseover', function() {
+        overlay.style.left = '0';
+        sidebarTrigger.style.opacity = '0';
+    });
+
+    overlay.addEventListener('mouseleave', function() {
+        overlay.style.left = '-200px';
+        sidebarTrigger.style.opacity = '1';
+    });
+
+    overlay.addEventListener('mouseover', function() {
+        sidebarTrigger.style.opacity = '0';
+    });
+
+    // tournament links
     document.getElementById("cup3Button").addEventListener("click", function() {
         openInNewTab('https://brackethq.com/b/6lk1b/');
     });
@@ -22,3 +41,15 @@ document.addEventListener("DOMContentLoaded", function() {
         openInNewTab('discord.gg/j6kDYSpYbs');
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('announcement-overlay');
+    const closeButton = document.getElementById('closeOverlay');
+  
+    overlay.style.display = 'block';
+  
+    closeButton.addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+  });
+  

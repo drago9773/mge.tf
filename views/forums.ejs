@@ -1,26 +1,26 @@
 <div>
     <link rel="stylesheet" href="css/header.css"/>
     <link rel="stylesheet" href="css/forums.css"/>
-
+    <div class="background-page"></div>
     <h1 class="description">Forum Posts</h1>
     <div class="forum-posts">
         <button class="create_post" hx-get="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
-
-            <% forums.forEach(forum => { %>
-                <% console.log(forum) %>
-                <a class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main" hx-swap="innerHtml">
-                    <ul>
-                        <p class="steam-username"><%= forum.steam_username + ' created at ' + forum.created_at %></p>
-                        <p class="title"><%= forum.title %></p>
-                        <p class="content"><%= forum.content %></p>
-                        <% if (forum.steamid === session.steamid) { %>
-                            <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
-                                <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
-                                <button class="remove-post" type="submit">Remove Post</button>
-                            </form>
-                        <% } %>
-                    </ul>
-                </a>
-            <% }); %>
+        
+        <% forums.forEach(forum => { %>
+            <% console.log(forum) %>
+            <a class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main" hx-swap="innerHtml">
+                <ul>
+                    <p class="steam-username"><%= forum.steam_username + ' created at ' + forum.created_at %></p>
+                    <p class="title"><%= forum.title %></p>
+                    <p class="content"><%= forum.content %></p>
+                    <% if (forum.steamid === session.steamid) { %>
+                        <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
+                            <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
+                            <button class="remove-post" type="submit">Remove Post</button>
+                        </form>
+                    <% } %>
+                </ul>
+            </a>
+        <% }); %>
     </div>
 </div>

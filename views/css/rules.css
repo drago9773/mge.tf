@@ -52,7 +52,7 @@
 .rules-textbox {
     width: 30%;
     max-width: 35%;
-    height: 500px; 
+    height: 700px; 
     overflow-y: auto;
     background-image: url("../images/paper-background.png");
     border-radius: 5px;

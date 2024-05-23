@@ -44,18 +44,15 @@
     margin-top: 25px;
 }
 
-/* Scrollbar Track */
 .post-background::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
+    width: 10px;
 }
 
-/* Scrollbar Handle */
 .post-background::-webkit-scrollbar-thumb {
-    background-color: #999; /* Color of the scrollbar handle */
-    border-radius: 5px; /* Radius of the scrollbar handle */
+    background-color: #999; 
+    border-radius: 5px;
 }
 
-/* Scrollbar Handle on hover */
 .post-background::-webkit-scrollbar-thumb:hover {
-    background-color: #777; /* Color of the scrollbar handle on hover */
+    background-color: #777; 
 }

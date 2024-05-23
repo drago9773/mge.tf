@@ -8,30 +8,18 @@
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
 <body>
+    <div class="sidebar-trigger">
+        <!-- <img src="images/sidebar-logo.png" alt="Sidebar Logo" class="sidebar-logo"> -->
+        _____
+        _____
+        _____
+    </div>
     <header class="overlay">
-        <div class="left-section">
+        <div class="top-section">
             <h1 class="title"><a hx-get="/load?page=main" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
             <img class="logo" src="">
         </div>
         <div class="middle-section">
-            <div class="menu">
-                <a class="menu-button home-button" hx-get="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
-                <a class="menu-button rules-button" hx-target="#main" hx-swap="innerHTML" hx-get="/load?page=rules">Rules</a>
-                <div class="dropdown">
-                    <a class="menu-button money-match" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
-                </div>
-                <div class="dropdown">
-                    <a class="menu-button league-button" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League ▼</a>
-                    <div class="dropdown-content">
-                        <a class="dropdown-option" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League Home</a>
-                        <a class="dropdown-option" hx-get="/load?page=signup" hx-target="#main" hx-swap="innerHtml">Signups</a>
-                        <a class="dropdown-option" hx-get="/load?page=season" hx-target="#main" hx-swap="innerHtml">Season 1</a>
-                    </div>
-                </div>
-                <a class="menu-button forum-button" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
-            </div>
-        </div>
-        <div class="right-section">
             <% if (!session.user) { %>
             <a class="signin-button" href="/init-openid">
                 <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
@@ -49,6 +37,26 @@
                 <span class="logged-in-username"><%= displayName %></span>
             </a>
             <% } %>
+        </div>
+        <div class="bottom-section">
+            <div class="menu">
+                <a class="menu-button" hx-get="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
+                <a class="menu-button" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
+                <div class="dropdown">
+                    <a class="menu-button dropdown" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League ▶</a>
+                    <div class="dropdown-content">
+                        <a class="dropdown-option" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League Home</a>
+                        <a class="dropdown-option" hx-get="/load?page=signup" hx-target="#main" hx-swap="innerHtml">Signups</a>
+                        <a class="dropdown-option" hx-get="/load?page=rules"  hx-target="#main" hx-swap="innerHTML">Rules</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a class="menu-button dropdown" hx-get="/load?page=seasons" hx-target="#main" hx-swap="innerHtml">Seasons ▶</a>
+                    <div class="dropdown-content">
+                        <a class="dropdown-option" hx-get="/load?page=season1" hx-target="#main" hx-swap="innerHtml">Season 1</a>
+                    </div>
+                </div>                <a class="menu-button forum-button" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
+            </div>
         </div>
     </header>
     <div class="strip">
