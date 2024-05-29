@@ -13,25 +13,25 @@
 }
 .mge-title{
     text-align: center;
-    font-size: 80px;
+    font-size: 100px;
     font-weight: bold;
     color: white;
     text-shadow: 
-        -8px -8px 0 #000,  
+        -6px -6px 0 #000,  
         0px 0px 0 #000,
         0px 0px 0 #000,
         0px 0px 0 #000;
 }
 .placeholder {
     background-color: rgba(0,0,0,0.8);
-    width: 600px;
+    width: 620px;
     height: 300px;
     margin: 0 auto;
-    margin-top: 50px;
-    border: 5px solid rgb(255, 255, 255);
+    margin-top: 0px;
+    border: 2px solid rgb(255, 255, 255);
     padding: 10px 10px;
     overflow-y: auto; 
-    border-radius: 10px;
+    border-radius: 3px;
     font-weight: none;
 }
 
@@ -76,7 +76,7 @@ table td.name-column {
 }
 
 .main-menu {
-    margin-top: 150px;
+    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -84,27 +84,33 @@ table td.name-column {
 
 .main-menu-button {
     text-overflow: wrap;
-    border-radius: 3px;
-    padding: 40px 50px;
+    border-radius: 1px;
+    padding: 30px 20px;
     margin-inline: 8px;
     text-decoration: none;
     color: #fff;
-    border: 3px solid white;
+    border: 2px solid white;
     cursor: pointer;
-    font-size: 30px;
+    font-size: 40px;
+    background-color: darkslategray;
+    font-weight: bold;
     transition: background-color 0.8s;
 }
 .main-1{
-    background-color: rgba(255, 0, 0, 0.6);
+    background-color: darkslategray;
+    /* background-color: rgba(255, 0, 0, 0.5); */
 }
 .main-2{
-    background-color: rgba(145, 255, 0, 0.6);
+    background-color: darkslategray;
+    /* background-color: rgba(145, 255, 0, 0.5); */
 }
 .main-3{
-    background-color: rgba(0, 255, 255, 0.6);   
+    background-color: darkslategray;
+    /* background-color: rgba(0, 255, 255, 0.5);    */
 }
 .main-4{
-    background-color: rgba(255, 0, 183, 0.6);
+    background-color: darkslategray;
+    /* background-color: rgba(255, 0, 183, 0.5); */
     
 }
 
@@ -143,24 +149,33 @@ table td.name-column {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    z-index: 2000;
-  }
+    z-index: 1000;
+}
 
-.overlay-content{
+.overlay-content {
+    position: relative;
+    z-index: 2000;
     text-align: center;
     color: white;
     background-color: darkslategray;
-    /* border: 2px solid white; */
     width: 400px;
     height: 230px;
     margin: 200px auto;
     border-radius: 3px;
+    padding: 10px;
+    box-sizing: border-box;
 }
-.announcement-button{
-    display: flex;
-    border: 2px solid white;
-    background-color: white;
-    color: black;
-    padding: 5px;
-    border-radius: 3px;
+
+.announcement-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.announcement-button:hover{
+    background-color: rgba(0, 0, 0, 0.1);
 }

@@ -9,21 +9,23 @@
     margin: 0 auto;
 }
 .create_post{
-    margin: 50px;
+    margin: 30px;
     padding: 8px;
     font-size: 20px;
-    border-radius: 10px;
+    border-radius: 2px;
     border: 2px solid white;
     background-color: darkslategray;
     color: white;
+    cursor: pointer;
 }
 .forum-strip {
     width: 600px;
-    border-radius: 5px;
+    border-radius: 2px;
     border: 3px solid rgb(52, 62, 65);
     background-color: rgba(0, 0, 0, 0.2); 
     margin-bottom: 20px; 
     transition: background-color 0.5s;
+    cursor: pointer;
 }   
 
 .forum-strip li {

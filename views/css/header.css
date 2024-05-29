@@ -22,7 +22,7 @@ body {
 
 .sidebar-trigger {
     position: fixed;
-    top: 100px;
+    top: 80px;
     left: 0;
     width: 50px;
     color: white;
@@ -54,7 +54,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 25px 0;
+    padding: 30px 0;
 }
 
 .middle-section {
@@ -63,7 +63,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 25px 0;
+    padding: 30px 0;
 }
 
 .bottom-section {
@@ -176,7 +176,7 @@ body {
 }
 
 .signin-button:hover {
-    background-color: rgba(0, 0, 0, 0.2); 
+    background-color: rgb(34, 68, 68);
 }
 
 .steam-login-logo {
