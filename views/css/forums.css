@@ -21,8 +21,8 @@
 .forum-strip {
     width: 600px;
     border-radius: 2px;
-    border: 3px solid rgb(52, 62, 65);
-    background-color: rgba(0, 0, 0, 0.2); 
+    border: 3px solid rgb(180, 180, 180);
+    background-color: rgb(220,220,220); 
     margin-bottom: 20px; 
     transition: background-color 0.5s;
     cursor: pointer;
@@ -50,7 +50,7 @@
 }
 .forum-strip:hover{
     transition: color 0.25s ease-in-out;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(220, 220, 220, 0.8);
 }
 .remove-post{
     padding: 5px;
