@@ -50,7 +50,22 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
                   owner INTEGER NOT NULL,
                   FOREIGN KEY (owner) REFERENCES users(id)
                   FOREIGN KEY (thread) REFERENCES thread(id))`);
+
+    await db.run(`CREATE TABLE IF NOT EXISTS activity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                thread_count INTEGER NOT NULL,
+                post_count INTEGER NOT NULL,
+                period INTEGER NOT NULL,
+
+                owner INTEGER NOT NULL,
+                FOREIGN KEY (owner) REFERENCES users(id))`)
 });
+
+// 3 posts per hour, 30 replies
+const MAX_POSTS = 3;
+const MAX_REPLIES = 30;
+// 1 hour
+const REFRESH_PERIOD = 3600000;
 
 app.post('/postContent', async (req, res) => {
     const { content, title } = req.body;
@@ -70,19 +85,51 @@ app.post('/postContent', async (req, res) => {
             console.error(err.message);
             return res.status(500).json({ error: 'Failed to post content.' });
         }
+
         const user_id = row.id;
-        db.run('INSERT INTO threads (title, content, owner) VALUES (?, ?, ?)',
-            [title, content, user_id],
-            (err) => {
+
+        db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
+            if(err){
+                console.error(err.message);
+                return res.status(500).json({ error: 'Failed to retrieve activity data.' });
+        }
+
+        const current_time = Date.now();
+        let threadCount = 0;
+        let lastPeriod = current_time;
+
+        if (activityRow) {
+            threadCount = activityRow.thread_count;
+            lastPeriod = activityRow.period;
+
+            if(current_time - lastPeriod >= REFRESH_PERIOD){
+                threadCount = 0;
+                lastPeriod = current_time;
+            }
+        }
+
+        if (threadCount >= MAX_POSTS) {
+            console.log('You have reached max numebr of posts')
+            return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
+        }
+
+        db.run('INSERT INTO threads (title, content, owner) VALUES (?, ?, ?)', [title, content, user_id], (err) => {
                 if (err) {
                     console.error(err.message);
                     return res.status(500).json({ error: 'Failed to post content.' });
                 } else {
                     console.log(`Forum Post "${content}" saved to the database.`);
+
+                    if (activityRow){
+                        db.run('UPDATE activity SET thread_count = ?, period = ? WHERE owner = ?', [threadCount + 1, lastPeriod, user_id])
+                    } else {
+                        db.run('INSERT INTO activity (thread_count, post_count, period, owner) VALUES (?, ?, ?, ?)', [1, 0, current_time, user_id]);
+                    }
+
                     return res.status(200).redirect('/forums');
                 }
-            }
-        );
+            });
+        });
     });
 });
 
@@ -118,18 +165,49 @@ app.post('/posts', (req, res) => {
             return res.status(500).json({ error: 'Failed to post content.' });
         }
         const user_id = row.id;
-        db.run('INSERT INTO posts (content, thread, owner) VALUES (?, ?, ?)',
-            [content, thread_id, user_id],
-            (err) => {
+
+	db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
+            if(err){
+                console.error(err.message);
+                return res.status(500).json({ error: 'Failed to retrieve activity data.' });
+        }
+	
+	const current_time = Date.now();
+        let postCount = 0;
+        let lastPeriod = current_time;
+
+        if (activityRow) {
+            postCount = activityRow.post_count;
+            lastPeriod = activityRow.period;
+
+            if(current_time - lastPeriod >= REFRESH_PERIOD){
+                postCount = 0;
+                lastPeriod = current_time;
+            }
+        }
+
+	if (postCount >= MAX_POSTS) {
+            console.log('You have reached max numebr of posts')
+            return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
+        }
+
+        db.run('INSERT INTO posts (content, thread, owner) VALUES (?, ?, ?)', [content, thread_id, user_id], (err) => {
                 if (err) {
                     console.error(err.message);
                     return res.status(500).json({ error: 'Failed to post content.' });
                 } else {
-                    console.log(`Forum Post "${content}" saved to the database.`);
-                    return res.status(200).redirect(`/post/${thread_id}`);
+                    console.log(`Post "${content}" saved to the database.`);
+
+                    if (activityRow){
+                        db.run('UPDATE activity SET post_count = ?, period = ? WHERE owner = ?', [postCount + 1, lastPeriod, user_id])
+                    } else {
+                        db.run('INSERT INTO activity (thread_count, post_count, period, owner) VALUES (?, ?, ?, ?)', [1, 0, current_time, user_id]);
+                    }
+
+                    return res.status(200).redirect('/forums');
                 }
-            }
-        );
+            });
+        });
     });
 });
 

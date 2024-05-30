@@ -44,7 +44,7 @@ body {
 .overlay {
     position: fixed;
     top: 0;
-    left: -200px; /* Initially hidden */
+    left: -200px; 
     width: 200px;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
@@ -120,13 +120,13 @@ body {
 .menu-button {
     padding: 20px 8px;
     border-radius: 3px;
-    margin: 0; /* Remove margins between buttons */
+    margin: 0; 
     text-decoration: none;
     color: #fff;
     cursor: pointer;
     font-size: 20px;
     transition: background-color 0.3s;
-    width: 100%; /* Ensure full width buttons */
+    width: 100%;
     text-align: center;
 }
 
@@ -280,8 +280,8 @@ body {
     position: fixed;
     top: 250px;
     right: 0;
-    width: 100px;
-    height: 70px;
+    width: 170px;
+    height: 45px;
     color: white;
     margin: auto;
     display: flex;
@@ -289,20 +289,18 @@ body {
     text-align: center;
     flex: none;
     font-size: 40px;
-    background-color: rgba(0, 0, 0, 0.5);
+    padding: 3px;
+    border: 1px solid white;
+    background-color: darkslategray;
     cursor: pointer;
     z-index: 1001;
-    transition: background-color 0.3s;
-}
-
-.tournament-hover-button:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    transition: background-color 0.5s;
 }
 
 .tournaments-overlay {
     position: fixed;
     top: 250px;
-    right: -330px; /* Initially hidden */
+    right: -340px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -313,10 +311,6 @@ body {
     transition: right 0.3s ease-in-out;
 }
 
-.tournament-hover-button:hover + .tournaments-overlay,
-.tournaments-overlay:hover {
-    right: 10px; /* Fully visible */
-}
 .tourney-section {
     width: 330px;
     display: flex;
