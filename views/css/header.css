@@ -197,10 +197,11 @@ body {
     display: flex;
     align-items: center;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .profile-container:hover {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgb(47, 79, 79);
 }
 
 .profile-pic {
@@ -220,13 +221,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2500;
 }
 
 .connectinfo {
+    z-index: 2500;
     color: white;
 }
 
 .join-server {
+    z-index: 2500;
     text-decoration: none;
     cursor: pointer;
     margin-left: 10px;
@@ -239,12 +243,14 @@ body {
 }
 
 .discordinfo {
+    z-index: 2500;
     margin-left: 50px;
     margin-right: 10px;
     color: white;
 }
 
 .join-discord {
+    z-index: 2500;
     text-decoration: none;
     cursor: pointer;
     padding: 0px 5px;
