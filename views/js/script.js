@@ -1,11 +1,8 @@
-function openInNewTab(url) {
-    window.open(url, '_blank').focus();
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     // sidebar logic
     const sidebarTrigger = document.querySelector('.sidebar-trigger');
     const overlay = document.querySelector('.overlay');
+    const tournamentHoverButton = document.querySelector('.tournament-hover-button');
 
     sidebarTrigger.addEventListener('mouseover', function() {
         overlay.style.left = '0';
@@ -19,6 +16,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     overlay.addEventListener('mouseover', function() {
         sidebarTrigger.style.opacity = '0';
+    });
+
+    // tournament hover button logic
+    tournamentHoverButton.addEventListener('mouseover', function() {
+        tournamentHoverButton.style.opacity = '0';
+    });
+
+    tournamentHoverButton.addEventListener('mouseleave', function() {
+        tournamentHoverButton.style.opacity = '1';
     });
 
     // tournament links
@@ -43,13 +49,12 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('announcement-overlay');
+    const announcementOverlay = document.getElementById('announcement-overlay');
     const closeButton = document.getElementById('closeOverlay');
   
-    overlay.style.display = 'block';
+    announcementOverlay.style.display = 'block';
   
-    closeButton.addEventListener('click', () => {
-      overlay.style.display = 'none';
+    closeButton.addEventListener('click', function() {
+        announcementOverlay.style.display = 'none';
     });
-  });
-  
+});
