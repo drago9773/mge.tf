@@ -1,6 +1,9 @@
 <div class="main-overlay">
     <h1 class="mge-title">REWRITING MGE</h1>
     <div class="placeholder">
+        <div class="elo-search-container">
+            <input type="text" id="eloSearch" placeholder="Search by username or steam ID...">
+        </div>
         <link rel="stylesheet" href="css/main.css" />
         <table>
             <tr class="elo-title">
@@ -23,9 +26,9 @@
     </div>
         <div class="main-menu">
         <div class="main-menu-buttons">
-            <a class="main-menu-button main-1" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
-            <a class="main-menu-button main-2" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">Money Match</a>
+            <a class="main-menu-button main-1" hx-get="/load?page=coaching" hx-target="#main" hx-swap="innerHtml">Coaching</a>
             <a class="main-menu-button main-3" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League</a>
+            <a class="main-menu-button main-2" hx-get="/load?page=seasons" hx-target="#main" hx-swap="innerHtml">Seasons</a>
             <a class="main-menu-button main-4" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
         </div>
     </div>
@@ -44,5 +47,5 @@
             <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
         </div>
     </div>
-    
+    <script src="/js/main.js"></script>
 </div>
