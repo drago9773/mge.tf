@@ -1,23 +1,23 @@
 function filterUsers() {
-    var input, filter, usersDisplay, users, username, steamId, i, usernameTxt, steamIdTxt;
+    var input, filter, table, rows, nameCell, steamIdCell, i, nameTxt, steamIdTxt;
     input = document.getElementById('eloSearch');
     filter = input.value.toLowerCase();
-    usersDisplay = document.getElementsByClassName('users_display')[0];
-    users = usersDisplay.getElementsByClassName('users_container');
+    table = document.getElementById('eloTableBody');
+    rows = table.getElementsByTagName('tr');
 
-    for (i = 0; i < users.length; i++) {
-        username = users[i].getElementsByClassName('users_username')[0];
-        steamId = users[i].getElementsByClassName('users_steam_id')[0];
-        usernameTxt = username.textContent || username.innerText;
-        steamIdTxt = steamId.textContent || steamId.innerText;
+    for (i = 0; i < rows.length; i++) {
+        nameCell = rows[i].getElementsByClassName('name-column')[0];
+        steamIdCell = rows[i].getAttribute('hx-get').split("=")[1].split("?")[0];
+        nameTxt = nameCell.textContent || nameCell.innerText;
         
-        if (usernameTxt.toLowerCase().indexOf(filter) > -1 || steamIdTxt.indexOf(filter) > -1) {
-            users[i].style.display = "";
+        if (nameTxt.toLowerCase().indexOf(filter) > -1 || steamIdCell.indexOf(filter) > -1) {
+            rows[i].style.display = "";
         } else {
-            users[i].style.display = "none";
+            rows[i].style.display = "none";
         }
     }
 }
-document.getElementById("userSearch").addEventListener("input", function() {
+
+document.getElementById("eloSearch").addEventListener("input", function() {
     filterUsers();
 });

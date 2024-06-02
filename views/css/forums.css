@@ -33,10 +33,12 @@
 }
 
 .forum-strip p {
-    margin: 0;
 }
-
-.forum-strip p.steam-username,
+.forum-strip p.steam_username {
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: rgb(70, 70, 70);
+}
 .forum-strip p.title {
     font-size: 16px;
     font-weight: bold;
