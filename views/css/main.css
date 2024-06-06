@@ -105,8 +105,32 @@ table td.name-column {
     font-size: 40px;
     background-color: darkslategray;
     font-weight: bold;
+}
+
+.main-menu-1v1-2v2 {
+    border-radius: 0px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
     transition: background-color 0.8s;
 }
+
+.mm-1v1,
+.mm-2v2 {
+    cursor: pointer;
+    padding: 30px 20px;
+    border: 2px solid white;
+    background-color: rgb(255, 0, 255);
+    transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s, padding 0.3s, scale 0.3s;
+}
+
+.mm-1v1:hover,
+.mm-2v2:hover {
+    padding: 100px;
+    background-color: #850585;
+}
+
 .main-1{
     /* background-color: darkslategray; */
     background-color: rgba(255, 0, 0, 0.5); 

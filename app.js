@@ -65,8 +65,21 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
                 user_id INTEGER NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(id))`);
 
-    await db.run(`INSERT INTO moderators (user_id)
-                SELECT id FROM users WHERE steam_id IN ('76561198082657536', '76561198041183975')`);
+    const moderatorIds = ['76561198082657536', '76561198041183975'];
+    db.all(`SELECT users.*, moderators.id as moderator_id
+                    FROM moderators
+                    JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
+                if (err) {
+                    console.error("Error querying database: " + err.message);
+                    return res.status(500).send("Internal Server Error");
+                }
+    const match = moderators.some(moderator => moderatorIds.includes(moderator.steam_id));
+    
+    if (!match) {
+        db.run(`INSERT INTO moderators (user_id)
+            SELECT id FROM users WHERE steam_id IN ('76561198082657536', '76561198041183975')`);
+    }
+    });    
 });
 
 // 3 posts per hour, 30 replies
@@ -147,7 +160,7 @@ app.get('/forums', (req, res) => {
     const user = req.session.user;
     const session = req.session;
 
-    const sql = `SELECT threads.id as thread_id, threads.*, users.steam_username, users.steam_id 
+    const sql = `SELECT threads.id as thread_id, threads.*, users.steam_username, users.steam_id, users.steam_avatar 
                  FROM threads 
                  LEFT JOIN users ON threads.owner = users.id 
                  ORDER BY bumped_at DESC`;
@@ -171,7 +184,7 @@ app.get('/forums', (req, res) => {
         db.all(`SELECT users.*, moderators.id as moderator_id
                 FROM moderators
                 JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
-            if (err) {
+            if (err) {s
                 console.error("Error querying database: " + err.message);
                 return res.status(500).send("Internal Server Error");
             }
@@ -203,13 +216,13 @@ app.post('/posts', (req, res) => {
         }
         const user_id = row.id;
 
-	db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
-            if(err){
-                console.error(err.message);
-                return res.status(500).json({ error: 'Failed to retrieve activity data.' });
-        }
-	
-	const current_time = Date.now();
+        db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
+                if(err){
+                    console.error(err.message);
+                    return res.status(500).json({ error: 'Failed to retrieve activity data.' });
+            }
+        
+        const current_time = Date.now();
         let postCount = 0;
         let lastPeriod = current_time;
 
@@ -223,10 +236,10 @@ app.post('/posts', (req, res) => {
             }
         }
 
-	if (postCount >= MAX_POSTS) {
-            console.log('You have reached max numebr of posts')
-            return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
-        }
+        if (postCount >= MAX_POSTS) {
+                console.log('You have reached max numebr of posts')
+                return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
+            }
 
         db.run('INSERT INTO posts (content, thread, owner) VALUES (?, ?, ?)', [content, thread_id, user_id], (err) => {
                 if (err) {
@@ -248,11 +261,14 @@ app.post('/posts', (req, res) => {
     });
 });
 
-app.post('/remove_post', (req, res) => {
-    const user = req.session.user;
+app.post('/remove_post', (req, res) => {;
     const postId = req.body.post_id;
+    const mod = req.body.is_moderator;
+    const owner = req.body.is_owner;
 
-    if (!user) {
+    console.log(owner);
+    console.log(mod);
+    if (!owner || !mod) {
         return res.status(403).send('Unauthorized');
     }
 
@@ -267,26 +283,52 @@ app.post('/remove_post', (req, res) => {
             return res.status(404).send('Post not found.');
         }
 
-        const sqlCheckModerator = `SELECT * FROM moderators WHERE user_id = ?`;
-        db.get(sqlCheckModerator, [user.id], (err, moderator) => {
+        const sqlDeletePost = `DELETE FROM threads WHERE id = ?`;
+        db.run(sqlDeletePost, [postId], (err) => {
             if (err) {
                 console.error(err.message);
-                return res.status(500).send('Failed to verify moderator status.');
+                return res.status(500).send('Failed to delete post.');
             }
+            return res.redirect('/');
+        });
+    });
+});
 
-            if (post.owner !== user.id && !moderator) {
-                return res.status(403).send('Unauthorized');
+app.post('/remove_reply', (req, res) => {;
+    const replyId = req.body.reply_id;
+    const mod = req.body.is_moderator;
+    const owner = req.body.is_owner;
+
+    console.log(owner);
+    console.log(mod);
+    console.log(replyId);
+
+    if (!owner || !mod) {
+        return res.status(403).send('Unauthorized');
+    }
+
+    const sqlCheckPost = `SELECT * FROM posts WHERE id = ?`;
+    db.get(sqlCheckPost, [replyId], (err, post) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Failed to verify post.');
+        }
+ 
+        if (!post) {
+            return res.status(404).send('Post not found.');
+        }
+
+        const sqlDeletePost = `DELETE FROM posts WHERE id = ?`;
+        console.log("3")
+        db.run(sqlDeletePost, [replyId], (err) => {
+            console.log("4")
+            if (err) {
+                console.log("5")
+                console.error(err.message);
+                return res.status(500).send('Failed to delete post.');
             }
-
-            const sqlDeletePost = `DELETE FROM threads WHERE id = ?`;
-            db.run(sqlDeletePost, [postId], (err) => {
-                if (err) {
-                    console.error(err.message);
-                    return res.status(500).send('Failed to delete post.');
-                }
-
-                res.send('Post deleted successfully');
-            });
+            console.log("6")
+            return res.redirect('/');
         });
     });
 });
@@ -361,27 +403,41 @@ app.get('/player_page/:steamid', (req, res) => {
         }
     });
 });
+
 app.get('/post/:forumid', (req, res) => {
+    const session = req.session;
     const forumid = req.params.forumid;
+
     db.get('SELECT threads.id as thread_id, * FROM threads LEFT JOIN users ON threads.owner = users.id WHERE threads.id = ?', [forumid], (err, row) => {
         if (err) {
             console.error("Error querying database: " + err.message);
-            res.status(500).send("Internal Server Error");
-        } else {
-            db.all('SELECT * FROM posts LEFT JOIN users ON posts.owner = users.id WHERE thread = ?', [forumid], (err, rows) => {
+            return res.status(500).send("Internal Server Error");
+        }
+
+        db.all(`SELECT posts.*, users.steam_username, users.steam_id, users.steam_avatar
+            FROM posts LEFT JOIN users ON 
+            posts.owner = users.id WHERE thread = ?`, [forumid], (err, posts) => {
+
+            if (err) {
+                console.error("Error querying database: " + err.message);
+                return res.status(500).send("Internal Server Error");
+            }
+
+            db.all(`SELECT users.*, moderators.id as moderator_id
+                    FROM moderators
+                    JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
                 if (err) {
                     console.error("Error querying database: " + err.message);
-                    res.status(500).send("Internal Server Error");
-                } else {
-                    res.render('posts', { posts: rows, thread: row });
+                    return res.status(500).send("Internal Server Error");
                 }
+
+                res.render('posts', { session: session, moderators: moderators, posts: posts, thread: row });
             });
-        }
+        });
     });
 });
 
 app.get('/users', (req, res) => {
-    // Retrieve all users
     db.all('SELECT * FROM users', [], (err, users) => {
         if (err) {
             console.error("Error querying database: " + err.message);

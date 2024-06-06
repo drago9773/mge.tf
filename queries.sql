@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS moderators(
             user_id INTEGER NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id)
 );
-INSERT INTO moderators (user_id)
-SELECT id FROM users WHERE steam_id IN ('76561198082657536', '76561198041183975');
 
 SELECT users.steam_id
 FROM moderators
 JOIN users ON moderators.user_id = users.id;
+
+select posts.id FROM posts;

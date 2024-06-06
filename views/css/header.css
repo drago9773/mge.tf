@@ -29,7 +29,7 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
     cursor: pointer;
     padding: 0 10px 10px 30px;
-    z-index: 1001;
+    z-index: 2000;
 }
 
 .sidebar-trigger, .tournament-hover-button {
@@ -48,7 +48,7 @@ body {
     width: 200px;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
+    z-index: 2000;
     transition: left 0.3s ease-in-out; 
 }
 
@@ -156,7 +156,7 @@ body {
     top: 0%;
     min-width: 120px;
     max-width: 400px; 
-    z-index: 1000;
+    z-index: 2001;
     cursor: pointer;
 }
 
@@ -225,12 +225,12 @@ body {
 }
 
 .connectinfo {
-    z-index: 2500;
+    z-index: 2000;
     color: white;
 }
 
 .join-server {
-    z-index: 2500;
+    z-index: 2000;
     text-decoration: none;
     cursor: pointer;
     margin-left: 10px;
@@ -243,14 +243,14 @@ body {
 }
 
 .discordinfo {
-    z-index: 2500;
+    z-index: 2000;
     margin-left: 50px;
     margin-right: 10px;
     color: white;
 }
 
 .join-discord {
-    z-index: 2500;
+    z-index: 2000;
     text-decoration: none;
     cursor: pointer;
     padding: 0px 5px;
