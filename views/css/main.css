@@ -1,13 +1,13 @@
 .main-overlay {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../images/badlands-mid.png');
+    /* background-image: url('../images/badlands-mid.png'); */
     background-size: cover;
     background-position: center;
-    z-index: 1001;
+    z-index: 1;
     justify-content: center;
     align-items: center;
 }
@@ -87,48 +87,87 @@ table td.name-column {
 }
 
 .main-menu {
-    margin-top: 150px;
+    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.main-menu-button {
-    text-overflow: wrap;
-    border-radius: 1px;
-    padding: 30px 20px;
-    margin-inline: 8px;
+.main-menu-1v1-2v2 {
+    border-radius: 0px;
     text-decoration: none;
     color: #fff;
-    border: 2px solid white;
-    cursor: pointer;
-    font-size: 40px;
-    background-color: darkslategray;
     font-weight: bold;
-    transition: background-color 0.8s;
-}
-.main-1{
-    /* background-color: darkslategray; */
-    background-color: rgba(255, 0, 0, 0.5); 
-}
-.main-2{
-    /* background-color: darkslategray; */
-    background-color: rgba(145, 255, 0, 0.5);
-}
-.main-3{
-    /* background-color: darkslategray; */
-    background-color: rgba(0, 255, 255, 0.5);  
-}
-.main-4{
-    /* background-color: darkslategray; */
-    background-color: rgba(255, 0, 183, 0.5); 
-    
+    transition: background-color 0.8s top 0.5s ease;
+    z-index: 3000;
 }
 
-.main-menu-button:hover{
-    background-color: white;
-    color: black;
+.mm-1v1,
+.mm-2v2 {
+    top: 90%;
+    position: absolute;
+    cursor: pointer;
+    padding: 120px 100px;
+    font-size: 40px;
+    border: 2px solid white;
+    background-color: rgb(255, 0, 255);
+    transition: transform 1s, background-color 1s, box-shadow 0.3s, padding 3s ease, top 2s ease, font-size 3s;
 }
+
+.mm-1v1 {
+    left: 40%;
+    transform: translateX(-50%);
+}
+
+.mm-2v2 {
+    left: 60%;
+    transform: translateX(-50%);
+}
+
+.button-overlay-background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 0;
+    transition: background-color 3s ease;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(-50%) translateY(1%);
+    }
+    12.5% {
+        transform: translateX(-50%) translateY(0%);
+    }
+    25% {
+        transform: translateX(-51%) translateY(0%);
+    }
+    37.5% {
+        transform: translateX(-51%) translateY(-1%);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-1%);
+    }
+    62.5% {
+        transform: translateX(-50%) translateY(0%);
+    }
+    75% {
+        transform: translateX(-49%) translateY(0%);
+    }
+    87.5% {
+        transform: translateX(-49%) translateY(1%);
+    }
+}
+
+.mm-1v1:hover,
+.mm-2v2:hover {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
 .main-connect-info{
     border-radius: 5px;
     margin: 0 auto;
@@ -141,6 +180,7 @@ table td.name-column {
     justify-content: center;
     align-items: center;
 }
+
 .main-discord-info{
     border-radius: 5px;
     margin: 0 auto;
