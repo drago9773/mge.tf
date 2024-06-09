@@ -19,25 +19,6 @@
                 <h1 class="title"><a hx-get="/load?page=main" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
                 <img class="logo" src="">
             </div>
-            <div class="middle-section">
-                <% if (!session.user) { %>
-                <a class="signin-button" href="/init-openid">
-                    <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
-                </a>
-                <% } else { %>
-                <a class="profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
-                    <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
-                    <% 
-                        const maxLength = 15;
-                        let displayName = session.user.username;
-                        if (displayName.length > maxLength) {
-                            displayName = displayName.slice(0, maxLength) + '...';
-                        }
-                    %>
-                    <span class="logged-in-username"><%= displayName %></span>
-                </a>
-                <% } %>
-            </div>
             <div class="bottom-section">
                 <div class="menu">
                     <a class="menu-button" hx-get="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
@@ -66,6 +47,25 @@
             <a a href="steam://connect/45.76.26.238:27015" class="join-server">connect</a>
             <a class="discordinfo">Join the discord:</a>
             <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
+            <div class="signin-section">
+                <% if (!session.user) { %>
+                <a class="signin-button" href="/init-openid">
+                    <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
+                </a>
+                <% } else { %>
+                <a class="profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
+                    <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
+                    <% 
+                        const maxLength = 15;
+                        let displayName = session.user.username;
+                        if (displayName.length > maxLength) {
+                            displayName = displayName.slice(0, maxLength) + '...';
+                        }
+                    %>
+                    <span class="logged-in-username"><%= displayName %></span>
+                </a>
+                <% } %>
+            </div>
         </div>
         
         <div class="tournament-hover-button">News ▶</div>
