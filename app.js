@@ -69,17 +69,17 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
     db.all(`SELECT users.*, moderators.id as moderator_id
                     FROM moderators
                     JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
-                if (err) {
-                    console.error("Error querying database: " + err.message);
-                    return res.status(500).send("Internal Server Error");
-                }
-    const match = moderators.some(moderator => moderatorIds.includes(moderator.steam_id));
-    
-    if (!match) {
-        db.run(`INSERT INTO moderators (user_id)
+        if (err) {
+            console.error("Error querying database: " + err.message);
+            return res.status(500).send("Internal Server Error");
+        }
+        const match = moderators.some(moderator => moderatorIds.includes(moderator.steam_id));
+
+        if (!match) {
+            db.run(`INSERT INTO moderators (user_id)
             SELECT id FROM users WHERE steam_id IN ('76561198082657536', '76561198041183975')`);
-    }
-    });    
+        }
+    });
 });
 
 // 3 posts per hour, 30 replies
@@ -110,38 +110,38 @@ app.post('/postContent', async (req, res) => {
         const user_id = row.id;
 
         db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
-            if(err){
+            if (err) {
                 console.error(err.message);
                 return res.status(500).json({ error: 'Failed to retrieve activity data.' });
-        }
-
-        const current_time = Date.now();
-        let threadCount = 0;
-        let lastPeriod = current_time;
-
-        if (activityRow) {
-            threadCount = activityRow.thread_count;
-            lastPeriod = activityRow.period;
-
-            if(current_time - lastPeriod >= REFRESH_PERIOD){
-                threadCount = 0;
-                lastPeriod = current_time;
             }
-        }
 
-        if (threadCount >= MAX_POSTS) {
-            console.log('You have reached max numebr of posts')
-            return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
-        }
+            const current_time = Date.now();
+            let threadCount = 0;
+            let lastPeriod = current_time;
 
-        db.run('INSERT INTO threads (title, content, owner) VALUES (?, ?, ?)', [title, content, user_id], (err) => {
+            if (activityRow) {
+                threadCount = activityRow.thread_count;
+                lastPeriod = activityRow.period;
+
+                if (current_time - lastPeriod >= REFRESH_PERIOD) {
+                    threadCount = 0;
+                    lastPeriod = current_time;
+                }
+            }
+
+            if (threadCount >= MAX_POSTS) {
+                console.log('You have reached max numebr of posts')
+                return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. ' })
+            }
+
+            db.run('INSERT INTO threads (title, content, owner) VALUES (?, ?, ?)', [title, content, user_id], (err) => {
                 if (err) {
                     console.error(err.message);
                     return res.status(500).json({ error: 'Failed to post content.' });
                 } else {
                     console.log(`Forum Post "${content}" saved to the database.`);
 
-                    if (activityRow){
+                    if (activityRow) {
                         db.run('UPDATE activity SET thread_count = ?, period = ? WHERE owner = ?', [threadCount + 1, lastPeriod, user_id])
                     } else {
                         db.run('INSERT INTO activity (thread_count, post_count, period, owner) VALUES (?, ?, ?, ?)', [1, 0, current_time, user_id]);
@@ -184,7 +184,8 @@ app.get('/forums', (req, res) => {
         db.all(`SELECT users.*, moderators.id as moderator_id
                 FROM moderators
                 JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
-            if (err) {s
+            if (err) {
+                s
                 console.error("Error querying database: " + err.message);
                 return res.status(500).send("Internal Server Error");
             }
@@ -217,51 +218,52 @@ app.post('/posts', (req, res) => {
         const user_id = row.id;
 
         db.get('SELECT * FROM activity WHERE owner = ?', [user_id], (err, activityRow) => {
-                if(err){
-                    console.error(err.message);
-                    return res.status(500).json({ error: 'Failed to retrieve activity data.' });
+            if (err) {
+                console.error(err.message);
+                return res.status(500).json({ error: 'Failed to retrieve activity data.' });
             }
-        
-        const current_time = Date.now();
-        let postCount = 0;
-        let lastPeriod = current_time;
 
-        if (activityRow) {
-            postCount = activityRow.post_count;
-            lastPeriod = activityRow.period;
+            const current_time = Date.now();
+            let postCount = 0;
+            let lastPeriod = current_time;
 
-            if(current_time - lastPeriod >= REFRESH_PERIOD){
-                postCount = 0;
-                lastPeriod = current_time;
+            if (activityRow) {
+                postCount = activityRow.post_count;
+                lastPeriod = activityRow.period;
+
+                if (current_time - lastPeriod >= REFRESH_PERIOD) {
+                    postCount = 0;
+                    lastPeriod = current_time;
+                }
             }
-        }
 
-        if (postCount >= MAX_POSTS) {
+            if (postCount >= MAX_POSTS) {
                 console.log('You have reached max numebr of posts')
-                return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. '})
+                return res.status(400).json({ error: 'You have reached the limit of posts. Try again later. ' })
             }
 
-        db.run('INSERT INTO posts (content, thread, owner) VALUES (?, ?, ?)', [content, thread_id, user_id], (err) => {
+            db.run('INSERT INTO posts (content, thread, owner) VALUES (?, ?, ?)', [content, thread_id, user_id], (err) => {
                 if (err) {
                     console.error(err.message);
                     return res.status(500).json({ error: 'Failed to post content.' });
                 } else {
                     console.log(`Post "${content}" saved to the database.`);
 
-                    if (activityRow){
+                    if (activityRow) {
                         db.run('UPDATE activity SET post_count = ?, period = ? WHERE owner = ?', [postCount + 1, lastPeriod, user_id])
                     } else {
                         db.run('INSERT INTO activity (thread_count, post_count, period, owner) VALUES (?, ?, ?, ?)', [1, 0, current_time, user_id]);
                     }
 
-                    return res.status(200).redirect('/forums');
+                    return res.status(200).redirect('/post/' + thread_id);
                 }
             });
         });
     });
 });
 
-app.post('/remove_post', (req, res) => {;
+app.post('/remove_post', (req, res) => {
+    ;
     const postId = req.body.post_id;
     const mod = req.body.is_moderator;
     const owner = req.body.is_owner;
@@ -294,7 +296,8 @@ app.post('/remove_post', (req, res) => {;
     });
 });
 
-app.post('/remove_reply', (req, res) => {;
+app.post('/remove_reply', (req, res) => {
+    ;
     const replyId = req.body.reply_id;
     const mod = req.body.is_moderator;
     const owner = req.body.is_owner;
@@ -313,7 +316,7 @@ app.post('/remove_reply', (req, res) => {;
             console.error(err.message);
             return res.status(500).send('Failed to verify post.');
         }
- 
+
         if (!post) {
             return res.status(404).send('Post not found.');
         }
@@ -328,7 +331,7 @@ app.post('/remove_reply', (req, res) => {;
                 return res.status(500).send('Failed to delete post.');
             }
             console.log("6")
-            return res.redirect('/');
+            return res.redirect('/post/' + post.thread);
         });
     });
 });
@@ -444,7 +447,7 @@ app.get('/users', (req, res) => {
             res.status(500).send("Internal Server Error");
             return;
         }
-        
+
         db.all(`SELECT users.*, moderators.id as moderator_id
             FROM moderators
             JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
@@ -453,7 +456,7 @@ app.get('/users', (req, res) => {
                 res.status(500).send("Internal Server Error");
                 return;
             }
-            
+
             res.render('users', { users: users, moderators: moderators });
         });
     });
