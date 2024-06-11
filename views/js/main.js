@@ -4,37 +4,29 @@ document.addEventListener("DOMContentLoaded", function() {
     const overlayBackground = document.querySelector('.button-overlay-background');
 
     button1v1.addEventListener('mouseover', function() {
-        button1v1.style.top = '85%';
         button1v1.style.padding = '120px 100px';
-        button1v1.style.fontSize = '50px'; 
         button1v1.style.backgroundColor = '#850585';
         overlayBackground.style.backgroundColor = 'black';
-        overlayBackground.style.zIndex = '2999';
+        overlayBackground.style.zIndex = '1';
     });
 
     button1v1.addEventListener('mouseleave', function() {
-        button1v1.style.top = '90%';
         button1v1.style.padding = '120px 100px';
-        button1v1.style.fontSize = '40px';
         button1v1.style.backgroundColor = 'rgb(255, 0, 255)';
         overlayBackground.style.backgroundColor = '';
         overlayBackground.style.zIndex = '0';
     });
 
     button2v2.addEventListener('mouseover', function() {
-        button2v2.style.top = '85%'; 
         button2v2.style.padding = '120px 100px';
-        button2v2.style.fontSize = '50px'; 
         button2v2.style.backgroundColor = '#850585';
         overlayBackground.style.display = 'block';
         overlayBackground.style.backgroundColor = 'black';
-        overlayBackground.style.zIndex = '2999';
+        overlayBackground.style.zIndex = '1';
     });
 
     button2v2.addEventListener('mouseleave', function() {
-        button2v2.style.top = '90%'; 
         button2v2.style.padding = '120px 100px'; 
-        button2v2.style.fontSize = '40px';
         button2v2.style.backgroundColor = 'rgb(255, 0, 255)';
         overlayBackground.style.backgroundColor = ''; 
         overlayBackground.style.zIndex = '0';

@@ -1,17 +1,5 @@
-.main-overlay {
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* background-image: url('../images/badlands-mid.png'); */
-    background-size: cover;
-    background-position: center;
-    z-index: 1;
-    justify-content: center;
-    align-items: center;
-}
 .mge-title{
+    margin-top: 50px;
     text-align: center;
     font-size: 100px;
     font-weight: bold;
@@ -27,7 +15,7 @@
     width: 620px;
     height: 300px;
     margin: 0 auto;
-    margin-top: 0px;
+    margin-top: -50px;
     border: 2px solid rgb(255, 255, 255);
     padding: 10px 10px;
     overflow-y: auto; 
@@ -87,7 +75,6 @@ table td.name-column {
 }
 
 .main-menu {
-    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -104,7 +91,7 @@ table td.name-column {
 
 .mm-1v1,
 .mm-2v2 {
-    top: 90%;
+    margin-top: 50px;
     position: absolute;
     cursor: pointer;
     padding: 120px 100px;
@@ -200,12 +187,11 @@ table td.name-column {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
+    z-index: 4000;
 }
 
 .overlay-content {
     position: relative;
-    z-index: 2000;
     text-align: center;
     color: white;
     background-color: darkslategray;
