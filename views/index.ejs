@@ -1,105 +1,116 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <link rel="stylesheet" href="css/index.css"/>
-        <link rel="stylesheet" href="css/header.css"/>
+<!DOCTYPE html>
+<html lang="en">
 
-        <script src="/js/script.js" defer></script>
-        <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    </head>
-    <body>
-        <div class="sidebar-trigger" id="sidebar-trigger">
-            <!-- <img src="images/sidebar-logo.png" alt="Sidebar Logo" class="sidebar-logo"> -->
-            _____
-            _____
-            _____
+<head>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/header.css" />
+
+    <script src="/js/script.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+
+<body>
+    <div class="sidebar-trigger" id="sidebar-trigger">
+        <!-- <img src="images/sidebar-logo.png" alt="Sidebar Logo" class="sidebar-logo"> -->
+        _____
+        _____
+        _____
+    </div>
+    <header class="overlay">
+        <div hx-boost="true" class="top-section">
+            <h1 class="title"><a href="/load?page=main" hx-swap="innerHtml" hx-target="#main"
+                    class="title-link">mge.tf</a></h1>
+            <img class="logo" src="">
         </div>
-        <header class="overlay">
-            <div class="top-section">
-                <h1 class="title"><a hx-get="/load?page=main" hx-swap="innerHtml" hx-target="#main" class="title-link">mge.tf</a></h1>
-                <img class="logo" src="">
-            </div>
-            <div class="bottom-section">
-                <div class="menu">
-                    <a class="menu-button" hx-get="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
-                    <a class="menu-button" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
-                    <div class="dropdown">
-                        <a class="menu-button dropdown" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League ▶</a>
-                        <div class="dropdown-content">
-                            <a class="dropdown-option" hx-get="/load?page=league" hx-target="#main" hx-swap="innerHtml">League Home</a>
-                            <a class="dropdown-option" hx-get="/load?page=signup" hx-target="#main" hx-swap="innerHtml">Signups</a>
-                            <a class="dropdown-option" hx-get="/load?page=rules"  hx-target="#main" hx-swap="innerHTML">Rules</a>
-                        </div>
+        <div class="bottom-section">
+            <div hx-boost="true" class="menu">
+                <a class="menu-button" href="/load?page=main" hx-target="#main" hx-swap="innerHtml">Home</a>
+                <a class="menu-button" href="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
+                <div class="dropdown">
+                    <a class="menu-button dropdown" href="/load?page=league" hx-target="#main"
+                        hx-swap="innerHtml">League ▶</a>
+                    <div class="dropdown-content">
+                        <a class="dropdown-option" href="/load?page=league" hx-target="#main" hx-swap="innerHtml">League
+                            Home</a>
+                        <a class="dropdown-option" href="/load?page=signup" hx-target="#main"
+                            hx-swap="innerHtml">Signups</a>
+                        <a class="dropdown-option" href="/load?page=rules" hx-target="#main"
+                            hx-swap="innerHTML">Rules</a>
                     </div>
-                    <div class="dropdown">
-                        <a class="menu-button dropdown" hx-get="/load?page=seasons" hx-target="#main" hx-swap="innerHtml">Seasons ▶</a>
-                        <div class="dropdown-content">
-                            <a class="dropdown-option" hx-get="/load?page=season1" hx-target="#main" hx-swap="innerHtml">Season 1</a>
-                        </div>
-                    </div>                
-                    <a class="menu-button" hx-get="/load?page=coaching" hx-target="#main" hx-swap="innerHtml">Coaching</a>
-                    <a class="menu-button forum-button" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
                 </div>
+                <div class="dropdown">
+                    <a class="menu-button dropdown" href="/load?page=seasons" hx-target="#main"
+                        hx-swap="innerHtml">Seasons ▶</a>
+                    <div class="dropdown-content">
+                        <a class="dropdown-option" href="/load?page=season1" hx-target="#main"
+                            hx-swap="innerHtml">Season 1</a>
+                    </div>
+                </div>
+                <a class="menu-button" href="/load?page=coaching" hx-target="#main" hx-swap="innerHtml">Coaching</a>
+                <a class="menu-button forum-button" href="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
             </div>
-        </header>
-        <div class="strip">
-            <div class="connectinfo">
-                Server IP: connect mge.tf
-                <a href="steam://connect/45.76.26.238:27015" class="join-server">connect</a>
-            </div>
-            <div class="discord-section">
-                <a class="discordinfo">Join the discord </a>
-                <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
-            </div>
-            <div class="signin-section">
-                <% if (!session.user) { %>
+        </div>
+    </header>
+    <div class="strip">
+        <div class="connectinfo">
+            Server IP: connect mge.tf
+            <a href="steam://connect/45.76.26.238:27015" class="join-server">connect</a>
+        </div>
+        <div class="discord-section">
+            <a class="discordinfo">Join the discord </a>
+            <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
+        </div>
+        <div hx-boost="true" class="signin-section">
+            <% if (!session.user) { %>
                 <a class="signin-button" href="/init-openid">
                     <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
                 </a>
                 <% } else { %>
-                <a class="profile-container" hx-target="#main" hx-swap="innerHtml" hx-get="/player_page/<%= session.user.steamid %>">
-                    <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
-                    <% 
-                        const maxLength = 15;
-                        let displayName = session.user.username;
-                        if (displayName.length > maxLength) {
+                    <a class="profile-container" hx-target="#main" hx-swap="innerHtml"
+                        href="/player_page/<%= session.user.steamid %>">
+                        <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
+                        <% const maxLength=15; let displayName=session.user.username; if (displayName.length> maxLength)
+                            {
                             displayName = displayName.slice(0, maxLength) + '...';
-                        }
-                    %>
-                    <span class="logged-in-username"><%= displayName %></span>
-                </a>
-                <% } %>
-            </div>
-        </div>     
-        
-        <div class="tournament-hover-button">News ▶</div>
+                            }
+                            %>
+                            <span class="logged-in-username">
+                                <%= displayName %>
+                            </span>
+                    </a>
+                    <% } %>
+        </div>
+    </div>
 
-        <div class="tournaments-overlay">
-            <div class="tourney-section">
-                <h3 class="tourney-title">UPCOMING</h3>
-                <div class="tournament-scroll">
-                    <div class="button-container">
-                        <a class="tourney_button" href="article001.php">2v2 Cup (July 27/28)</a>
-                        <a class="tourney_button" href="article002.php">1v1 Cup (August 3)</a>
-                        <a class="tourney_button" href="signup.php">Season 1 Signup (August 10)</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tourney-section">
-                <h3 class="tourney-title">COMPLETED</h3>
-                <div class="tournament-scroll">
-                    <div class="button-container">
-                        <a class="tourney_button" id="cup3Button">2v2 CUP 3 Main Event (5/05/24)</a>
-                        <a class="tourney_button" id="cup3Button">2v2 CUP 3 Qualifier (5/04/24)</a>
-                        <a class="tourney_button" id="cup2Button">2v2 CUP 2 Results (1/28/24)</a>
-                        <a class="tourney_button" id="cup1Button">2v2 CUP 1 Results (11/19/23)</a>
-                    </div>
+    <div class="tournament-hover-button">News ▶</div>
+
+    <div class="tournaments-overlay">
+        <div class="tourney-section">
+            <h3 class="tourney-title">UPCOMING</h3>
+            <div class="tournament-scroll">
+                <div class="button-container">
+                    <a class="tourney_button" href="article001.php">2v2 Cup (July 27/28)</a>
+                    <a class="tourney_button" href="article002.php">1v1 Cup (August 3)</a>
+                    <a class="tourney_button" href="signup.php">Season 1 Signup (August 10)</a>
                 </div>
             </div>
         </div>
-        <div id="main">
-            <%- include('main', {elo: elo}) %>
+
+        <div class="tourney-section">
+            <h3 class="tourney-title">COMPLETED</h3>
+            <div class="tournament-scroll">
+                <div class="button-container">
+                    <a class="tourney_button" id="cup3Button">2v2 CUP 3 Main Event (5/05/24)</a>
+                    <a class="tourney_button" id="cup3Button">2v2 CUP 3 Qualifier (5/04/24)</a>
+                    <a class="tourney_button" id="cup2Button">2v2 CUP 2 Results (1/28/24)</a>
+                    <a class="tourney_button" id="cup1Button">2v2 CUP 1 Results (11/19/23)</a>
+                </div>
+            </div>
         </div>
-    </body>
-    </html>
+    </div>
+    <div id="main">
+        <%- include('main', {elo: elo}) %>
+    </div>
+</body>
+
+</html>
