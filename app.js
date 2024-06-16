@@ -1,13 +1,14 @@
-import express from "express";
-import path from "path";
-import bodyParser from "body-parser";
-import SteamAuth from "node-steam-openid";
-import session from "express-session";
-import sqlite3 from "sqlite3";
-import SteamID from "steamid";
-import { renderFile } from "ejs";
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import SteamAuth from 'node-steam-openid';
+import session from 'express-session';
+import sqlite3 from 'sqlite3';
+// NOTE: Should SteamID be used somewhere?
+//import SteamID from "steamid";
+import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
-import moment from "moment";
+import moment from 'moment';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,8 +77,7 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
                     FROM moderators
                     JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
         if (err) {
-            console.error("Error querying database: " + err.message);
-            return res.status(500).send("Internal Server Error");
+            console.error('Error querying database: ' + err.message);
         }
         const match = moderators.some(moderator => moderatorIds.includes(moderator.steam_id));
 
@@ -90,7 +90,7 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
 
 // 3 posts per hour, 30 replies
 const MAX_POSTS = 3;
-const MAX_REPLIES = 30;
+
 // 1 hour
 const REFRESH_PERIOD = 3600000;
 
@@ -161,7 +161,6 @@ app.post('/postContent', async (req, res) => {
 });
 
 app.get('/forums', (req, res) => {
-    const user = req.session.user;
     const session = req.session;
 
     const sql = `SELECT threads.id as thread_id, threads.*, users.steam_username, users.steam_id, users.steam_avatar 
@@ -189,9 +188,8 @@ app.get('/forums', (req, res) => {
                 FROM moderators
                 JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
             if (err) {
-                s
-                console.error("Error querying database: " + err.message);
-                return res.status(500).send("Internal Server Error");
+                console.error('Error querying database: ' + err.message);
+                return res.status(500).send('Internal Server Error');
             }
 
             res.render('forums', { forums: forums, session: session, moderators: moderators });
@@ -278,7 +276,7 @@ app.post('/remove_post', (req, res) => {
         return res.status(403).send('Unauthorized');
     }
 
-    const sqlCheckPost = `SELECT * FROM threads WHERE id = ?`;
+    const sqlCheckPost = 'SELECT * FROM threads WHERE id = ?';
     db.get(sqlCheckPost, [postId], (err, post) => {
         if (err) {
             console.error(err.message);
@@ -289,7 +287,7 @@ app.post('/remove_post', (req, res) => {
             return res.status(404).send('Post not found.');
         }
 
-        const sqlDeletePost = `DELETE FROM threads WHERE id = ?`;
+        const sqlDeletePost = 'DELETE FROM threads WHERE id = ?';
         db.run(sqlDeletePost, [postId], (err) => {
             if (err) {
                 console.error(err.message);
@@ -314,7 +312,7 @@ app.post('/remove_reply', (req, res) => {
         return res.status(403).send('Unauthorized');
     }
 
-    const sqlCheckPost = `SELECT * FROM posts WHERE id = ?`;
+    const sqlCheckPost = 'SELECT * FROM posts WHERE id = ?';
     db.get(sqlCheckPost, [replyId], (err, post) => {
         if (err) {
             console.error(err.message);
@@ -325,16 +323,16 @@ app.post('/remove_reply', (req, res) => {
             return res.status(404).send('Post not found.');
         }
 
-        const sqlDeletePost = `DELETE FROM posts WHERE id = ?`;
-        console.log("3")
+        const sqlDeletePost = 'DELETE FROM posts WHERE id = ?';
+        console.log('3')
         db.run(sqlDeletePost, [replyId], (err) => {
-            console.log("4")
+            console.log('4')
             if (err) {
-                console.log("5")
+                console.log('5')
                 console.error(err.message);
                 return res.status(500).send('Failed to delete post.');
             }
-            console.log("6")
+            console.log('6')
             return res.redirect('/post/' + post.thread);
         });
     });
@@ -349,8 +347,8 @@ const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
 app.get('/', (req, res) => {
     eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
         if (err) {
-            console.error("Error querying database: " + err.message);
-            res.status(500).send("Internal Server Error");
+            console.error('Error querying database: ' + err.message);
+            res.status(500).send('Internal Server Error');
         } else {
             res.render('index', { session: req.session, elo: rows });
         }
@@ -380,18 +378,18 @@ app.get('/verify', async (req, res) => {
         // check if first time login
         db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
             if (err) {
-                console.error("Error querying database: " + err.message);
+                console.error('Error querying database: ' + err.message);
             } else if (!row) {
                 // add if first time
                 db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)', [user.steamid, user.username, user.avatar.small], (err) => {
                     if (err) {
-                        console.error("Error inserting into database: " + err.message);
+                        console.error('Error inserting into database: ' + err.message);
                     }
                 });
             }
         });
     } catch (err) {
-        console.error("Authentication error: " + err.message);
+        console.error('Authentication error: ' + err.message);
     }
     return res.redirect('/');
 });
@@ -400,8 +398,8 @@ app.get('/player_page/:steamid', (req, res) => {
     const steamid = req.params.steamid;
     db.get('SELECT * FROM users WHERE steam_id = ?', [steamid], (err, row) => {
         if (err) {
-            console.error("Error querying database: " + err.message);
-            res.status(500).send("Internal Server Error");
+            console.error('Error querying database: ' + err.message);
+            res.status(500).send('Internal Server Error');
         } else if (!row) {
             const name = req.query.name;
             res.render('empty_player_page', { steamid, name });
@@ -417,8 +415,8 @@ app.get('/post/:forumid', (req, res) => {
 
     db.get('SELECT threads.id as thread_id, * FROM threads LEFT JOIN users ON threads.owner = users.id WHERE threads.id = ?', [forumid], (err, row) => {
         if (err) {
-            console.error("Error querying database: " + err.message);
-            return res.status(500).send("Internal Server Error");
+            console.error('Error querying database: ' + err.message);
+            return res.status(500).send('Internal Server Error');
         }
 
         db.all(`SELECT posts.*, users.steam_username, users.steam_id, users.steam_avatar
@@ -426,16 +424,16 @@ app.get('/post/:forumid', (req, res) => {
             posts.owner = users.id WHERE thread = ?`, [forumid], (err, posts) => {
 
             if (err) {
-                console.error("Error querying database: " + err.message);
-                return res.status(500).send("Internal Server Error");
+                console.error('Error querying database: ' + err.message);
+                return res.status(500).send('Internal Server Error');
             }
 
             db.all(`SELECT users.*, moderators.id as moderator_id
                     FROM moderators
                     JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
                 if (err) {
-                    console.error("Error querying database: " + err.message);
-                    return res.status(500).send("Internal Server Error");
+                    console.error('Error querying database: ' + err.message);
+                    return res.status(500).send('Internal Server Error');
                 }
 
                 res.render('posts', { session: session, moderators: moderators, posts: posts, thread: row });
@@ -447,8 +445,8 @@ app.get('/post/:forumid', (req, res) => {
 app.get('/users', (req, res) => {
     db.all('SELECT * FROM users', [], (err, users) => {
         if (err) {
-            console.error("Error querying database: " + err.message);
-            res.status(500).send("Internal Server Error");
+            console.error('Error querying database: ' + err.message);
+            res.status(500).send('Internal Server Error');
             return;
         }
 
@@ -456,8 +454,8 @@ app.get('/users', (req, res) => {
             FROM moderators
             JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
             if (err) {
-                console.error("Error querying database: " + err.message);
-                res.status(500).send("Internal Server Error");
+                console.error('Error querying database: ' + err.message);
+                res.status(500).send('Internal Server Error');
                 return;
             }
 
@@ -473,8 +471,8 @@ app.get('/load', (req, res) => {
     if (page === 'main') {
         eloDb.all('SELECT * FROM mgemod_stats ORDER BY rating DESC', [], (err, rows) => {
             if (err) {
-                console.error("Error querying database: " + err.message);
-                res.status(500).send("Internal Server Error");
+                console.error('Error querying database: ' + err.message);
+                res.status(500).send('Internal Server Error');
             } else {
                 return res.render('main', { elo: rows });
             }
@@ -487,7 +485,7 @@ app.get('/load', (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            console.error("Error destroying session: " + err.message);
+            console.error('Error destroying session: ' + err.message);
         }
         res.redirect('/');
     });
