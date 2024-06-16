@@ -1,15 +1,21 @@
-const express = require("express");
-const path = require('path');
-const bodyParser = require("body-parser");
-const SteamAuth = require("node-steam-openid");
-const session = require('express-session');
-const sqlite3 = require('sqlite3').verbose();
-const SteamID = require('steamid');
+import express from "express";
+import path from "path";
+import bodyParser from "body-parser";
+import SteamAuth from "node-steam-openid";
+import session from "express-session";
+import sqlite3 from "sqlite3";
+import SteamID from "steamid";
+import { renderFile } from "ejs";
+import { fileURLToPath } from 'url';
+import moment from "moment";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 
-app.engine('html', require('ejs').renderFile);
+app.engine('html', renderFile);
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, 'views')));
@@ -153,8 +159,6 @@ app.post('/postContent', async (req, res) => {
         });
     });
 });
-
-const moment = require('moment');
 
 app.get('/forums', (req, res) => {
     const user = req.session.user;
