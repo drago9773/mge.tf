@@ -10,14 +10,14 @@ function filterUsers() {
         steamId = users[i].getElementsByClassName('users_steam_id')[0];
         usernameTxt = username.textContent || username.innerText;
         steamIdTxt = steamId.textContent || steamId.innerText;
-        
+
         if (usernameTxt.toLowerCase().indexOf(filter) > -1 || steamIdTxt.indexOf(filter) > -1) {
-            users[i].style.display = "";
+            users[i].style.display = '';
         } else {
-            users[i].style.display = "none";
+            users[i].style.display = 'none';
         }
     }
 }
-document.getElementById("userSearch").addEventListener("input", function() {
+document.getElementById('userSearch').addEventListener('input', function() {
     filterUsers();
 });
