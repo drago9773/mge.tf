@@ -1,5 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
-
+document.addEventListener('DOMContentLoaded', function() {
     const sidebarTrigger = document.querySelector('.sidebar-trigger');
     const overlay = document.querySelector('.overlay');
     const tournamentTrigger = document.querySelector('.tournament-hover-button');
@@ -31,32 +30,38 @@ document.addEventListener("DOMContentLoaded", function() {
     newsOverlay.addEventListener('mouseover', function() {
     });
 
-    document.getElementById("cup3Button").addEventListener("click", function() {
-        openInNewTab('https://brackethq.com/b/6lk1b/');
+    document.getElementById('cup3Button').addEventListener('click', function() {
+        window.open('https://brackethq.com/b/6lk1b/');
     });
-    document.getElementById("cup2Button").addEventListener("click", function() {
-        openInNewTab('https://brackethq.com/b/8lovb/');
+    document.getElementById('cup2Button').addEventListener('click', function() {
+        window.open('https://brackethq.com/b/8lovb/');
     });
-    document.getElementById("cup1Button").addEventListener("click", function() {
-        openInNewTab('https://brackethq.com/b/5qorb/');
+    document.getElementById('cup1Button').addEventListener('click', function() {
+        window.open('https://brackethq.com/b/5qorb/');
     });
-    document.getElementById("new1Button").addEventListener("click", function() {
-        openInNewTab('https://university.com');
+    document.getElementById('new1Button').addEventListener('click', function() {
+        window.open('https://university.com');
     });
-    document.getElementById("new2Button").addEventListener("click", function() {
-        openInNewTab('https://university.com');
+    document.getElementById('new2Button').addEventListener('click', function() {
+        window.open('https://university.com');
     });
-    document.getElementById("discordInvite").addEventListener("click", function() {
-        openInNewTab('discord.gg/j6kDYSpYbs');
-    });
+    document
+        .getElementById('discordInvite')
+        .addEventListener('click', function() {
+            window.open('discord.gg/j6kDYSpYbs');
+        });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    let seen = localStorage.getItem('popupSeen');
     const announcementOverlay = document.getElementById('announcement-overlay');
     const closeButton = document.getElementById('closeOverlay');
-  
-    announcementOverlay.style.display = 'block';
-  
+
+    if (!seen) {
+        announcementOverlay.style.display = 'block';
+        localStorage.setItem('popupSeen', 'true');
+    }
+
     closeButton.addEventListener('click', function() {
         announcementOverlay.style.display = 'none';
     });
