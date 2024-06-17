@@ -5,7 +5,7 @@
     font-weight: bold;
     color: white;
     text-shadow: 
-        -6px -6px 0 #000,  
+        -4px -4px 0 #000,  
         0px 0px 0 #000,
         0px 0px 0 #000,
         0px 0px 0 #000;
@@ -94,32 +94,35 @@ table td.name-column {
     margin-top: 50px;
     position: absolute;
     cursor: pointer;
-    padding: 120px 100px;
+    padding: 130px 90px;
     font-size: 40px;
-    border: 2px solid white;
-    background-color: rgb(255, 0, 255);
+    border: 0px solid white;
     transition: transform 1s, background-color 1s, box-shadow 0.3s, padding 3s ease, top 2s ease, font-size 3s;
 }
 
 .mm-1v1 {
+    background-color: rgb(51, 51, 184);
     left: 40%;
     transform: translateX(-50%);
 }
 
 .mm-2v2 {
+    background-color: rgb(224, 52, 52);
     left: 60%;
     transform: translateX(-50%);
 }
 
-.button-overlay-background{
+.button-overlay-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    z-index: 0;
-    transition: background-color 3s ease;
+    background-color: black;
+    z-index: 1000;
+    transition: background-color 3s ease, opacity 3s ease;
+    opacity: 0;
+    pointer-events: none;
 }
 
 @keyframes shake {
@@ -147,6 +150,68 @@ table td.name-column {
     87.5% {
         transform: translateX(-49%) translateY(1%);
     }
+}
+
+@keyframes flames {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    15% {
+        transform: translateX(0);
+        opacity: 0.5;
+    }
+    30% {
+        transform: translateX(-2px);
+        opacity: 1;
+    }
+    45% {
+        transform: translateX(-2px);
+        opacity: 0.5;
+    }
+    60% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+    75% {
+        transform: translateX(0px);
+        opacity: 0.5;
+    }
+    90% {
+        transform: translateX(2px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(2px);
+        opacity: 0;
+    }
+}
+
+.flame-container {
+    position: absolute;
+    top: -0px;
+    left: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+}
+
+.flame {
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 20px;
+    background: rgba(255, 69, 0, 0.8);
+    transform-origin: bottom center;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    opacity: 0;
+    transition: opacity 0.5s, transform 1s;
+}
+
+.mm-1v1:hover .flame,
+.mm-2v2:hover .flame {
+    animation: flames 0.8s linear infinite;
+    opacity: 1;
 }
 
 .mm-1v1:hover,

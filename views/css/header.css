@@ -141,8 +141,8 @@ body {
     margin-top: 0px;
     display: none;
     position: absolute;
-    background-color: rgb(34, 68, 68);
-    border: 1px solid rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.7);
+    border-bottom: 1px solid rgb(255, 255, 255);
     left: 100%;
     top: 0%;
     min-width: 120px;
@@ -168,25 +168,28 @@ body {
 
 .strip {
     display: flex;
-    justify-content: space-between;
+    justify-content: inline;
     align-items: center;
-    width: 100%;
     height: 25px;
     padding: 0 10px;
     z-index: 2000;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .connectinfo,
 .discordinfo,
 .signin-section {
     color: white;
-    margin: 0;
+}
+.connectinfo{
+    margin-left: 250px;
 }
 
 .discord-section {
     flex: 1;
     text-align: center;
-    margin-right: 10%;
+    margin-right: 5%;
 }
 
 .join-server,
@@ -217,31 +220,29 @@ body {
 }
 
 .signin-section{
-    margin-top: 25px;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
+    margin-top: 3px;
+    margin-right: 250px;
 }
 
 .signin-button {
-    padding: 10px 12px;
+    /* padding: 2px 3px; */
 }
 
 .signin-button:hover {
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.5); */
 }
 
 .steam-login-logo {
     width: 160px;
     height: auto;
-    padding: 2px;
+    padding: 1px;
     background-color: #777;
     cursor: pointer;
-    border-radius: 3px; 
+    border-radius: 1px; 
 }
 
 .profile-container {
-    padding: 10px;
+    margin-top: -5px;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -253,6 +254,7 @@ body {
 }
 
 .profile-pic {
+    height: 25px;
     margin-right: 10px; 
 }
 
@@ -285,11 +287,10 @@ body {
     flex: none;
     font-size: 40px;
     padding: 3px;
-    border: 1px solid white;
-    background-color: darkslategray;
+    background-color: rgba(0, 0, 0, 0.7);
     cursor: pointer;
     z-index: 1;
-    transition: background-color 0.5s;
+    transition: right 0.3s ease-in-out;
 }
 
 .tournaments-overlay {
@@ -300,9 +301,8 @@ body {
     flex-direction: column;
     align-items: flex-end;
     z-index: 1000;
-    background-color: rgb(20, 34, 34);
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 0;
-    border: 1px solid white;
     transition: right 0.3s ease-in-out;
 }
 
@@ -339,7 +339,7 @@ body {
 .tourney_button {
     width: 100%;
     color: white;
-    background-color: darkslategray;
+    background-color: rgba(47,79,79,0.8);
     padding: 7px 0px;
     margin-top: 1px;
     cursor: pointer;

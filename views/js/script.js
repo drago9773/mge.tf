@@ -21,15 +21,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     tournamentTrigger.addEventListener('mouseover', function() {
         newsOverlay.style.right = '0';
-        tournamentTrigger.style.opacity = '0';
+        tournamentTrigger.style.right = '-200px';
     });
 
     newsOverlay.addEventListener('mouseleave', function() {
         newsOverlay.style.right = '-340px';
-        tournamentTrigger.style.opacity = '1';
+        tournamentTrigger.style.right = '0';
     });
     newsOverlay.addEventListener('mouseover', function() {
-        tournamentTrigger.style.opacity = '0';
     });
 
     document.getElementById("cup3Button").addEventListener("click", function() {
