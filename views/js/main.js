@@ -60,25 +60,25 @@ document.getElementById("eloSearch").addEventListener("input", function() {
     filterUsers();
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-    const button1v1 = document.querySelector('.mm-1v1');
-    const button2v2 = document.querySelector('.mm-2v2');
+// document.addEventListener("DOMContentLoaded", function() {
+//     const button1v1 = document.querySelector('.mm-1v1');
+//     const button2v2 = document.querySelector('.mm-2v2');
     
-    const createFlames = (button) => {
-        const flameContainer = document.createElement('div');
-        flameContainer.classList.add('flame-container');
-        for (let i = 0; i < 100; i++) {
-            const flame = document.createElement('div');
-            flame.classList.add('flame');
-            flame.style.left = `${i-1}%`;
-            flame.style.animationDelay = `${Math.random() * 0.5}s`;
-            flame.style.width = `${Math.random() * 10 + 5}px`;
-            flame.style.height = `${Math.random() * 30 + 10}px`;
-            flameContainer.appendChild(flame);
-        }
-        button.appendChild(flameContainer);
-    };
+//     const createFlames = (button) => {
+//         const flameContainer = document.createElement('div');
+//         flameContainer.classList.add('flame-container');
+//         for (let i = 0; i < 100; i++) {
+//             const flame = document.createElement('div');
+//             flame.classList.add('flame');
+//             flame.style.left = `${i-1}%`;
+//             flame.style.animationDelay = `${Math.random() * 0.5}s`;
+//             flame.style.width = `${Math.random() * 10 + 5}px`;
+//             flame.style.height = `${Math.random() * 30 + 10}px`;
+//             flameContainer.appendChild(flame);
+//         }
+//         button.appendChild(flameContainer);
+//     };
 
-    createFlames(button1v1);
-    createFlames(button2v2);
-});
+//     createFlames(button1v1);
+//     createFlames(button2v2);
+// });

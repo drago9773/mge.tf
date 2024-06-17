@@ -82,7 +82,6 @@ table td.name-column {
 
 .main-menu-1v1-2v2 {
     border-radius: 0px;
-    text-decoration: none;
     color: #fff;
     font-weight: bold;
     transition: background-color 0.8s top 0.5s ease;
@@ -91,6 +90,7 @@ table td.name-column {
 
 .mm-1v1,
 .mm-2v2 {
+    text-decoration: none;
     margin-top: 50px;
     position: absolute;
     cursor: pointer;
@@ -151,7 +151,7 @@ table td.name-column {
         transform: translateX(-49%) translateY(1%);
     }
 }
-
+/* 
 @keyframes flames {
     0% {
         transform: translateX(0);
@@ -212,7 +212,7 @@ table td.name-column {
 .mm-2v2:hover .flame {
     animation: flames 0.8s linear infinite;
     opacity: 1;
-}
+} */
 
 .mm-1v1:hover,
 .mm-2v2:hover {
