@@ -28,6 +28,13 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+app.use((req, res, next) => {
+    if (req.url !== '/' && req.headers['hx-request'] !== 'true') {
+        return res.redirect('/');
+    }
+    next();
+});
 // user database
 const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) => {
     if (err) {
