@@ -1,13 +1,15 @@
 <div>
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/forums.css" />
+    <link rel="stylesheet" href="css/post.css" />
     <div class="background-page"></div>
     <h1 class="description">Forum Posts</h1>
-    <div hx-boost="true" class="forum-posts">
+    <div class="forum-posts">
         <button class="create_post" href="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
 
         <% forums.forEach(forum=> { %>
-            <a class="forum-strip" href="/post/<%= forum.thread_id %>" hx-target="#main" hx-swap="innerHTML">
+            <a hx-push-url="true" class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main"
+                hx-swap="innerHTML">
                 <ul>
                     <p class="steam-username">
                         <%= forum.steam_username + ' published at ' + forum.formatted_date %>

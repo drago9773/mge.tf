@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initializeEventListeners() {
     const sidebarTrigger = document.querySelector('.sidebar-trigger');
     const overlay = document.querySelector('.overlay');
     const tournamentTrigger = document.querySelector('.tournament-hover-button');
@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
         newsOverlay.style.right = '-340px';
         tournamentTrigger.style.right = '0';
     });
-    newsOverlay.addEventListener('mouseover', function() {
-    });
 
     document.getElementById('cup3Button').addEventListener('click', function() {
         window.open('https://brackethq.com/b/6lk1b/');
@@ -45,24 +43,28 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('new2Button').addEventListener('click', function() {
         window.open('https://university.com');
     });
-    document
-        .getElementById('discordInvite')
-        .addEventListener('click', function() {
-            window.open('discord.gg/j6kDYSpYbs');
-        });
-});
+    document.getElementById('discordInvite').addEventListener('click', function() {
+        window.open('discord.gg/j6kDYSpYbs');
+    });
 
-document.addEventListener('DOMContentLoaded', () => {
     let seen = localStorage.getItem('popupSeen');
     const announcementOverlay = document.getElementById('announcement-overlay');
     const closeButton = document.getElementById('closeOverlay');
 
-    if (!seen) {
+    if (!seen && announcementOverlay) {
         announcementOverlay.style.display = 'block';
         localStorage.setItem('popupSeen', 'true');
     }
 
-    closeButton.addEventListener('click', function() {
-        announcementOverlay.style.display = 'none';
-    });
+    if (closeButton) {
+        closeButton.addEventListener('click', function() {
+            announcementOverlay.style.display = 'none';
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initializeEventListeners);
+document.body.addEventListener('htmx:historyRestore', () => {
+    console.log('Settled');
+    initializeEventListeners();
 });

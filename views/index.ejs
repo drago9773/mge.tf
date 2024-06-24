@@ -4,6 +4,18 @@
 <head>
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/forums.css" />
+    <link rel="stylesheet" href="css/post.css" />
+    <link rel="stylesheet" href="css/player-page.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/users.css" />
+    <link rel="stylesheet" href="css/rules.css" />
+    <link rel="stylesheet" href="css/league.css" />
+    <link rel="stylesheet" href="css/1v1signup.css" />
+    <link rel="stylesheet" href="css/2v2signup.css" />
+    <link rel="stylesheet" href="css/article001.css" />
+    <link rel="stylesheet" href="css/money-match.css" />
+    <link rel="stylesheet" href="css/signup.css" />
 
     <script src="/js/script.js" defer></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
@@ -60,14 +72,14 @@
             <a class="discordinfo">Join the discord </a>
             <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
         </div>
-        <div hx-boost="true" class="signin-section">
+        <div class="signin-section">
             <% if (!session.user) { %>
                 <a class="signin-button" href="/init-openid">
                     <img class="steam-login-logo" src="../images/signin-thru-steam.png" alt="Steam Logo">
                 </a>
                 <% } else { %>
-                    <a class="profile-container" hx-target="#main" hx-swap="innerHtml"
-                        href="/player_page/<%= session.user.steamid %>">
+                    <a hx-push-url="true" class="profile-container" hx-target="#main" hx-swap="innerHtml"
+                        hx-get="/player_page/<%= session.user.steamid %>">
                         <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
                         <% const maxLength=15; let displayName=session.user.username; if (displayName.length> maxLength)
                             {

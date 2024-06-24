@@ -9,6 +9,7 @@ import sqlite3 from 'sqlite3';
 import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import moment from 'moment';
+import {appendRequestToFile, logRequestToFile} from './helpers/logger.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +31,10 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-    if (req.url !== '/' && req.headers['hx-request'] !== 'true') {
+    const noRedirectUrls = ['openid', 'player_page'];
+    const shouldRedirect = !noRedirectUrls.some(substring => req.url.includes(substring)) 
+                            && req.headers['hx-request'] !== 'true';
+    if (req.url !== '/' && shouldRedirect) {
         return res.redirect('/');
     }
     next();
