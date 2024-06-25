@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= article.title %></title>
+</head>
+<body>
+    <h1><%= article.title %></h1>
+    <p>by <%= article.owner %> on <%= moment(article.created_at).format('MM/DD/YYYY HH:mm:ss') %></p>
+    <div>
+        <%= article.content %>
+    </div>
+</body>
+</html>

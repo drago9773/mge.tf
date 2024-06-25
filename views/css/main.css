@@ -1,4 +1,5 @@
 .mge-title{
+    font-family: apple chancery;
     margin-top: 50px;
     text-align: center;
     font-size: 100px;
@@ -9,6 +10,9 @@
         0px 0px 0 #000,
         0px 0px 0 #000,
         0px 0px 0 #000;
+}
+.mge-logo{
+    height: 70px;
 }
 .placeholder {
     background-color: rgba(0,0,0,0.8);
@@ -90,24 +94,30 @@ table td.name-column {
 
 .mm-1v1,
 .mm-2v2 {
+    color: white;
+    font-family: apple chancery;
+    border-radius: 20px;
+    border: 1px solid white;
     text-decoration: none;
     margin-top: 50px;
     position: absolute;
     cursor: pointer;
-    padding: 130px 90px;
-    font-size: 40px;
+    padding: 100px 70px;
+    font-size: 60px;
     border: 0px solid white;
     transition: transform 1s, background-color 1s, box-shadow 0.3s, padding 3s ease, top 2s ease, font-size 3s;
 }
 
 .mm-1v1 {
-    background-color: rgb(51, 51, 184);
+    background-color: rgb(33, 33, 192);
+    background-color: rgb(234, 0, 255);
     left: 40%;
     transform: translateX(-50%);
 }
 
 .mm-2v2 {
-    background-color: rgb(224, 52, 52);
+    background-color: rgb(170, 32, 32);
+    background-color: rgb(234, 0, 255);
     left: 60%;
     transform: translateX(-50%);
 }

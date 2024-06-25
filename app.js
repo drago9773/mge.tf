@@ -4,8 +4,6 @@ import bodyParser from 'body-parser';
 import SteamAuth from 'node-steam-openid';
 import session from 'express-session';
 import sqlite3 from 'sqlite3';
-// NOTE: Should SteamID be used somewhere?
-//import SteamID from "steamid";
 import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import moment from 'moment';
@@ -73,6 +71,14 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
 
                 owner INTEGER NOT NULL,
                 FOREIGN KEY (owner) REFERENCES users(id))`);
+
+    // await db.run(`CREATE TABLE IF NOT EXISTS articles (
+    //             id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //             title TEXT NOT NULL,
+    //             content TEXT NOT NULL,
+    //             owner INTEGER NOT NULL,
+    //             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    //             FOREIGN KEY (owner) REFERENCES users(id))`);
 
     await db.run(`CREATE TABLE IF NOT EXISTS moderators (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -488,6 +494,74 @@ app.get('/load', (req, res) => {
         res.render(page);
     }
 });
+
+
+app.get('/2v2cup', (req, res) => {
+    res.render('2v2cup');
+});
+
+// app.get('/discord', (req, res) => {
+//     const discordInviteLink = 'https://discord.gg/j6kDYSpYbs'; 
+//     res.redirect(discordInviteLink);
+// });
+
+// app.get('/create_article', (req, res) => {
+//     if (!req.session.user) {
+//         return res.redirect('/login');
+//     }
+//     res.render('create_article');
+// });
+
+// app.post('/create_article', (req, res) => {
+//     const { title, content } = req.body;
+//     const user = req.session.user;
+
+//     if (!user) {
+//         return res.status(401).json({ error: 'Login to create article' });
+//     }
+
+//     if (!title || !content) {
+//         return res.status(400).json({ error: 'Title and content are required' });
+//     }
+
+//     db.run('INSERT INTO articles (title, content, owner) VALUES (?, ?, ?)', [title, content, user.id], (err) => {
+//         if (err) {
+//             console.error(err.message);
+//             return res.status(500).json({ error: 'Failed to create article.' });
+//         }
+//         return res.redirect('/articles'); // Redirect to articles page after creation
+//     });
+// });
+
+// app.get('/articles', (req, res) => {
+//     db.all(`SELECT articles.*, users.steam_username AS author 
+//             FROM articles 
+//             LEFT JOIN users ON articles.owner = users.id 
+//             ORDER BY articles.created_at DESC`, [], (err, rows) => {
+//         if (err) {
+//             console.error(err.message);
+//             return res.status(500).json({ error: 'Failed to fetch articles.' });
+//         }
+//         res.render('articles', { articles: rows });
+//     });
+// });
+
+// app.get('/article/:id', (req, res) => {
+//     const articleId = req.params.id;
+//     db.get(`SELECT articles.*, users.steam_username AS author 
+//             FROM articles 
+//             LEFT JOIN users ON articles.owner = users.id 
+//             WHERE articles.id = ?`, [articleId], (err, row) => {
+//         if (err) {
+//             console.error(err.message);
+//             return res.status(500).json({ error: 'Failed to fetch article.' });
+//         }
+//         if (!row) {
+//             return res.status(404).json({ error: 'Article not found.' });
+//         }
+//         res.render('article', { article: row });
+//     });
+// });
 
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Articles</title>
+</head>
+<body>
+    <h1>Articles</h1>
+    <ul>
+        <% articles.forEach(article => { %>
+            <li>
+                <h2><a href="/article/<%= article.id %>"><%= article.title %></a></h2>
+                <p>by <%= article.owner %> on <%= moment(article.created_at).format('MM/DD/YYYY HH:mm:ss') %></p>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>

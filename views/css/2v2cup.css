@@ -1,0 +1,47 @@
+.a001-page-title {
+    text-align: center;
+    font-size: 36px;
+}
+
+.a001-subtitle {
+    text-align: center;
+}
+
+
+/* Define the styles for the image within the anchor */
+.dolphinrider-cup-poster img {
+    width: 100%;
+    max-height: 400px;
+    height: auto; 
+}
+
+.a001-content {
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.a001-textbox {
+    width: 50%; 
+    max-width: 35%; 
+    overflow-y: auto; 
+    background-image: url("../images/paper-background.png");
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    background-position: center;
+}
+.a001-textbox h3 {
+    font-size: 24px;
+}
+.a001-textbox h5 {
+    font-size: 20px;
+}
+.a001-textbox p {
+    font-size: 20px;
+    color: #000000;
+    transition: color 0.5s;
+}
