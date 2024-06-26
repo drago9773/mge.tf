@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-    const noRedirectUrls = ['openid', 'player_page'];
+    const noRedirectUrls = ['openid', 'player_page', 'users', 'forums'];
     const shouldRedirect = !noRedirectUrls.some(substring => req.url.includes(substring)) 
                             && req.headers['hx-request'] !== 'true';
     if (req.url !== '/' && shouldRedirect) {

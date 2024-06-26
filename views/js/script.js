@@ -27,7 +27,6 @@ function initializeEventListeners() {
         newsOverlay.style.right = '-340px';
         tournamentTrigger.style.right = '0';
     });
-
     document.getElementById('cup3Button').addEventListener('click', function() {
         window.open('https://brackethq.com/b/6lk1b/');
     });
@@ -37,14 +36,13 @@ function initializeEventListeners() {
     document.getElementById('cup1Button').addEventListener('click', function() {
         window.open('https://brackethq.com/b/5qorb/');
     });
-    document.getElementById('new1Button').addEventListener('click', function() {
-        window.open('https://university.com');
-    });
-    document.getElementById('new2Button').addEventListener('click', function() {
-        window.open('https://university.com');
-    });
+
     document.getElementById('discordInvite').addEventListener('click', function() {
         window.open('discord.gg/j6kDYSpYbs');
+    });
+    
+    document.getElementById('2v2cup').addEventListener('click', function() {
+        window.open('https://mge.tf/2v2cup');
     });
 
     let seen = localStorage.getItem('popupSeen');

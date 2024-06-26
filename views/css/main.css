@@ -1,4 +1,4 @@
-.mge-title{
+.mge-title {
     font-family: apple chancery;
     margin-top: 50px;
     text-align: center;
@@ -10,10 +10,16 @@
         0px 0px 0 #000,
         0px 0px 0 #000,
         0px 0px 0 #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap as needed */
 }
-.mge-logo{
-    height: 70px;
+
+.mge-logo {
+    height: 140px;
 }
+
 .placeholder {
     background-color: rgba(0,0,0,0.8);
     width: 620px;

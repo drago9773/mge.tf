@@ -107,7 +107,9 @@ body {
     align-items: center;
     width: 100%;
 }
-
+.menu-mge-logo{
+    height: 80px;
+}
 .menu-button {
     padding: 20px 8px;
     border-radius: 3px;
