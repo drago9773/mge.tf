@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-    const noRedirectUrls = ['openid', 'player_page'];
+    const noRedirectUrls = ['openid', 'player_page', '2v2cup', 'discord'];
     const shouldRedirect = !noRedirectUrls.some(substring => req.url.includes(substring)) 
                             && req.headers['hx-request'] !== 'true';
     if (req.url !== '/' && shouldRedirect) {
@@ -504,10 +504,10 @@ app.get('/2v2cup', (req, res) => {
     res.render('2v2cup');
 });
 
-// app.get('/discord', (req, res) => {
-//     const discordInviteLink = 'https://discord.gg/j6kDYSpYbs'; 
-//     res.redirect(discordInviteLink);
-// });
+app.get('/discord', (req, res) => {
+    const discordInviteLink = 'https://discord.gg/j6kDYSpYbs'; 
+    res.redirect(discordInviteLink);
+});
 
 // app.get('/create_article', (req, res) => {
 //     if (!req.session.user) {

@@ -7,8 +7,6 @@
     text-align: center;
 }
 
-
-/* Define the styles for the image within the anchor */
 .dolphinrider-cup-poster img {
     width: 100%;
     max-height: 600px;
@@ -24,16 +22,16 @@
 }
 
 .a001-textbox {
-    width: 57%; 
+    width: 40%; 
     max-width: 50%; 
     overflow-y: auto; 
     background-image: url("../images/paper-background.png");
     border-radius: 5px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-size: cover;
     background-position: center;
 }
+
 .a001-textbox h3 {
     font-size: 28px;
 }
@@ -44,4 +42,7 @@
     font-size: 20px;
     color: #000000;
     transition: color 0.5s;
+}
+.article-2v2-desc{
+    font-style: italic;
 }
