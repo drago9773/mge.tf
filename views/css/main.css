@@ -25,7 +25,7 @@
     width: 620px;
     height: 300px;
     margin: 0 auto;
-    margin-top: -50px;
+    margin-top: 0px;
     border: 2px solid rgb(255, 255, 255);
     padding: 10px 10px;
     overflow-y: auto; 
@@ -296,4 +296,47 @@ table td.name-column {
 }
 .announcement-button:hover{
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.main-menu-buttons {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mge-title {
+        font-size: 60px;
+    }
+    .mge-logo {
+        height: 80px;
+    }
+    .main-menu-buttons {
+        display: block;
+        padding: 10px;
+    }
+    .main-menu-button {
+        font-size: 40px;
+        display: block;
+        margin: 10px 0;
+        padding: 30px 80px;
+        border: 2px solid white;
+        text-align: center;
+        color: white;
+        text-decoration: none;
+    }
+    .main-menu-button:hover{
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .main-1 {
+        background-color: rgba(36, 36, 244, 0.6);
+    }
+    .main-2 {
+        background-color: rgba(255, 0, 0, 0.6);
+    }
+    .main-3 {
+        background-color: rgba(255, 255, 0, 0.6);
+    }
+    .main-4 {
+        background-color: rgba(0, 255, 0, 0.6);
+    }
 }

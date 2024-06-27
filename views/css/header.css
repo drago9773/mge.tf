@@ -58,7 +58,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 30px 0;
+    padding: 30px 30px;
 }
 
 .bottom-section {
@@ -70,10 +70,13 @@ body {
 }
 
 .title {
-    margin: 5px 0;
-    display: inline-block;
+    display: flex;
 }
 
+.menu-mge-logo {
+    height: 40px;
+    margin-right: -20px;
+}
 .title-link {
     padding: 10px 20px;
     text-decoration: none;
@@ -106,9 +109,6 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-}
-.menu-mge-logo{
-    height: 60px;
 }
 .menu-button {
     padding: 20px 8px;
@@ -363,4 +363,23 @@ body {
     height: 100%;
     background: #292929;
     z-index: -1; 
+}
+
+@media (max-width: 768px) {
+    .strip {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        padding: 10px;
+    }
+
+    .connectinfo, .discord-section, .signin-section {
+        margin: 5px 0; 
+        text-align: center;
+    }
+    
+    .tournament-hover-button,
+    .sidebar-trigger {
+        display: none;
+    }
 }

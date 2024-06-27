@@ -31,6 +31,12 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-position: center;
 }
+@media (max-width: 768px) {
+    .a001-textbox {
+        width: 70%;
+        max-width: 70%;
+    }
+}
 
 .a001-textbox h3 {
     font-size: 28px;
