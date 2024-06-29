@@ -1,25 +1,27 @@
 <script src="/js/users.js"></script>
 <div class="users_display">
-    <link rel="stylesheet" href="css/users.css"/>
+    <link rel="stylesheet" href="css/users.css" />
     <div class="search-container">
         <input type="text" id="userSearch" placeholder="Search by username or steam ID...">
     </div>
 
-    <% users.forEach(user => { %>
-        <div class="users_container" hx-get="/player_page/<%= user.steam_id %>" hx-target="#main" hx-swap="innerHtml">
+    <% users.forEach(user=> { %>
+        <div hx-push-url="true" class="users_container" hx-get="/player_page/<%= user.steam_id %>" hx-target="#main"
+            hx-swap="innerHtml">
             <img class="users_avatar" src="<%= user.steam_avatar %>" alt="Avatar">
-            <% 
-                const maxLength = 30;
-                let displayName = user.steam_username;
-                if (displayName.length > maxLength) {
-                    displayName = displayName.slice(0, maxLength) + '...';
+            <% const maxLength=30; let displayName=user.steam_username; if (displayName.length> maxLength) {
+                displayName = displayName.slice(0, maxLength) + '...';
                 }
-            %>
-            <a class="users_username" href="#"><%= displayName %></a>
-            <span class="users_steam_id"><%= user.steam_id %></span>
+                %>
+                <a class="users_username" href="#">
+                    <%= displayName %>
+                </a>
+                <span class="users_steam_id">
+                    <%= user.steam_id %>
+                </span>
         </div>
-    <% }); %>
-<!-- 
+        <% }); %>
+            <!-- 
     <% moderators.forEach(moderator => { %>
         <div class="users_container" hx-get="/player_page/<%= moderator.steam_id %>" hx-target="#main" hx-swap="innerHtml">
             <img class="users_avatar" src="<%= moderator.steam_avatar %>" alt="Avatar">
@@ -33,5 +35,5 @@
             <span class="users_steam_id"><%= moderator.steam_id %></span>
         </div>
     <% }); %> -->
-    
+
 </div>
