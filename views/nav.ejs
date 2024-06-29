@@ -1,0 +1,47 @@
+<div class="rounded-b-md p-2 bg-black bg-opacity-50 align-middle items-center flex w-full justify-between">
+  <!-- Logo and dropdown trigger -->
+  <div class="relative">
+    <img class="h-10 object-scale-down cursor-pointer" src="/images/mge_transparent_logo.png" id="dropdown-trigger">
+    <!-- Dropdown content -->
+    <div id="dropdown-content"
+      class="hidden absolute top-full left-0 mt-2 w-48 bg-black bg-opacity-80 shadow-lg rounded-lg py-2">
+      <a href="/" class="block px-4 py-2 text-white hover:bg-gray-800">Home</a>
+      <a href="/users" class="block px-4 py-2 text-white hover:bg-gray-800">Users</a>
+      <a href="/forums" class="block px-4 py-2 text-white hover:bg-gray-800">Forums</a>
+      <a href="/league" class="block px-4 py-2 text-white hover:bg-gray-800">League</a>
+      <a href="/signup" class="block px-4 py-2 text-white hover:bg-gray-800">Sign Up</a>
+      <!-- Add more links as needed -->
+    </div>
+  </div>
+  <div class="connectinfo">
+    Server IP: connect mge.tf
+    <a href="steam://connect/45.76.26.238:27015" class="p-1 bg-green-600 border border-green-800 rounded-md">connect</a>
+  </div>
+  <div class="discord-section">
+    <a class="discordinfo">Join the discord </a>
+    <a class="p-1 bg-indigo-700 border border-indigo-900 rounded-md" id="discordInvite"
+      href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
+  </div>
+  <div class="signin-section">
+    <% if (!session.user) { %>
+      <a class="signin-button" href="/init-openid">
+        <img class="w-40 rounded-md" src="../images/signin-thru-steam.png" alt="Steam Logo">
+      </a>
+      <% } else { %>
+        <div class="flex flex-row-reverse gap-2">
+          <a class="profile-container" href="/player_page/<%= session.user.steamid %>">
+            <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
+            <% const maxLength=15; let displayName=session.user.username; if (displayName.length> maxLength)
+              {
+              displayName = displayName.slice(0, maxLength) + '...';
+              }
+              %>
+          </a>
+          <span class="logged-in-username">
+            <%= displayName %>
+          </span>
+        </div>
+        <% } %>
+  </div>
+  <script src="/js/sidebar.js"></script>
+</div>

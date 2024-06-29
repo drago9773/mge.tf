@@ -1,40 +1,36 @@
-<div>
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/forums.css" />
-    <link rel="stylesheet" href="css/post.css" />
-    <div class="background-page"></div>
+<div class="bg-[url('/images/paper-background.png')] rounded-md">
     <h1 class="description">Forum Posts</h1>
-    <div class="forum-posts">
+    <div class="text-black forum-posts">
         <button class="create_post" href="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
 
         <% forums.forEach(forum=> { %>
-            <a hx-push-url="true" class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main"
-                hx-swap="innerHTML">
-                <ul>
-                    <p class="steam-username">
-                        <%= forum.steam_username + ' published at ' + forum.formatted_date %>
-                    </p>
-                    <p class="title">
-                        <%= forum.title %>
-                    </p>
-                    <p class="content">
-                        <%= forum.content %>
-                    </p>
-
-                    <% if (session.user) { %>
-                        <% const isOwner=forum.steam_id===session.user.steamid; %>
-                            <% const isModerator=moderators.some(moderator=> moderator.steam_id ===
-                                session.user.steamid); %>
-                                <% if (isOwner || isModerator) { %>
-                                    <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
-                                        <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
-                                        <input type="hidden" name="is_owner" value="<%= isOwner %>">
-                                        <input type="hidden" name="is_moderator" value="<%= isModerator %>">
-                                        <button class="remove-post" type="submit">Remove Post</button>
-                                    </form>
-                                    <% } %>
+            <a class="m-y-2 block border-t border-t-white" href="/post/<%= forum.thread_id %>">
+                <div class="container p-2">
+                    <ul>
+                        <p class="steam-username">
+                            <%= forum.steam_username + ' published at ' + forum.formatted_date %>
+                        </p>
+                        <p class="title">
+                            <%= forum.title %>
+                        </p>
+                        <p class="content">
+                            <%= forum.content %>
+                        </p>
+                        <% if (session.user) { %>
+                            <% const isOwner=forum.steam_id===session.user.steamid; %>
+                                <% const isModerator=moderators.some(moderator=> moderator.steam_id ===
+                                    session.user.steamid); %>
+                                    <% if (isOwner || isModerator) { %>
+                                        <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
+                                            <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
+                                            <input type="hidden" name="is_owner" value="<%= isOwner %>">
+                                            <input type="hidden" name="is_moderator" value="<%= isModerator %>">
+                                            <button class="remove-post" type="submit">Remove Post</button>
+                                        </form>
                                         <% } %>
-                </ul>
+                                            <% } %>
+                    </ul>
+                </div>
             </a>
             <% }); %>
     </div>

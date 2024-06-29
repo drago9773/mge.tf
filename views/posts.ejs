@@ -6,9 +6,9 @@
 
     <title>Thread</title>
 
-    <div class="post-background">
+    <div class="h-screen overflow-y-scroll border-lg bg-[url('/images/paper-background.png')]">
         <div class="post-header">
-            <button class="post-return-button" hx-get="/forums" hx-target="#main">Threads</button>
+            <button href="/forums">Threads</button>
             <div class="post-container">
                 <a class="post-title">
                     <%= thread.title %>
@@ -57,9 +57,9 @@
             </div>
 
             <% }); %>
-                <form class="reply-textbox" hx-post="/posts" hx-target="#main">
-                    <input type="hidden" name="thread_id" value="<%= thread.thread_id %>">
-                    <textarea id="content" name="content" rows="10" cols="60"></textarea><br><br>
+                <form action="/posts" method="POST" class="reply-textbox"">
+                    <input type=" hidden" name="thread_id" value="<%= thread.thread_id %>">
+                    <textarea class="text-black" id="content" name="content" rows="10" cols="60"></textarea><br><br>
                     <button class="post-reply" type="submit">Post Reply</button>
                 </form>
     </div>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html class="h-screen overflow-y-scroll" lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/tw-out.css" />
+  <title>
+    <%= title %>
+  </title>
+</head>
+
+<body
+  class="h-screen overflow-y-scroll <%= typeof bgparam !== 'undefined' ? bgparam : 'bg-[url(/images/badlands-mid.png)]' %> text-white">
+  <div class="container mx-auto rounded-md">
+    <div class="lg:w-3/4 mx-auto">
+      <%- include('nav') %>
+        <div id="sidebar"
+          class="fixed left-0 top-20 h-full bg-black bg-opacity-80 w-0 overflow-hidden transition-all duration-300">
+          <% include('sidebar') %>
+        </div>
+        <%- include(body) %>
+    </div>
+  </div>
+</body>
+
+</html>
