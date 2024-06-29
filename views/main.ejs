@@ -1,67 +1,47 @@
 <div class="main-overlay">
-    <h1 class="mge-title">
-        <img src="images/mge_transparent_logo.png" class="mge-logo">
-        REWRITING MGE
+    <h1 class="flex align-middle justify-center">
+        <img class="h-40 w-40 object-contain" src="images/mge_transparent_logo.png">
+        <h1 class="text-center text-8xl font-bold text-white shadow-black gap-5">REWRITING MGE</h1>
     </h1>
-    <div class="placeholder">
+    <div class="h-3/4 overflow-y-scroll">
         <div class="elo-search-container">
             <input type="text" id="eloSearch" placeholder="Search by username...">
         </div>
-        <link rel="stylesheet" href="css/main.css" />
-        <table>
-            <thead>
-                <tr class="elo-title">
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Elo</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                </tr>
-            </thead>
-            <tbody id="eloTableBody">
-                <% elo.forEach((player, index)=> { %>
-                    <tr style="cursor:pointer" hx-target="#main" hx-get=<%="/player_page/" + player.steamid + "?name=" +
-                        player.name %> class="elo-row">
-                        <td>
-                            <%= index + 1 %>
-                        </td>
-                        <td class="name-column">
-                            <%= player.name %></a>
-                        </td>
-                        <td>
-                            <%= player.rating %>
-                        </td>
-                        <td>
-                            <%= player.wins %>
-                        </td>
-                        <td>
-                            <%= player.losses %>
-                        </td>
+        <div class="max-h-fit bg-opacity-55 bg-black shadow-sm border rounded-lg overflow-x-auto overflow-y-scroll h-[75vh]">
+            <table class="w-full table-auto text-sm text-left">
+                <thead class="bg-gray-600 text-gray-50 font-medium border-b">
+                    <tr>
+                        <th class="py-3 px-6">Rank</th>
+                        <th class="py-3 px-6">Name</th>
+                        <th class="py-3 px-6">Elo</th>
+                        <th class="py-3 px-6">Wins</th>
+                        <th class="py-3 px-6">Losses</th>
                     </tr>
-                    <% }) %>
-            </tbody>
-        </table>
-    </div>
-    <div class="button-overlay-background"></div>
-    <div class="main-menu">
-        <div class="main-menu-buttons">
-            <a class="main-menu-button main-1" hx-get="/users" hx-target="#main" hx-swap="innerHtml">Users</a>
-            <a class="main-menu-button main-3" hx-get="/load?page=league" hx-target="#main"
-                hx-swap="innerHtml">League</a>
-            <a class="main-menu-button main-2" hx-get="/load?page=seasons" hx-target="#main"
-                hx-swap="innerHtml">Seasons</a>
-            <a class="main-menu-button main-4" hx-get="/forums" hx-swap="innerHtml" hx-target="#main">Forums</a>
+                </thead>
+                <tbody class="text-gray-50 divide-y">
+                    <% elo.forEach((player, index)=> { %>
+                        <tr style="cursor:pointer">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%= index + 1 %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%= player.name %></a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%= player.rating %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%= player.wins %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <%= player.losses %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
         </div>
-
-        <!-- <div hx-boost="true" class="main-menu-1v1-2v2">
-            <a class="mm-1v1" href="/load?page=1v1signup" hx-target="#main" hx-swap="innerHtml">1v1</a>
-            <a class="mm-2v2" href="/load?page=2v2signup" hx-target="#main" hx-swap="innerHtml">2v2</a>
-        </div> -->
     </div>
-    <!-- <div class="main-connect-info">Official TF2 MGE Server: 'connect mge.tf'
-    </div>
-    <div class="main-discord-info">Official TF2 MGE Discord: 'discord.gg/mge'
-    </div> -->
 
     <div id="announcement-overlay" class="announcement-overlay">
         <button class="announcement-button" id="closeOverlay"></button>
