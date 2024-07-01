@@ -1,7 +1,14 @@
 <div class="rounded-b-md p-2 bg-black bg-opacity-50 align-middle items-center flex w-full justify-between">
   <!-- Logo and dropdown trigger -->
-  <div class="relative">
-    <img class="h-10 object-scale-down cursor-pointer" src="/images/mge_transparent_logo.png" id="dropdown-trigger">
+  <div class="relative z-10">
+    <!-- SVG icon or trigger -->
+    <div id="dropdown-trigger" class="h-full cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="size-6 cursor-pointer">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+      </svg>
+    </div>
+
     <!-- Dropdown content -->
     <div id="dropdown-content"
       class="hidden absolute top-full left-0 mt-2 w-48 bg-black bg-opacity-80 shadow-lg rounded-lg py-2">
@@ -13,13 +20,15 @@
       <!-- Add more links as needed -->
     </div>
   </div>
-  <div class="connectinfo">
+
+  <div class="connectinfo hidden md:block">
     Server IP: connect mge.tf
-    <a href="steam://connect/45.76.26.238:27015" class="p-1 bg-green-600 border border-green-800 rounded-md">connect</a>
+    <a href="steam://connect/45.76.26.238:27015"
+      class="p-0.5 bg-green-600 border border-green-800 rounded-md">connect</a>
   </div>
   <div class="discord-section">
     <a class="discordinfo">Join the discord </a>
-    <a class="p-1 bg-indigo-700 border border-indigo-900 rounded-md" id="discordInvite"
+    <a class="p-0.5 bg-indigo-700 border border-indigo-900 rounded-md" id="discordInvite"
       href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
   </div>
   <div class="signin-section">

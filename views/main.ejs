@@ -1,18 +1,22 @@
 <div class="main-overlay">
-    <h1 class="flex align-middle justify-center">
-        <img class="h-40 w-40 object-contain" src="images/mge_transparent_logo.png">
-        <h1 class="text-center text-8xl font-bold text-white shadow-black gap-5">REWRITING MGE</h1>
-    </h1>
-    <div class="h-3/4 overflow-y-scroll">
-        <div class="elo-search-container">
-            <input type="text" id="eloSearch" placeholder="Search by username...">
+    <div class="flex align-middle justify-center items-center">
+        <img class="h-12 w-12 md:h-32 md:w-32 object-contain" src="images/mge_transparent_logo.png">
+        <h1 class="text-center md:text-6xl font-bold text-white gap-5 text-shadow shadow-black">REWRITING MGE
+        </h1>
+    </div>
+    <div class="overflow-y-scroll flex flex-col gap-1 mb-2">
+        <div class="w-full">
+            <input
+                class="focus:border-white focus:border w-full rounded p-2 bg-black bg-opacity-50 backdrop-blur-lg backdrop-filter"
+                type="text" id="eloSearch" placeholder="Search by username...">
         </div>
-        <div class="max-h-fit bg-opacity-55 bg-black shadow-sm border rounded-lg overflow-x-auto overflow-y-scroll h-[75vh]">
-            <table class="w-full table-auto text-sm text-left">
+        <div
+            class="max-h-[420px] bg-opacity-55 backdrop-blur-lg backdrop-filter bg-black shadow-sm border rounded-lg overflow-x-auto overflow-y-scroll h-[75vh]">
+            <table class="mb-2 w-full table-fixed text-sm text-left">
                 <thead class="bg-gray-600 text-gray-50 font-medium border-b">
                     <tr>
-                        <th class="py-3 px-6">Rank</th>
-                        <th class="py-3 px-6">Name</th>
+                        <th class="w-10 py-3 px-6">Rank</th>
+                        <th class="overflow-x-auto max-w-[40px] py-3 px-6">Name</th>
                         <th class="py-3 px-6">Elo</th>
                         <th class="py-3 px-6">Wins</th>
                         <th class="py-3 px-6">Losses</th>
@@ -24,7 +28,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <%= index + 1 %>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="overflow-x-auto px-6 py-4 break-words">
                                 <%= player.name %></a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -40,17 +44,6 @@
                         <% }) %>
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <div id="announcement-overlay" class="announcement-overlay">
-        <button class="announcement-button" id="closeOverlay"></button>
-        <div class="overlay-content">
-            <h1>2V2 CUP JULY 27/28</h1>
-            <h3>$500+ KEY PRIZE POOL</h3>
-            <h3>TWO DIVISIONS</h3>
-            <h3>SIGN UPS OPEN SOON</h3>
-            <a class="join-discord" id="discordInvite" href="https://discord.gg/j6kDYSpYbs">discord.gg</a>
         </div>
     </div>
     <script src="/js/main.js"></script>

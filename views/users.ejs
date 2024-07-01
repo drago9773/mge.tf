@@ -1,54 +1,65 @@
 <div class="w-full flex flex-col justify-center align-middle">
-    <div class="flex flex-col align-middle justify-center w-full items-center">
-        <input class="m-2 p-1 bg-slate-800 bg-opacity-50 outline-none border placeholder-slate-200 focus:border-indigo-600 rounded-lg w-1/2" type="text" id="userSearch" placeholder="Search by username or steam ID...">
-      
-      <div class="w-1/2 flex flex-col justify-center align-middle">
-          <ul id="users_container">
-              <% users.forEach((user, index) => { %>
-                <a href="/player_page/<%= user.steam_id %>">
-                    <li id="card-<%= index %>" class="relative z-0 group overflow-hidden h-40 border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
-                      <div class="space-y-3 relative z-10 p-5 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
-                        <div class="text-gray-500 w-9 h-9 rounded-full bg-[linear-gradient(180deg,_rgba(39,_39,_42,_0.68)_0%,_rgba(39,_39,_42,_0.00)_100%)] flex items-center justify-center border border-zinc-700">
-                          <img class="object-contain h-40 w-40" src="<%= user.steam_avatar %>" alt="Avatar">
-                        </div>
-                        <% const maxLength = 30; let displayName = user.steam_username; if (displayName.length > maxLength) {
-                            displayName = displayName.slice(0, maxLength) + '...';
-                        } %>
-                        <h3 id="users_username" class="text-zinc-100 font-semibold"><%= displayName %></h3>
-                        <p id="users_steam_id" class="text-zinc-300"><%= user.steam_id %></p>
-                        <a class="users_username" href="/player_page/<%= user.steam_id %>">
-                          View Profile
-                        </a>
-                      </div>
-                      <div id="shadow-<%= index %>" class="bg-[linear-gradient(180deg,_#1E293B_0%,_rgba(59,_130,_246,_0.00)_137.53%,_rgba(32,_69,_129,_0.00)_195%)] blur-[70px] opacity-0 absolute top-0 left-0 w-4/5 h-4/5 duration-150 group-hover:opacity-90"></div>
-                      <div class="absolute inset-[1px] -z-10 rounded-xl bg-zinc-950"></div>
-                    </li>
-                </a>
-              <% }); %>
-          </ul>
-      </div>
+  <div class="flex flex-col align-middle justify-center w-full items-center">
+    <input
+      class="m-2 p-1 bg-slate-800 bg-opacity-50 outline-none border placeholder-slate-200 focus:border-indigo-600 rounded-lg w-1/2"
+      type="text" id="userSearch" placeholder="Search by username or steam ID...">
+
+    <div class="md:w-1/2 flex flex-col justify-center align-middle">
+      <ul id="users_container">
+        <% users.forEach((user, index)=> { %>
+          <a href="/player_page/<%= user.steam_id %>">
+            <li id="card-<%= index %>"
+              class="relative z-0 group overflow-hidden h-40 border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
+              <div
+                class="space-y-3 relative z-10 p-5 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
+                <div
+                  class="text-gray-500 w-9 h-9 rounded-full bg-[linear-gradient(180deg,_rgba(39,_39,_42,_0.68)_0%,_rgba(39,_39,_42,_0.00)_100%)] flex items-center justify-center border border-zinc-700">
+                  <img class="object-contain h-40 w-40" src="<%= user.steam_avatar %>" alt="Avatar">
+                </div>
+                <% const maxLength=30; let displayName=user.steam_username; if (displayName.length> maxLength) {
+                  displayName = displayName.slice(0, maxLength) + '...';
+                  } %>
+                  <h3 id="users_username" class="text-zinc-100 font-semibold">
+                    <%= displayName %>
+                  </h3>
+                  <p id="users_steam_id" class="text-zinc-300">
+                    <%= user.steam_id %>
+                  </p>
+                  <a class="users_username" href="/player_page/<%= user.steam_id %>">
+                    View Profile
+                  </a>
+              </div>
+              <div id="shadow-<%= index %>"
+                class="bg-[linear-gradient(180deg,_#1E293B_0%,_rgba(59,_130,_246,_0.00)_137.53%,_rgba(32,_69,_129,_0.00)_195%)] blur-[70px] opacity-0 absolute top-0 left-0 w-4/5 h-4/5 duration-150 group-hover:opacity-90">
+              </div>
+              <div class="absolute inset-[1px] -z-10 rounded-xl bg-zinc-950"></div>
+            </li>
+          </a>
+          <% }); %>
+      </ul>
     </div>
   </div>
+</div>
 
-  <script src="/js/users.js" defer></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const cards = document.querySelectorAll('li[id^="card-"]');
-      cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left; // x position within the element.
-          const y = e.clientY - rect.top;  // y position within the element.
+<script src="/js/users.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('li[id^="card-"]');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element.
+        const y = e.clientY - rect.top;  // y position within the element.
 
-          const shadow = document.getElementById(`shadow-${card.id.split('-')[1]}`);
-          if (shadow) {
-            shadow.style.top = `${y}px`;
-            shadow.style.left = `${x}px`;
-            shadow.style.transform = "translate(-50%, -50%)";
-            card.style.setProperty('--cursor-x', `${x}px`);
-            card.style.setProperty('--cursor-y', `${y}px`);
-          }
-        });
+        const shadow = document.getElementById(`shadow-${card.id.split('-')[1]}`);
+        if (shadow) {
+          shadow.style.top = `${y}px`;
+          shadow.style.left = `${x}px`;
+          shadow.style.transform = "translate(-50%, -50%)";
+          card.style.setProperty('--cursor-x', `${x}px`);
+          card.style.setProperty('--cursor-y', `${y}px`);
+        }
       });
     });
-  </script>
+  });
+</script>

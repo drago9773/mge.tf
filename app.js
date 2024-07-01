@@ -104,6 +104,10 @@ app.get('/discord', (req, res) => {
     res.redirect(discordInviteLink);
 });
 
+app.get('/league', (req, res) => {
+    res.render('layout', {title: 'League', body: 'league', session: req.session});
+})
+
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {

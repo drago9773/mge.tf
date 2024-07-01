@@ -2,36 +2,36 @@ document.addEventListener('DOMContentLoaded', function() {
   const dropdownTrigger = document.getElementById('dropdown-trigger');
   const dropdownContent = document.getElementById('dropdown-content');
 
-  // Track whether mouse is over the trigger or content
-  let isMouseOver = false;
+  if (dropdownTrigger && dropdownContent) {
+    // Function to toggle dropdown visibility
+    function toggleDropdown() {
+      dropdownContent.classList.toggle('hidden');
+    }
 
-  // Show dropdown content when hovering over trigger or content
-  dropdownTrigger.addEventListener('mouseenter', function() {
-    dropdownContent.classList.remove('hidden');
-    isMouseOver = true;
-  });
+    // Show dropdown content on SVG click or hover
+    dropdownTrigger.addEventListener('click', function() {
+      toggleDropdown();
+    });
 
-  dropdownContent.addEventListener('mouseenter', function() {
-    dropdownContent.classList.remove('hidden');
-    isMouseOver = true;
-  });
+    dropdownTrigger.addEventListener('mouseenter', function() {
+      toggleDropdown();
+    });
 
-  // Hide dropdown content when leaving trigger or content
-  dropdownTrigger.addEventListener('mouseleave', function() {
-    isMouseOver = false;
-    setTimeout(function() {
-      if (!isMouseOver) {
+    // Hide dropdown content when mouse leaves trigger and content
+    function closeDropdown() {
+      if (!dropdownTrigger.matches(':hover') && !dropdownContent.matches(':hover')) {
         dropdownContent.classList.add('hidden');
       }
-    }, 200); // Adjust delay as needed to prevent premature hiding
-  });
+    }
 
-  dropdownContent.addEventListener('mouseleave', function() {
-    isMouseOver = false;
-    setTimeout(function() {
-      if (!isMouseOver) {
-        dropdownContent.classList.add('hidden');
-      }
-    }, 200); // Adjust delay as needed to prevent premature hiding
-  });
+    dropdownTrigger.addEventListener('mouseleave', function() {
+      setTimeout(closeDropdown, 500);
+    });
+
+    dropdownContent.addEventListener('mouseleave', function() {
+      setTimeout(closeDropdown, 500);
+    });
+  } else {
+    console.error('Dropdown trigger or content not found.');
+  }
 });
