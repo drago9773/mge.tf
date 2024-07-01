@@ -12,6 +12,11 @@ export default {
       },
     },
   },
+  variants: {
+    extend: {
+      boxShadow: ['active'],
+    }
+  },
   plugins: [
     plugin(function({ matchUtilities, theme }) {
       matchUtilities(

@@ -1,46 +1,60 @@
-<div class="post">
-    <link rel="stylesheet" href="css/post.css" />
-    <link rel="stylesheet" href="css/forums.css" />
-    <link rel="stylesheet" href="css/post.css" />
-    <div class="background-page"></div>
+<div class="post text-black border-black shadow shadow-black">
+    <title>
+        <%= thread.title %>
+    </title>
 
-    <title>Thread</title>
+    <div class="px-2 py-2 gap-2 h-screen overflow-y-scroll border-lg bg-[url('/images/paper-background.png')]">
+        <a href="/forums">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6" style="filter: url(#shadow);">
+                <filter id="shadow">
+                    <feDropShadow dx="2" dy="2" stdDeviation="1" />
+                </filter>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+            </svg>
+        </a>
+        <div class="my-2 border border-black rounded shadow shadow-black">
 
-    <div class="h-screen overflow-y-scroll border-lg bg-[url('/images/paper-background.png')]">
-        <div class="post-header">
-            <button href="/forums">Threads</button>
-            <div class="post-container">
-                <a class="post-title">
-                    <%= thread.title %>
-                </a>
-                <div class="post-profile-container" hx-get="/player_page/<%= thread.steam_id %>" hx-target="#main"
+            <div class="flex">
+                <a class="p-2 border-r border-black" href="/player_page/<%= thread.steam_id %>" hx-target="#main"
                     hx-swap="innerHtml">
                     <img class="post-avatar" src="<%= thread.steam_avatar %>" alt="Post Avatar">
-                    <a class="post-username">
+                    <div class="text-rose-800 font-bold">
                         <%= thread.steam_username %>
-                    </a>
+                    </div>
+                    <div>Elo</div>
+                    <div>Posts:69</div>
+                </a>
+                <div class="w-full flex flex-col">
+                    <div class="flex w-full justify-center">
+                        <span class="text-2xl underline">
+                            <%= thread.title %>
+                        </span>
+                    </div>
+                    <p class="p-2 flex-grow">
+                        <%= thread.content %>
+                    </p>
                 </div>
-                <p class="post-content">
-                    <%= thread.content %>
-                </p>
-                <p class="post-id">
-                    <%= thread.thread_id %>
-                </p>
             </div>
         </div>
         <% posts.forEach(post=> { %>
-            <div class="reply-container">
-                <div class="reply-profile-container" hx-get="/player_page/<%= post.steam_id %>" hx-target="#main"
-                    hx-swap="innerHtml">
-                    <img class="reply-avatar" src="<%= post.steam_avatar %>" alt="Post Avatar">
-                    <a class="reply-username">
-                        <%= post.steam_username %>
+            <div class="border mb-2 border-black rounded shadow shadow-black">
+                <div class="flex">
+                    <a class="p-2 border-r border-black" href="/player_page/<%= thread.steam_id %>" hx-target="#main"
+                        hx-swap="innerHtml">
+                        <img class="post-avatar" src="<%= thread.steam_avatar %>" alt="Post Avatar">
+                        <div class="text-rose-800 font-bold">
+                            <%= post.steam_username %>
+                        </div>
+                        <div>Elo</div>
+                        <div>Posts: 69</div>
                     </a>
+                    <div class="w-full flex flex-col flex-grow">
+                        <p class="p-2">
+                            <%= post.content %>
+                        </p>
+                    </div>
                 </div>
-                <p class="reply-content">
-                    <%= post.content %>
-                </p>
-
                 <% if (session.user) { %>
                     <% const isOwner=post.steam_id===session.user.steamid; %>
                         <% const isModerator=moderators.some(moderator=> moderator.steam_id === session.user.steamid);
@@ -58,8 +72,11 @@
 
             <% }); %>
                 <form action="/posts" method="POST" class="reply-textbox"">
-                    <input type=" hidden" name="thread_id" value="<%= thread.thread_id %>">
-                    <textarea class="text-black" id="content" name="content" rows="10" cols="60"></textarea><br><br>
+                    <input class=" hidden" type=" hidden" name="thread_id" value="<%= thread.thread_id %>">
+                    <label for="message" class="block mb-2 text-sm font-medium text-black">Reply to thread:</label>
+                    <textarea
+                        class="block p-2.5 w-full text-sm rounded-lg border border-gray-900 bg-transparent text-black"
+                        id="content" name="content" rows="4"></textarea>
                     <button class="post-reply" type="submit">Post Reply</button>
                 </form>
     </div>

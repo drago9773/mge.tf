@@ -1,17 +1,28 @@
-<div class="bg-[url('/images/paper-background.png')] rounded-md">
-    <h1 class="description">Forum Posts</h1>
+<div class="pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
+    <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
     <div class="text-black forum-posts">
-        <button class="create_post" href="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
+        <button id="createThread"
+            class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
+            href="/load?page=create_post" hx-swap="outerHTML">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue"
+                class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Create Thread</span>
+        </button>
 
         <% forums.forEach(forum=> { %>
             <a class="m-y-2 block border-t border-t-white" href="/post/<%= forum.thread_id %>">
                 <div class="container p-2">
                     <ul>
                         <p class="steam-username">
-                            <%= forum.steam_username + ' published at ' + forum.formatted_date %>
+                            <span class="text-rose-800 text-shadow shadow-white font-bold">
+                                <%= forum.steam_username %>
+                            </span>
+                            <%= ' published at ' + forum.formatted_date %>
                         </p>
-                        <p class="title">
-                            <%= forum.title %>
+                        <p class="underline">
+                            Topic: <%= forum.title %>
                         </p>
                         <p class="content">
                             <%= forum.content %>
@@ -35,3 +46,13 @@
             <% }); %>
     </div>
 </div>
+
+<script>
+    const nThreadButton = document.getElementById("createThread");
+    nThreadButton.addEventListener("mousedown", () => {
+        nThreadButton.classList.add("shadow-inner");
+    });
+    nThreadButton.addEventListener("mouseup", () => {
+        nThreadButton.classList.remove("shadow-inner");
+    })
+</script>

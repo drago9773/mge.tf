@@ -10,6 +10,7 @@
                 class="focus:border-white focus:border w-full rounded p-2 bg-black bg-opacity-50 backdrop-blur-lg backdrop-filter"
                 type="text" id="eloSearch" placeholder="Search by username...">
         </div>
+        <!-- TODO: Filter this correctly -->
         <div
             class="max-h-[420px] bg-opacity-55 backdrop-blur-lg backdrop-filter bg-black shadow-sm border rounded-lg overflow-x-auto overflow-y-scroll h-[75vh]">
             <table class="mb-2 w-full table-fixed text-sm text-left">
@@ -22,7 +23,7 @@
                         <th class="py-3 px-6">Losses</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-50 divide-y">
+                <tbody id="eloTableBody" class="text-gray-50 divide-y">
                     <% elo.forEach((player, index)=> { %>
                         <tr style="cursor:pointer">
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -40,6 +41,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <%= player.losses %>
                             </td>
+                            <td class="hidden"><%= player.steamid %></td>
                         </tr>
                         <% }) %>
                 </tbody>

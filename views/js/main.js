@@ -1,54 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const button1v1 = document.querySelector('.mm-1v1');
-    const button2v2 = document.querySelector('.mm-2v2');
-    const overlayBackground = document.querySelector('.button-overlay-background');
-
-    button1v1?.addEventListener('mouseover', function() {
-        // button1v1.style.padding = '130px 90px';
-        //button1v1.style.backgroundColor = '#850585';
-        overlayBackground.style.backgroundColor = 'black';
-        overlayBackground.style.opacity = '1';
-        overlayBackground.style.pointerEvents = 'auto';
-    });
-
-    button1v1?.addEventListener('mouseleave', function() {
-        //button1v1.style.padding = '130px 90px';
-        //button1v1.style.backgroundColor = 'rgb(51, 51, 184)';
-        overlayBackground.style.backgroundColor = '';
-        overlayBackground.style.opacity = '0';
-        overlayBackground.style.pointerEvents = 'none';
-    });
-
-    button2v2?.addEventListener('mouseover', function() {
-        // button2v2.style.padding = '130px 90px';
-        //button2v2.style.backgroundColor = '#850585';
-        overlayBackground.style.backgroundColor = 'black';
-        overlayBackground.style.opacity = '1';
-        overlayBackground.style.pointerEvents = 'auto';
-    });
-
-    button2v2?.addEventListener('mouseleave', function() {
-        // button2v2.style.padding = '130px 90px';
-        //button2v2.style.backgroundColor = 'rgb(224, 52, 52)';
-        overlayBackground.style.backgroundColor = ''; 
-        overlayBackground.style.opacity = '0';
-        overlayBackground.style.pointerEvents = 'none';
-    });
-});
-
 function filterUsers() {
-    var input, filter, table, rows, nameCell, steamIdCell, i, nameTxt;
-    input = document.getElementById('eloSearch');
-    filter = input.value.toLowerCase();
-    table = document.getElementById('eloTableBody');
-    rows = table.getElementsByTagName('tr');
+    let input = document.getElementById('eloSearch');
+    let filter = input.value.toLowerCase();
+    let table = document.getElementById('eloTableBody');
+    let rows = table.getElementsByTagName('tr');
 
-    for (i = 0; i < rows.length; i++) {
-        nameCell = rows[i].getElementsByClassName('name-column')[0];
-        steamIdCell = rows[i].getAttribute('hx-get').split('=')[1].split('?')[0];
-        nameTxt = nameCell.textContent || nameCell.innerText;
+    for (let i = 0; i < rows.length; i++) {
+        let nameCell = rows[i].getElementsByTagName('td')[1];
+        let steamCell = rows[i].getElementsByTagName('td')[4];
+        let nameTxt = nameCell.textContent || nameCell.innerText;
         
-        if (nameTxt.toLowerCase().indexOf(filter) > -1 || steamIdCell.indexOf(filter) > -1) {
+        if (nameTxt.toLowerCase().includes(filter.toLowerCase()) || steamCell.innerText.includes(filter)) {
             rows[i].style.display = '';
         } else {
             rows[i].style.display = 'none';
