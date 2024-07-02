@@ -1,6 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
   const dropdownTrigger = document.getElementById('dropdown-trigger');
   const dropdownContent = document.getElementById('dropdown-content');
+  const copyServerDiv = document.getElementById('copy-server-id')
+
+  copyServerDiv.addEventListener('mousedown', () => {
+    navigator.clipboard.writeText('connect mge.tf');
+    copyServerDiv.classList.add('text-green-500');
+  })
+
+  copyServerDiv.addEventListener('mouseup', () => {
+    copyServerDiv.classList.remove('text-green-500');
+  })
 
   if (dropdownTrigger && dropdownContent) {
     // Function to toggle dropdown visibility
