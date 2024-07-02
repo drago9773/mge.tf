@@ -22,3 +22,9 @@
 .sidebar.open {
   left: 0;
 }
+
+@layer base {
+  html {
+    font-family: Inter, system-ui, sans-serif;
+  }
+}

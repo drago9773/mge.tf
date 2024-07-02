@@ -1,15 +1,14 @@
 <div class="pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
     <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
     <div class="text-black forum-posts">
-        <button id="createThread"
-            class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
-            href="/load?page=create_post" hx-swap="outerHTML">
+        <a id="createThread" class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
+            href="/create_post" hx-swap="outerHTML">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue"
                 class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             <span>Create Thread</span>
-        </button>
+        </a>
 
         <% forums.forEach(forum=> { %>
             <a class="m-y-2 block border-t border-t-white" href="/post/<%= forum.thread_id %>">
@@ -32,7 +31,7 @@
                                 <% const isModerator=moderators.some(moderator=> moderator.steam_id ===
                                     session.user.steamid); %>
                                     <% if (isOwner || isModerator) { %>
-                                        <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
+                                        <form method="POST" action="/remove_post">
                                             <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
                                             <input type="hidden" name="is_owner" value="<%= isOwner %>">
                                             <input type="hidden" name="is_moderator" value="<%= isModerator %>">
@@ -50,9 +49,12 @@
 <script>
     const nThreadButton = document.getElementById("createThread");
     nThreadButton.addEventListener("mousedown", () => {
+        nThreadButton.classList.remove("shadow-sm");
         nThreadButton.classList.add("shadow-inner");
+
     });
     nThreadButton.addEventListener("mouseup", () => {
         nThreadButton.classList.remove("shadow-inner");
+        nThreadButton.classList.add("shadow-sm");
     })
 </script>

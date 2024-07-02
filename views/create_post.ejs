@@ -1,12 +1,12 @@
-<div class="create-post-container">
-    <link rel="stylesheet" href="css/header.css"/>
-    <link rel="stylesheet" href="css/create_post.css">
-    <form id="postForm" hx-post="/postContent" hx-target="#main">
-        <label class="thread-title" for="title">Enter Thread Title:</label><br>
-        <input type="text" id="title" name="title"><br><br>
-        <label for="content">Enter Thread Body:</label><br>
-        <textarea class="post-text-area" id="content" name="content" rows="15" cols="60"></textarea><br><br>
-        <button type="submit">Post Message</button>
-    </form>
+<div class="pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
+    <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
+    <div>
+        <form class="text-black" method="POST" id="postForm" action="/postContent" hx-target="#main">
+            <label for="title">Enter Thread Title:</label><br>
+            <input type="text" id="title" name="title"><br><br>
+            <label for="content">Enter Thread Body:</label><br>
+            <textarea id="content" name="content" rows="15" cols="60"></textarea><br><br>
+            <button type="submit">Post Message</button>
+        </form>
+    </div>
 </div>
-<script src="/js/create_post.js"></script>

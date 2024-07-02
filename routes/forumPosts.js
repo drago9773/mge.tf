@@ -10,6 +10,10 @@ const MAX_POSTS = 3;
 // 1 hour
 const REFRESH_PERIOD = 3600000;
 
+router.get('/create_post', (req, res) => {
+    res.render('layout', {title: 'Create Thread', body: 'create_post', session : req.session});
+});
+
 router.get('/forums', (req, res) => {
     const session = req.session;
 
@@ -180,7 +184,6 @@ router.post('/posts', (req, res) => {
 });
 
 router.post('/remove_post', (req, res) => {
-    ;
     const postId = req.body.post_id;
     const mod = req.body.is_moderator;
     const owner = req.body.is_owner;
@@ -214,7 +217,6 @@ router.post('/remove_post', (req, res) => {
 });
 
 router.post('/remove_reply', (req, res) => {
-    ;
     const replyId = req.body.reply_id;
     const mod = req.body.is_moderator;
     const owner = req.body.is_owner;

@@ -37,7 +37,7 @@
         <img class="w-40 rounded-md" src="../images/signin-thru-steam.png" alt="Steam Logo">
       </a>
       <% } else { %>
-        <div class="flex flex-row-reverse gap-2">
+        <div class="flex flex-row-reverse gap-2 align-middle items-center">
           <a class="profile-container" href="/player_page/<%= session.user.steamid %>">
             <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar">
             <% const maxLength=15; let displayName=session.user.username; if (displayName.length> maxLength)
