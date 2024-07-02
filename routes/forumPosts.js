@@ -11,7 +11,10 @@ const MAX_POSTS = 3;
 const REFRESH_PERIOD = 3600000;
 
 router.get('/create_post', (req, res) => {
-    res.render('layout', {title: 'Create Thread', body: 'create_post', session : req.session});
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'You must be logged in to do this' });
+    }
+    res.render('layout', { title: 'Create Thread', body: 'create_post', session: req.session });
 });
 
 router.get('/forums', (req, res) => {
@@ -283,7 +286,7 @@ router.get('/post/:forumid', (req, res) => {
                     return res.status(500).send('Internal Server Error');
                 }
 
-                res.render('layout', {title: 'Thread', body: 'posts', session: session, moderators: moderators, posts: posts, thread: row });
+                res.render('layout', { title: 'Thread', body: 'posts', session: session, moderators: moderators, posts: posts, thread: row });
             });
         });
     });

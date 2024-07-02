@@ -1,7 +1,8 @@
 <div class="pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
     <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
     <div class="text-black forum-posts">
-        <a id="createThread" class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
+        <a id="create-post-link"
+            class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
             href="/create_post" hx-swap="outerHTML">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue"
                 class="size-6">
@@ -57,4 +58,52 @@
         nThreadButton.classList.remove("shadow-inner");
         nThreadButton.classList.add("shadow-sm");
     })
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const createPostLink = document.getElementById('create-post-link'); // Adjust the ID as needed
+
+        if (createPostLink) {
+            createPostLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                try {
+                    const response = await fetch('/create_post');
+
+                    if (response.ok) {
+                        window.location.href = '/create_post';
+                    } else {
+                        const data = await response.json();
+                        showPopup(data.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showPopup('An error occurred. Please try again.');
+                }
+            });
+        }
+
+        function showPopup(message) {
+            // Create and show a popup with the message
+            const popup = document.createElement('div');
+            popup.textContent = message;
+            popup.style.cssText = `
+            position: absolute;
+            top: 5%;
+            right: 50%;
+            transform: translateX(50%);
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1000;
+        `;
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                popup.remove();
+            }, 3000);
+        }
+    });
 </script>
