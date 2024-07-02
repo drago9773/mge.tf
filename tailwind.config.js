@@ -2,7 +2,7 @@ const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./views/**/*.{ejs,html}'],
+  content: ['./views/**/*.{js,ejs,html}'],
   theme: {
     extend: {
       textShadow: {
