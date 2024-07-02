@@ -70,17 +70,22 @@
                                     </form>
                                 </div>
                                 <% } %>
+
                                     <% } %>
             </div>
 
             <% }); %>
-                <form action="/posts" method="POST" class="reply-textbox"">
+                <% if (session.user) { %>
+                    <form action="/posts" method="POST" class="reply-textbox"">
                     <input class=" hidden" type=" hidden" name="thread_id" value="<%= thread.thread_id %>">
-                    <label for="message" class="block mb-2 text-sm font-medium text-black">Reply to thread:</label>
-                    <textarea
-                        class="block p-2.5 w-full text-sm rounded-lg border border-gray-900 bg-transparent text-black"
-                        id="content" name="content" rows="4"></textarea>
-                    <button class="post-reply" type="submit">Post Reply</button>
-                </form>
+                        <label for="message" class="block mb-2 text-sm font-medium text-black">Reply to
+                            thread:</label>
+                        <textarea
+                            class="block p-2.5 w-full text-sm rounded-lg border border-gray-900 bg-transparent text-black"
+                            id="content" name="content" rows="4"></textarea>
+                        <button class="mt-1 shadow-black shadow p-2 rounded" type="submit">Post
+                            Reply</button>
+                    </form>
+                    <% } %>
     </div>
 </div>
