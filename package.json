@@ -6,6 +6,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "dev": "node app.js & npm run tw &",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tw": "npx tailwindcss -i ./views/css/tw.css -o ./views/css/tw-out.css --watch"
   },
