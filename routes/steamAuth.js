@@ -15,6 +15,7 @@ const router = express.Router();
 
 
 router.get('/init-openid', async (req, res) => {
+    req.session.returnTo = req.headers.referer || req.originalUrl || '/';
     const redirectUrl = await steam.getRedirectUrl();
     return res.redirect(redirectUrl);
 });
@@ -24,7 +25,6 @@ router.get('/verify', async (req, res) => {
         const user = await steam.authenticate(req);
         req.session.user = user;
 
-        // check if first time login
         db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
             if (err) {
                 console.error('Error querying database: ' + err.message);
@@ -37,6 +37,9 @@ router.get('/verify', async (req, res) => {
                 });
             }
         });
+        const returnTo = req.session.returnTo || '/';
+        delete req.session.returnTo;
+        return res.redirect(returnTo);
     } catch (err) {
         console.error('Authentication error: ' + err.message);
     }
