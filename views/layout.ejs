@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-screen w-full overflow-y-scroll font-sans" lang="en">
+<html class="m-0 p-0 h-screen w-full font-sans scrollbar-thin scrollbar-dark" lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,7 @@
 </head>
 
 <body
-  class="bg-cover h-screen w-full overflow-y-scroll <%= typeof bgparam !== 'undefined' ? bgparam : 'bg-[url(/images/badlands-mid.png)]' %> text-white">
+  class="bg-cover w-full <%= typeof bgparam !== 'undefined' ? bgparam : 'bg-[url(/images/badlands-mid.png)]' %> text-white scrollbar-thin scrollbar-dark">
   <div class="container mx-auto rounded-md">
     <div class="lg:w-3/4 mx-auto">
       <%- include('nav') %>

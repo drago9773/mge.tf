@@ -28,3 +28,28 @@
     font-family: Inter, system-ui, sans-serif;
   }
 }
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-dark {
+    scrollbar-color: #4B5563 #1F2937;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-track {
+    background: #1F2937;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-thumb {
+    background-color: #4B5563;
+    border-radius: 20px;
+    border: 2px solid #1F2937;
+  }
+}
