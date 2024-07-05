@@ -5,7 +5,7 @@ import moment from 'moment';
 const router = express.Router()
 
 const MAX_POSTS = 3;
-
+const MAX_REPLIES = 30;
 const REFRESH_PERIOD = 3600000;
 
 router.get('/create_post', (req, res) => {
@@ -286,7 +286,7 @@ router.post('/thread/:threadId/reply', (req, res) => {
             }
         }
 
-        if (postCount >= MAX_POSTS) {
+        if (postCount >= MAX_REPLIES) {
             return res.status(400).json({ error: 'You have reached the limit of posts. Try again later.' });
         }
 

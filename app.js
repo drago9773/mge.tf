@@ -9,6 +9,7 @@ import forumPostRoutes from './routes/forumPosts.js';
 import steamRoutes from './routes/steamAuth.js';
 import signupRoutes from './routes/signup.js';
 import apiRoutes from './routes/api.js';
+import adminRoutes from './routes/admin.js';
 import db from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,7 @@ app.use('/', forumPostRoutes);
 app.use('/', steamRoutes);
 app.use('/signup', signupRoutes);
 app.use('/api', apiRoutes);
+app.use('/', adminRoutes);
 
 const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
     if (err) {
