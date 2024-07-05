@@ -17,7 +17,9 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
     try {
         await runQuery(db, `CREATE TABLE IF NOT EXISTS users (
             steam_id TEXT PRIMARY KEY,
-            steam_username TEXT NOT NULL)`);
+            steam_username TEXT NOT NULL,
+            steam_avatar TEXT)`);
+
 
         await runQuery(db, `CREATE TABLE IF NOT EXISTS threads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
