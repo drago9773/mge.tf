@@ -1,45 +1,55 @@
 document.addEventListener('DOMContentLoaded', function() {
   const dropdownTrigger = document.getElementById('dropdown-trigger');
   const dropdownContent = document.getElementById('dropdown-content');
-  const copyServerDiv = document.getElementById('copy-server-id')
+  const copyServerDiv = document.getElementById('copy-server-id');
 
   copyServerDiv.addEventListener('mousedown', () => {
     navigator.clipboard.writeText('connect mge.tf');
     copyServerDiv.classList.add('text-green-500');
-  })
+  });
 
   copyServerDiv.addEventListener('mouseup', () => {
     copyServerDiv.classList.remove('text-green-500');
-  })
+  });
 
   if (dropdownTrigger && dropdownContent) {
-    // Function to toggle dropdown visibility
-    function toggleDropdown() {
-      dropdownContent.classList.toggle('hidden');
+    let isOpen = false;
+
+    // Function to open dropdown
+    function openDropdown() {
+      dropdownContent.classList.remove('hidden');
+      isOpen = true;
     }
 
-    // Show dropdown content on SVG click or hover
-    dropdownTrigger.addEventListener('click', function() {
-      toggleDropdown();
-    });
-
-    dropdownTrigger.addEventListener('mouseenter', function() {
-      toggleDropdown();
-    });
-
-    // Hide dropdown content when mouse leaves trigger and content
+    // Function to close dropdown
     function closeDropdown() {
-      if (!dropdownTrigger.matches(':hover') && !dropdownContent.matches(':hover')) {
-        dropdownContent.classList.add('hidden');
-      }
+      dropdownContent.classList.add('hidden');
+      isOpen = false;
     }
 
-    dropdownTrigger.addEventListener('mouseleave', function() {
-      setTimeout(closeDropdown, 500);
+    // Toggle dropdown on click
+    dropdownTrigger.addEventListener('click', function(event) {
+      event.stopPropagation();
+      if (isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
     });
 
-    dropdownContent.addEventListener('mouseleave', function() {
-      setTimeout(closeDropdown, 500);
+    // Open dropdown on hover
+    dropdownTrigger.addEventListener('mouseenter', openDropdown);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (isOpen && !dropdownContent.contains(event.target) && event.target !== dropdownTrigger) {
+        closeDropdown();
+      }
+    });
+
+    // Prevent dropdown from closing when clicking inside it
+    dropdownContent.addEventListener('click', function(event) {
+      event.stopPropagation();
     });
   } else {
     console.error('Dropdown trigger or content not found.');

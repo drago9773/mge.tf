@@ -1,60 +1,72 @@
 import sqlite3 from 'sqlite3';
 
+function runQuery(db, query) {
+    return new Promise((resolve, reject) => {
+        db.run(query, (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
+
 const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) => {
     if (err) {
         console.error(err.message);
+        return;
     }
 
-    await db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            steam_id TEXT NOT NULL,
+    try {
+        await runQuery(db, `CREATE TABLE IF NOT EXISTS users (
+            steam_id TEXT PRIMARY KEY,
             steam_username TEXT NOT NULL)`);
 
-    await db.run(`CREATE TABLE IF NOT EXISTS threads (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  title TEXT NOT NULL,
-                  content TEXT NOT NULL,
-                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                  bumped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                  owner INTEGER NOT NULL,
-                  FOREIGN KEY (owner) REFERENCES users(id))`);
+        await runQuery(db, `CREATE TABLE IF NOT EXISTS threads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            bumped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            owner TEXT NOT NULL,
+            FOREIGN KEY (owner) REFERENCES users(steam_id))`);
 
-    await db.run(`CREATE TABLE IF NOT EXISTS posts (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  content TEXT NOT NULL,
-                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                  thread INTEGER NOT NULL,
-                  owner INTEGER NOT NULL,
-                  FOREIGN KEY (owner) REFERENCES users(id),
-                  FOREIGN KEY (thread) REFERENCES threads(id))`);
+        await runQuery(db, `CREATE TABLE IF NOT EXISTS posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            thread INTEGER NOT NULL,
+            owner TEXT NOT NULL,
+            FOREIGN KEY (owner) REFERENCES users(steam_id),
+            FOREIGN KEY (thread) REFERENCES threads(id))`);
 
-    await db.run(`CREATE TABLE IF NOT EXISTS activity (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                thread_count INTEGER NOT NULL,
-                post_count INTEGER NOT NULL,
-                period INTEGER NOT NULL,
-                owner INTEGER NOT NULL,
-                FOREIGN KEY (owner) REFERENCES users(id))`);
+        await runQuery(db, `CREATE TABLE IF NOT EXISTS activity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            thread_count INTEGER NOT NULL,
+            post_count INTEGER NOT NULL,
+            period INTEGER NOT NULL,
+            owner TEXT NOT NULL,
+            FOREIGN KEY (owner) REFERENCES users(steam_id))`);
 
-    await db.run(`CREATE TABLE IF NOT EXISTS moderators (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users(id))`);
+        await runQuery(db, `CREATE TABLE IF NOT EXISTS moderators (
+            steam_id TEXT PRIMARY KEY,
+            FOREIGN KEY (steam_id) REFERENCES users(steam_id))`);
 
-    const moderatorIds = ['76561198082657536', '76561198041183975'];
-    db.all(`SELECT users.*, moderators.id as moderator_id
-                    FROM moderators
-                    JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
-        if (err) {
-            console.error('Error querying database: ' + err.message);
-        }
-        const match = moderators.some(moderator => moderatorIds.includes(moderator.steam_id));
+        const moderatorIds = ['76561198082657536', '76561198041183975'];
+        db.all('SELECT * FROM moderators', [], (err, moderators) => {
+            if (err) {
+                console.error('Error querying database: ' + err.message);
+                return;
+            }
+            const missingModerators = moderatorIds.filter(id => !moderators.some(mod => mod.steam_id === id));
+            if (missingModerators.length > 0) {
+                const placeholders = missingModerators.map(() => '(?)').join(',');
+                db.run(`INSERT INTO moderators (steam_id) VALUES ${placeholders}`, missingModerators);
+            }
+        });
 
-        if (!match) {
-            db.run(`INSERT INTO moderators (user_id)
-            SELECT id FROM users WHERE steam_id IN ('76561198082657536', '76561198041183975')`);
-        }
-    });
+        console.log('Database setup completed successfully.');
+    } catch (error) {
+        console.error('Error setting up database:', error);
+    }
 });
 
 export default db;

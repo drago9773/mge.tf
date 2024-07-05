@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import forumPostRoutes from './routes/forumPosts.js';
 import steamRoutes from './routes/steamAuth.js';
 import signupRoutes from './routes/signup.js';
+import apiRoutes from './routes/api.js';
 import db from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,7 @@ app.use(session({
 app.use('/', forumPostRoutes);
 app.use('/', steamRoutes);
 app.use('/signup', signupRoutes);
+app.use('/api', apiRoutes);
 
 const eloDb = new sqlite3.Database('sourcemod-local.sq3', (err) => {
     if (err) {
@@ -46,13 +48,13 @@ app.get('/', (req, res) => {
             console.error('Error querying database: ' + err.message);
             res.status(500).send('Internal Server Error');
         } else {
-            res.render('layout', {body: 'index', title: 'home', session: req.session, elo: rows });
+            res.render('layout', { body: 'index', title: 'home', session: req.session, elo: rows });
         }
     });
 });
 
 app.get('/signup', (req, res) => {
-    res.render('layout', {title: 'Signup', body: 'signup', session: req.session});
+    res.render('layout', { title: 'Signup', body: 'signup', session: req.session });
 })
 
 
@@ -66,7 +68,7 @@ app.get('/player_page/:steamid', (req, res) => {
             const name = req.query.name;
             res.render('empty_player_page', { steamid, name });
         } else {
-           res.render('layout', {body: 'player_page', title: row.steam_username, user: row, session: req.session });
+            res.render('layout', { body: 'player_page', title: row.steam_username, user: row, session: req.session });
         }
     });
 });
@@ -100,12 +102,12 @@ app.get('/2v2cup', (req, res) => {
 });
 
 app.get('/discord', (req, res) => {
-    const discordInviteLink = 'https://discord.gg/j6kDYSpYbs'; 
+    const discordInviteLink = 'https://discord.gg/j6kDYSpYbs';
     res.redirect(discordInviteLink);
 });
 
 app.get('/league', (req, res) => {
-    res.render('layout', {title: 'League', body: 'league', session: req.session});
+    res.render('layout', { title: 'League', body: 'league', session: req.session });
 })
 
 app.get('/logout', (req, res) => {

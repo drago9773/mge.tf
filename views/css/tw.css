@@ -53,3 +53,49 @@
     border: 2px solid #1F2937;
   }
 }
+
+/* Apply to all elements */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #4B5563;
+  border-radius: 20px;
+  border: 2px solid #1F2937;
+}
+
+/* If you prefer to apply only to html and body */
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: #4B5563;
+  border-radius: 20px;
+  border: 2px solid #1F2937;
+}

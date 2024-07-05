@@ -1,94 +1,87 @@
 <div class="pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
-    <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
-    <div class="text-black forum-posts">
-        <a id="create-post-link"
-            class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2"
-            href="/create_post" hx-swap="outerHTML">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue"
-                class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            <span>Create Thread</span>
-        </a>
-
-        <% forums.forEach(forum=> { %>
-            <a class="m-y-2 block border-t border-t-white" href="/post/<%= forum.thread_id %>">
-                <div class="container p-2">
-                    <ul>
-                        <p class="steam-username">
-                            <span class="text-rose-800 text-shadow shadow-white font-bold">
-                                <%= forum.steam_username %>
-                            </span>
-                            <%= ' published at ' + forum.formatted_date %>
-                        </p>
-                        <p class="underline">
-                            Topic: <%= forum.title %>
-                        </p>
-                        <p class="content">
-                            <%= forum.content %>
-                        </p>
-                        <% if (session.user) { %>
-                            <% const isOwner=forum.steam_id===session.user.steamid; %>
-                                <% const isModerator=moderators.some(moderator=> moderator.steam_id ===
-                                    session.user.steamid); %>
-                                    <% if (isOwner || isModerator) { %>
-                                        <form method="POST" action="/remove_post">
-                                            <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
-                                            <input type="hidden" name="is_owner" value="<%= isOwner %>">
-                                            <input type="hidden" name="is_moderator" value="<%= isModerator %>">
-                                            <button class="remove-post" type="submit">Remove Post</button>
-                                        </form>
-                                        <% } %>
-                                            <% } %>
-                    </ul>
-                </div>
-            </a>
-            <% }); %>
+  <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
+  <div class="text-black forum-posts">
+    <a id="createThread" class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2" href="/create_post" hx-swap="outerHTML">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      <span>Create Thread</span>
+    </a>
+    <% threads.forEach(thread=> { %>
+    <div class="m-y-2 block border-t border-t-white">
+      <a href="/thread/<%= thread.id %>">
+        <div class="container p-2">
+          <ul>
+            <p class="steam-username">
+              <span class="text-rose-800 text-shadow shadow-white font-bold">
+                <%= thread.steam_username %>
+              </span>
+              <%= ' published at ' + thread.formatted_date %>
+            </p>
+            <p class="underline">
+              Topic: <%= thread.title %>
+            </p>
+            <p class="content">
+              <%= thread.content %>
+            </p>
+          </ul>
+        </div>
+      </a>
+      <% if (session.user && moderators.includes(session.user.steamid)) { %>
+      <form method="POST" action="/remove_thread" onsubmit="return confirmDelete('<%= thread.title %>')">
+        <input type="hidden" name="thread_id" value="<%= thread.id %>">
+        <button class="mb-2  bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">Remove Thread</button>
+      </form>
+      <% } %>
     </div>
+    <% }); %>
+  </div>
 </div>
-
 <script>
-    const nThreadButton = document.getElementById("createThread");
-    nThreadButton.addEventListener("mousedown", () => {
-        nThreadButton.classList.remove("shadow-sm");
-        nThreadButton.classList.add("shadow-inner");
+  function confirmDelete(threadTitle) {
+    return confirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`);
+  }
+  const nThreadButton = document.getElementById("createThread");
+  nThreadButton.addEventListener("mousedown", () => {
+    nThreadButton.classList.remove("shadow-sm");
+    nThreadButton.classList.add("shadow-inner");
 
-    });
-    nThreadButton.addEventListener("mouseup", () => {
-        nThreadButton.classList.remove("shadow-inner");
-        nThreadButton.classList.add("shadow-sm");
-    })
+  });
+  nThreadButton.addEventListener("mouseup", () => {
+    nThreadButton.classList.remove("shadow-inner");
+    nThreadButton.classList.add("shadow-sm");
+  })
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const createPostLink = document.getElementById('create-post-link'); // Adjust the ID as needed
+  document.addEventListener('DOMContentLoaded', () => {
+    const createPostLink = document.getElementById('create-post-link'); // Adjust the ID as needed
 
-        if (createPostLink) {
-            createPostLink.addEventListener('click', async (e) => {
-                e.preventDefault();
+    if (createPostLink) {
+      createPostLink.addEventListener('click', async (e) => {
+        e.preventDefault();
 
-                try {
-                    const response = await fetch('/create_post');
+        try {
+          const response = await fetch('/create_post');
 
-                    if (response.ok) {
-                        window.location.href = '/create_post';
-                    } else {
-                        const data = await response.json();
-                        showPopup(data.error);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showPopup('An error occurred. Please try again.');
-                }
-            });
+          if (response.ok) {
+            window.location.href = '/create_post';
+          } else {
+            const data = await response.json();
+            showPopup(data.error);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showPopup('An error occurred. Please try again.');
         }
+      });
+    }
 
-        function showPopup(message) {
-            // Create and show a popup with the message
-            const popup = document.createElement('div');
-            popup.textContent = message;
-            popup.style.cssText = `
+    function showPopup(message) {
+      // Create and show a popup with the message
+      const popup = document.createElement('div');
+      popup.textContent = message;
+      popup.style.cssText = `
             position: absolute;
             top: 5%;
             right: 50%;
@@ -99,11 +92,11 @@
             border-radius: 5px;
             z-index: 1000;
         `;
-            document.body.appendChild(popup);
+      document.body.appendChild(popup);
 
-            setTimeout(() => {
-                popup.remove();
-            }, 3000);
-        }
-    });
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+  });
 </script>
