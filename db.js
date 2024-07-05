@@ -1,10 +1,10 @@
 import sqlite3 from 'sqlite3';
 
-function runQuery(db, query) {
+function runQuery(db, query, params = []) {
     return new Promise((resolve, reject) => {
-        db.run(query, (err) => {
+        db.run(query, params, function (err) {
             if (err) reject(err);
-            else resolve();
+            else resolve(this);
         });
     });
 }
@@ -14,7 +14,6 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
         console.error(err.message);
         return;
     }
-
     try {
         await runQuery(db, `CREATE TABLE IF NOT EXISTS users (
             steam_id TEXT PRIMARY KEY,
@@ -51,17 +50,10 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
             FOREIGN KEY (steam_id) REFERENCES users(steam_id))`);
 
         const moderatorIds = ['76561198082657536', '76561198041183975'];
-        db.all('SELECT * FROM moderators', [], (err, moderators) => {
-            if (err) {
-                console.error('Error querying database: ' + err.message);
-                return;
-            }
-            const missingModerators = moderatorIds.filter(id => !moderators.some(mod => mod.steam_id === id));
-            if (missingModerators.length > 0) {
-                const placeholders = missingModerators.map(() => '(?)').join(',');
-                db.run(`INSERT INTO moderators (steam_id) VALUES ${placeholders}`, missingModerators);
-            }
-        });
+
+        for (const id of moderatorIds) {
+            await runQuery(db, 'INSERT OR IGNORE INTO moderators (steam_id) VALUES (?)', [id]);
+        }
 
         console.log('Database setup completed successfully.');
     } catch (error) {
