@@ -23,14 +23,15 @@ router.get('/verify', async (req, res) => {
         const user = await steam.authenticate(req);
         req.session.user = user;
 
+
         const addOrUpdateUser = new Promise((resolve, reject) => {
             db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
                 if (err) {
                     console.error('Error querying database: ' + err.message);
                     reject(err);
                 } else if (!row) {
-                    db.run('INSERT INTO users (steam_id, steam_username) VALUES (?, ?)',
-                        [user.steamid, user.username],
+                    db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)',
+                        [user.steamid, user.username, user.avatar.large],
                         function (err) {
                             if (err) {
                                 console.error('Error inserting into database: ' + err.message);
