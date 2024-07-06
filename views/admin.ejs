@@ -4,25 +4,34 @@
     <title><%= title %></title>
 </head>
 <body>
-    <h1>Admin Panel</h1>
+    <h1>Administrative</h1>
 
     <h2>Create Team</h2>
     <form action="/create_team" method="POST">
         <label for="name">Team Name:</label>
         <input type="text" id="name" name="name" required><br>
-
-        <label for="division">Division:</label>
-        <input type="number" id="division" name="division" required><br>
-
+    
+        <label for="division_id">Division ID:</label>
+        <input type="number" id="division_id" name="division_id" required><br>
+    
+        <label for="season_no">Season Number:</label>
+        <input type="number" id="season_no" name="season_no" required><br>
+    
+        <label for="region">Region:</label>
+        <input type="text" id="region" name="region" required><br>
+    
         <button type="submit">Create Team</button>
-    </form>
+    </form>    
 
     <h3>Teams</h3>
-    <table border="1">
+    <table border="2">
         <thead>
             <tr>
                 <th>Team Name</th>
                 <th>Division</th>
+                <th>Record</th>
+                <th>Season</th>
+                <th>Region</th>
             </tr>
         </thead>
         <tbody>
@@ -30,12 +39,21 @@
                 <% teams.forEach(team => { %>
                     <tr>
                         <td><%= team.name %></td>
-                        <td><%= team.division %></td>
+                        <td>
+                            <% const division = divisions.find(div => div.id === team.division_id); %>
+                            <%= division ? division.name : ' ' %>
+                        </td>
+                        <td><%= team.record %></td>
+                        <td><%= team.season_no %></td>
+                        <td>
+                            <% const region = regions.find(reg => reg.id === team.region_id); %>
+                            <%= region ? region.name : ' ' %>
+                        </td>
                     </tr>
                 <% }) %>
             <% } else { %>
                 <tr>
-                    <td colspan="2">No teams created yet</td>
+                    <td colspan="5">No teams created yet</td>
                 </tr>
             <% } %>
         </tbody>
@@ -43,58 +61,79 @@
 
     <h2>Create Match</h2>
     <form action="/create_match" method="POST">
-        <label for="winner_id">Winner ID:</label>
-        <input type="number" id="winner_id" name="winner_id" required><br>
-
-        <label for="loser_id">Loser ID:</label>
-        <input type="number" id="loser_id" name="loser_id" required><br>
-
+        <label for="home_team_id">Home Team ID:</label>
+        <input type="number" id="home_team_id" name="home_team_id" required><br>
+    
+        <label for="away_team_id">Away Team ID:</label>
+        <input type="number" id="away_team_id" name="away_team_id" required><br>
+    
         <label for="division_id">Division ID:</label>
         <input type="number" id="division_id" name="division_id" required><br>
-
-        <label for="loser_score">Loser Score:</label>
-        <input type="number" id="loser_score" name="loser_score" required><br>
-
+    
         <label for="season_no">Season Number:</label>
         <input type="number" id="season_no" name="season_no" required><br>
-
+    
         <label for="week_no">Week Number:</label>
         <input type="number" id="week_no" name="week_no" required><br>
-
+    
+        <label for="played_at">Played at:</label>
+        <input type="text" id="played_at" name="played_at" required><br>
+    
         <button type="submit">Create Match</button>
     </form>
 
+    <h2>Submit Match Result</h2>
+    <form action="/submit_match_result" method="POST">
+        <label for="match_id">Match ID:</label>
+        <input type="number" id="match_id" name="match_id" required><br>
+    
+        <label for="winner_id">Winner Team ID:</label>
+        <input type="number" id="winner_id" name="winner_id" required><br>
+    
+        <label for="loser_score">Loser Score:</label>
+        <input type="number" id="loser_score" name="loser_score" required><br>
+    
+        <button type="submit">Submit Match Result</button>
+    </form>
+
     <h3>Matches</h3>
-    <table border="1">
+    <table border="2">
         <thead>
             <tr>
-                <th>Winner Team</th>
-                <th>Loser Team</th>
+                <th>Match ID</th>
+                <th>Home Team</th>
+                <th>Away Team</th>
                 <th>Division</th>
-                <th>Loser Score</th>
                 <th>Season Number</th>
                 <th>Week Number</th>
+                <th>Played At</th>
+                <th>Winner Team</th>
+                <th>Loser Score</th>
             </tr>
         </thead>
         <tbody>
             <% if (matches && matches.length > 0) { %>
                 <% matches.forEach(match => { %>
                     <tr>
-                        <td><%= match.winner_name %></td>
-                        <td><%= match.loser_name %></td>
+                        <td><%= match.id %></td>
+                        <td><%= match.home_team_name %></td>
+                        <td><%= match.away_team_name %></td>
                         <td><%= match.division_name %></td>
-                        <td><%= match.loser_score %></td>
                         <td><%= match.season_no %></td>
                         <td><%= match.week_no %></td>
+                        <td><%= match.played_at %></td>
+                        <td><%= match.winner_name %></td>
+                        <td><%= match.loser_score %></td>
                     </tr>
                 <% }) %>
             <% } else { %>
                 <tr>
-                    <td colspan="6">No matches created yet</td>
+                    <td colspan="9">No matches created yet</td>
                 </tr>
             <% } %>
         </tbody>
     </table>
+    
 
     <h2>Create Division</h2>
     <form action="/create_division" method="POST">
@@ -105,7 +144,7 @@
     </form>
 
     <h3>Divisions</h3>
-    <table border="1">
+    <table border="2">
         <thead>
             <tr>
                 <th>Division Name</th>
@@ -126,7 +165,37 @@
         </tbody>
     </table>
 
+    <h2>Create Region</h2>
+    <form action="/create_region" method="POST">
+        <label for="name">Region Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <button type="submit">Create Region</button>
+    </form>
+
+    <h3>Regions</h3>
+    <table border="2">
+        <thead>
+            <tr>
+                <th>Region Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (regions && regions.length > 0) { %>
+                <% regions.forEach(region => { %>
+                    <tr>
+                        <td><%= region.name %></td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td>No regions created yet</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
     <br>
-    <a href="/">Back to Home</a>
+    <a href="/">HOME</a>
 </body>
 </html>

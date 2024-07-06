@@ -82,25 +82,29 @@ app.get('/users', (req, res) => {
             res.status(500).send('Internal Server Error');
             return;
         }
-        // db.all('SELECT steam_id FROM moderators', [], (err, moderators) => {
-        //     if (err) {
-        //         console.error('Error querying moderators: ' + err.message);
-        //         res.status(500).send('Internal Server Error');
-        //         return;
-        //     }
 
-        // const moderatorSet = new Set(moderators.map(m => m.steam_id));
+        db.all(`SELECT users.*, moderators.id as moderator_id
+            FROM moderators
+            JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
+            if (err) {
+                console.error('Error querying database: ' + err.message);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
 
-        // const usersWithModStatus = users.map(user => ({
-        //     ...user,
-        //     isModerator: moderatorSet.has(user.steam_id)
-        // }));
+            const moderatorSet = new Set(moderators.map(m => m.steam_id));
 
-        res.render('layout', {
-            title: 'Users',
-            body: 'users',
-            users: users,
-            session: req.session
+            const usersWithModStatus = users.map(user => ({
+                ...user,
+                isModerator: moderatorSet.has(user.steam_id)
+            }));
+
+            res.render('layout', {
+                title: 'Users',
+                body: 'users',
+                users: usersWithModStatus,
+                session: req.session
+            });
         });
     });
 });
