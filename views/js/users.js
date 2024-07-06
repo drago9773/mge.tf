@@ -17,6 +17,6 @@ function filterUsers() {
         }
     }
 }
-document.getElementById('userSearch').addEventListener('input', function() {
+document.getElementById('userSearch').addEventListener('input', function () {
     filterUsers();
 });

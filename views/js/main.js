@@ -8,7 +8,7 @@ function filterUsers() {
         let nameCell = rows[i].getElementsByTagName('td')[1];
         let steamCell = rows[i].getElementsByTagName('td')[4];
         let nameTxt = nameCell.textContent || nameCell.innerText;
-        
+
         if (nameTxt.toLowerCase().includes(filter.toLowerCase()) || steamCell.innerText.includes(filter)) {
             rows[i].style.display = '';
         } else {
@@ -17,6 +17,6 @@ function filterUsers() {
     }
 }
 
-document.getElementById('eloSearch')?.addEventListener('input', function() {
+document.getElementById('eloSearch')?.addEventListener('input', function () {
     filterUsers();
 });

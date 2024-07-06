@@ -1,57 +1,43 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const dropdownTrigger = document.getElementById('dropdown-trigger');
-  const dropdownContent = document.getElementById('dropdown-content');
+function setupEventListeners() {
   const copyServerDiv = document.getElementById('copy-server-id');
+  let isDropdownOpen = false;
 
-  copyServerDiv.addEventListener('mousedown', () => {
-    navigator.clipboard.writeText('connect mge.tf');
-    copyServerDiv.classList.add('text-green-500');
-  });
+  document.addEventListener('click', function (event) {
+    const dropdownTrigger = event.target.closest('#dropdown-trigger');
+    const dropdownContent = document.getElementById('dropdown-content');
 
-  copyServerDiv.addEventListener('mouseup', () => {
-    copyServerDiv.classList.remove('text-green-500');
-  });
-
-  if (dropdownTrigger && dropdownContent) {
-    let isOpen = false;
-
-    // Function to open dropdown
-    function openDropdown() {
-      dropdownContent.classList.remove('hidden');
-      isOpen = true;
-    }
-
-    // Function to close dropdown
-    function closeDropdown() {
+    if (dropdownTrigger) {
+      event.stopPropagation();
+      isDropdownOpen = !isDropdownOpen;
+      dropdownContent.classList.toggle('hidden', !isDropdownOpen);
+    } else if (isDropdownOpen && !event.target.closest('#dropdown-content')) {
       dropdownContent.classList.add('hidden');
-      isOpen = false;
+      isDropdownOpen = false;
     }
+  });
 
-    // Toggle dropdown on click
-    dropdownTrigger.addEventListener('click', function(event) {
-      event.stopPropagation();
-      if (isOpen) {
-        closeDropdown();
-      } else {
-        openDropdown();
-      }
-    });
+  document.addEventListener('mouseenter', function (event) {
+    if (event.target.closest('#dropdown-trigger')) {
+      const dropdownContent = document.getElementById('dropdown-content');
+      dropdownContent.classList.remove('hidden');
+      isDropdownOpen = true;
+    }
+  }, true);
 
-    // Open dropdown on hover
-    dropdownTrigger.addEventListener('mouseenter', openDropdown);
+  document.addEventListener('mousedown', function (event) {
+    if (event.target.closest('#copy-server-id')) {
+      navigator.clipboard.writeText('connect mge.tf');
+      copyServerDiv.classList.add('text-green-500');
+    }
+  });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      if (isOpen && !dropdownContent.contains(event.target) && event.target !== dropdownTrigger) {
-        closeDropdown();
-      }
-    });
+  document.addEventListener('mouseup', function (event) {
+    if (event.target.closest('#copy-server-id')) {
+      copyServerDiv.classList.remove('text-green-500');
+    }
+  });
+}
 
-    // Prevent dropdown from closing when clicking inside it
-    dropdownContent.addEventListener('click', function(event) {
-      event.stopPropagation();
-    });
-  } else {
-    console.error('Dropdown trigger or content not found.');
-  }
-});
+document.addEventListener('DOMContentLoaded', setupEventListeners);
+
+window.setupSidebarListeners = setupEventListeners;

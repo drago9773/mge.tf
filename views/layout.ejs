@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/tw-out.css" />
+  <meta name="view-transition" content="same-origin">
+  <script src="/js/transitions.js"></script>
+  <script src="/js/sidebar.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <title>
     <%= title %>
@@ -18,7 +21,7 @@
       <div id="sidebar" class="fixed left-0 top-20 h-full bg-black bg-opacity-80 w-0 overflow-hidden transition-all duration-300">
         <% include('sidebar') %>
       </div>
-      <div class="flex-grow overflow-y-auto">
+      <div id="main-content" class="flex-grow overflow-y-auto">
         <%- include(body) %>
       </div>
     </div>

@@ -99,3 +99,14 @@ body::-webkit-scrollbar-thumb {
   border-radius: 20px;
   border: 2px solid #1F2937;
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+}
+
+::view-transition-old(persistent-image-1),
+::view-transition-new(persistent-image-1) {
+  animation: none;
+  mix-blend-mode: normal;
+}
