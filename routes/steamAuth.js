@@ -1,6 +1,6 @@
 import SteamAuth from 'node-steam-openid';
 import express from 'express';
-import db from '../db.js';
+import db, { isAdmin } from '../db.js'; 
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
 const domain = process.env.DOMAIN || 'http://localhost:3005/';
@@ -22,7 +22,7 @@ router.get('/verify', async (req, res) => {
     try {
         const user = await steam.authenticate(req);
         req.session.user = user;
-
+        req.session.user.isAdmin = await isAdmin(req.session.user.steam_id);
 
         const addOrUpdateUser = new Promise((resolve, reject) => {
             db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
@@ -62,7 +62,6 @@ router.get('/verify', async (req, res) => {
         });
 
         await addOrUpdateUser;
-
         const returnTo = req.session.returnTo || '/';
         delete req.session.returnTo;
         return res.redirect(returnTo);
