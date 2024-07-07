@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 
-function runQuery(db, query, params = []) {
+export function runQuery(db, query, params = []) {
     return new Promise((resolve, reject) => {
         db.run(query, params, function (err) {
             if (err) reject(err);
@@ -8,6 +8,15 @@ function runQuery(db, query, params = []) {
         });
     });
 }
+export function selectQuery(db, sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
 
 const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) => {
     if (err) {
@@ -101,7 +110,7 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
             FOREIGN KEY (player_id) REFERENCES users(id),
             FOREIGN KEY (team_id) REFERENCES teams(id))`);
 
-        const moderatorIds = ['76561198082657536', '76561198041183975'];
+        const moderatorIds = ['76561198082657536', '76561198041183975', '76561199032212844'];
         for (const id of moderatorIds) {
             await runQuery(db, 'INSERT OR IGNORE INTO moderators (steam_id) VALUES (?)', [id]);
         }
@@ -111,5 +120,10 @@ const db = new sqlite3.Database('users.db', sqlite3.OPEN_READWRITE, async (err) 
         console.error('Error setting up database:', error);
     }
 });
+
+export async function isAdmin(steamID) {
+    let rows = await selectQuery(db, 'SELECT steam_id FROM moderators;');
+    return rows.some(user => user.steam_id === steamID);
+}
 
 export default db;
