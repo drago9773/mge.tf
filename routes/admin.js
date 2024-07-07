@@ -1,9 +1,16 @@
 import express from 'express';
-import db from '../db.js';
+import db, { isAdmin } from '../db.js';
 
 const router = express.Router();
 
-router.get('/admin', (req, res) => {
+router.get('/admin', async (req, res) => {
+    console.log(req.session?.user);
+    const adminStatus = await isAdmin(req.session?.user?.steamid);
+    console.log(`Admin status:dd ${adminStatus}`);
+    if (!adminStatus) {
+        res.status(404);
+        return res.redirect('/');
+    }
     db.all('SELECT * FROM teams', [], (err, teams) => {
         if (err) {
             console.error('Error getting teams: ' + err.message);
@@ -28,7 +35,7 @@ router.get('/admin', (req, res) => {
                         console.error('Error getting regions: ' + err.message);
                         regions = [];
                     }
-                    res.render('admin', { title: 'Admin', session: req.session, teams, matches, divisions, regions });
+                    res.render('layout', {body: 'admin', title: 'Admin', session: req.session, teams, matches, divisions, regions });
                 });
             });
         });
@@ -37,7 +44,7 @@ router.get('/admin', (req, res) => {
 
 router.post('/create_team', (req, res) => {
     const { name, division_id, season_no, region_id } = req.body;
-    const record = "0-0";
+    const record = '0-0';
 
     db.run('INSERT INTO teams (name, record, division_id, region_id, season_no) VALUES (?, ?, ?, ?, ?)', [name, record, division_id, region_id, season_no], (err) => {
         if (err) {
