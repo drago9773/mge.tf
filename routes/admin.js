@@ -4,9 +4,7 @@ import db, { isAdmin } from '../db.js';
 const router = express.Router();
 
 router.get('/admin', async (req, res) => {
-    console.log(req.session?.user);
     const adminStatus = await isAdmin(req.session?.user?.steamid);
-    console.log(`Admin status:dd ${adminStatus}`);
     if (!adminStatus) {
         res.status(404);
         return res.redirect('/');

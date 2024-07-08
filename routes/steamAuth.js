@@ -22,7 +22,7 @@ router.get('/verify', async (req, res) => {
     try {
         const user = await steam.authenticate(req);
         req.session.user = user;
-        req.session.user.isAdmin = await isAdmin(req.session.user.steam_id);
+        req.session.user.isAdmin = await isAdmin(req.session.user.steamid);
 
         const addOrUpdateUser = new Promise((resolve, reject) => {
             db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
