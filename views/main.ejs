@@ -9,7 +9,6 @@
       <input class="focus:border-white focus:border w-full rounded p-2 bg-black bg-opacity-50 backdrop-blur-lg backdrop-filter" type="text" id="eloSearch" placeholder="Search by username...">
     </div>
     <div class="scrollbar-thin scrollbar-dark max-h-[420px] bg-opacity-55 backdrop-blur-lg backdrop-filter bg-black shadow-sm border rounded-lg overflow-x-auto overflow-y-scroll h-[75vh]">
-      <%# TODO: Make users clickable %>
       <table class="mb-2 w-full table-fixed text-sm text-left">
         <thead class="bg-gray-600 text-gray-50 font-medium border-b">
           <tr>
@@ -27,7 +26,7 @@
               <%= index + 1 %>
             </td>
             <td class="overflow-x-auto px-6 py-4 break-words">
-              <%= player.name %></a>
+              <a href="/player_page/<%= player.steamid %>"><%= player.name %></a>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <%= player.rating %>

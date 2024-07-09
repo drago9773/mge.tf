@@ -11,6 +11,7 @@ import signupRoutes from './routes/signup.js';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
 import db from './db.js';
+import { steamId64FromSteamId32 } from './helpers/steamid.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,7 +51,11 @@ app.get('/', (req, res) => {
             console.error('Error querying database: ' + err.message);
             res.status(500).send('Internal Server Error');
         } else {
-            res.render('layout', { body: 'index', title: 'home', session: req.session, elo: rows });
+            const players = rows.map(player => {
+                player.steamid = steamId64FromSteamId32(player.steamid)
+                return player;
+            });
+            res.render('layout', { body: 'index', title: 'home', session: req.session, elo: players });
         }
     });
 });
@@ -68,7 +73,7 @@ app.get('/player_page/:steamid', (req, res) => {
             res.status(500).send('Internal Server Error');
         } else if (!row) {
             const name = req.query.name;
-            res.render('empty_player_page', { steamid, name });
+            res.render('layout', { title: 'Player not found', body: 'empty_player_page', steamid, name, session: req.session });
         } else {
             res.render('layout', { body: 'player_page', title: row.steam_username, user: row, session: req.session });
         }
@@ -83,9 +88,7 @@ app.get('/users', (req, res) => {
             return;
         }
 
-        db.all(`SELECT users.*, moderators.id as moderator_id
-            FROM moderators
-            JOIN users ON moderators.user_id = users.id`, [], (err, moderators) => {
+        db.all('SELECT steam_id from moderators;', [], (err, moderators) => {
             if (err) {
                 console.error('Error querying database: ' + err.message);
                 res.status(500).send('Internal Server Error');
@@ -102,7 +105,8 @@ app.get('/users', (req, res) => {
             res.render('layout', {
                 title: 'Users',
                 body: 'users',
-                users: usersWithModStatus,
+                users: users,
+                mods: usersWithModStatus,
                 session: req.session
             });
         });
