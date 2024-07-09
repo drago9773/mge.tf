@@ -14,13 +14,12 @@
       <a href="/league" class="block px-4 py-2 text-white hover:bg-gray-800">League</a>
       <a href="/signup" class="block px-4 py-2 text-white hover:bg-gray-800">Sign Up</a>
       <% if (session?.user?.isAdmin) { %>
-        <a href="/admin" class="block px-4 py-2 text-white hover:bg-gray-800">Admin</a>
+      <a href="/admin" class="block px-4 py-2 text-white hover:bg-gray-800">Admin</a>
       <% } %>
       <%# Add more links as needed %>
     </div>
   </div>
 
-  <%# TODO: Make connection links less hideous %>
   <div class="flex gap-2 items-center">
     <div class="hidden md:flex gap-2 align-middle items-center text-base">
       <div id="copy-server-id" class="border rounded-lg border-neutral-400 inline-flex cursor-pointer justify-center items-center select-none align-middle">
