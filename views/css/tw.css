@@ -8,6 +8,9 @@
   background-position: center;
 }
 
+/* @view-transition {
+  navigation: auto;
+} */
 
 .sidebar {
   position: fixed;
@@ -102,11 +105,21 @@ body::-webkit-scrollbar-thumb {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
 }
 
 ::view-transition-old(persistent-image-1),
 ::view-transition-new(persistent-image-1) {
-  animation: none;
-  mix-blend-mode: normal;
+  animation-duration: 0.1s;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-old(persistent-image-1):only-child {
+  animation: fade-out 0.2s ease-out forwards;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
 }
