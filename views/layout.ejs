@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="/css/tw-out.css" />
   <meta name="view-transition" content="same-origin">
   <script src="/js/transitions.js"></script>
-  <script src="/js/sidebar.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <title>
     <%= title %>
   </title>
 </head>
 
-<body class="flex flex-col h-full overflow-hidden bg-cover w-full <%= typeof bgparam !== 'undefined' ? bgparam : 'bg-[url(/images/badlands-mid.png)]' %> text-white">
+<body class="subpixel-antialiased flex flex-col h-full overflow-hidden bg-cover w-full <%= typeof bgparam !== 'undefined' ? bgparam : 'bg-[url(/images/badlands-mid.png)]' %> text-white">
   <div class="flex flex-col flex-grow overflow-hidden container mx-auto rounded-md">
     <div class="flex flex-col h-full lg:w-3/4 mx-auto">
       <%- include('nav') %>
