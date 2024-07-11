@@ -12,6 +12,7 @@ export default {
       },
         fontFamily: {
         'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
+        'lucida': ['Lucida Console', 'Monaco', 'monospace'],
       },
     },
   },
@@ -21,7 +22,7 @@ export default {
     }
   },
   plugins: [
-    plugin(function({ matchUtilities, theme }) {
+    plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {
           'text-shadow': (value) => ({
