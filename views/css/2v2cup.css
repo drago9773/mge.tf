@@ -1,3 +1,12 @@
+.description-2v2{
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 5px 5px 0 darkslategray;
+    position: relative;
+    margin-top: 50px;
+}
 .a001-page-title {
     text-align: center;
     font-size: 36px;
