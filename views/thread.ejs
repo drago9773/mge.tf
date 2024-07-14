@@ -21,7 +21,7 @@
     <div class="w-full flex justify-center text-2xl underline">
       <%= thread.title %>
     </div>
-    <div class="my-2 border border-black rounded shadow shadow-black">
+    <div class="my-2 border border-black rounded shadow shadow-black bg-black bg-opacity-10">
       <div class="flex">
         <div class="w-1/5 min-w-[150px] p-2 border-r border-black">
           <a href="/player_page/<%= thread.owner %>" hx-target="#main" hx-swap="innerHtml">
@@ -33,14 +33,14 @@
           </a>
         </div>
         <div class="w-3/4 flex flex-col flex-grow">
-          <p class="p-2">
+          <p class="p-2 text-left whitespace-pre">
             <%= thread.content %>
           </p>
         </div>
       </div>
     </div>
     <% replies.forEach(reply=> { %>
-    <div class="border mb-2 border-black rounded shadow shadow-black">
+    <div class="border mb-2 border-black rounded shadow shadow-black bg-black bg-opacity-10">
       <div class="flex">
         <div class="w-1/5 min-w-[150px] p-2 border-r border-black">
           <a href="/player_page/<%= reply.owner %>" hx-target="#main" hx-swap="innerHtml">
