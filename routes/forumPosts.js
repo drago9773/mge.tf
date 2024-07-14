@@ -66,6 +66,12 @@ router.post('/create_thread', async (req, res) => {
     if (!content || !title) {
         return res.status(400).json({ error: 'Content and title are required' });
     }
+    if (title.length > 150) {
+        return res.status(400).json({ error: 'Title cannot be longer than 150 characters'})
+    }
+    if (content.length > 3000) {
+        return res.status(400).json({ error: 'Content cannot be longer than 3000 characters'})
+    }
 
     db.get('SELECT * FROM activity WHERE owner = ?', [user.steamid], (err, activityRow) => {
         if (err) {
@@ -264,6 +270,10 @@ router.post('/thread/:threadId/reply', (req, res) => {
 
     if (!content) {
         return res.status(400).json({ error: 'Reply content is required' });
+    }
+
+    if (content.length > 3000) {
+        return res.status(400).json({ error: 'Reply content is too long, maximum of 4000 characters'});
     }
 
     db.get('SELECT * FROM activity WHERE owner = ?', [user.steamid], (err, activityRow) => {
