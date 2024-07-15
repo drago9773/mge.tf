@@ -5,7 +5,7 @@
     TODO: Change username color based on ELO
     TODO: Potentially display badges based on MGE achievements
  %>
-  <div class="font-medium post text-black border-black shadow shadow-black h-full flex flex-col">
+<div class="font-medium post text-black border-black shadow shadow-black h-full flex flex-col">
   <title>
     <%= thread.title %>
   </title>
@@ -18,7 +18,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
       </svg>
     </a>
-    <div class="w-full flex justify-center text-2xl underline">
+    <div class="w-full flex justify-center text-2xl text-shadow-sm shadow-black">
       <%= thread.title %>
     </div>
     <div class="my-2 border border-black rounded shadow shadow-black bg-black bg-opacity-10">
@@ -77,6 +77,8 @@
       <button id="replyButton" class="mt-1 shadow-black shadow p-2 rounded" type="submit">Post
         Reply</button>
     </form>
+    <% } else { %>
+    <div>You must be logged in to reply.</div>
     <% } %>
   </div>
 </div>
