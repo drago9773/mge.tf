@@ -1,26 +1,12 @@
 <div class="rounded-b-md p-2 bg-black bg-opacity-50 align-middle items-center flex w-full justify-between">
   <div class="relative z-10" x-data="{ open: false, timeout: null }">
-    <div id="dropdown-trigger" class="h-full cursor-pointer"
-         @click="open = !open"
-         @mouseenter.prevent="if (window.innerWidth > 768) { open = true; clearTimeout(timeout); }"
-         @mouseleave.prevent="if (window.innerWidth > 768) { timeout = setTimeout(() => open = false, 500); }">
+    <div id="dropdown-trigger" class="h-full cursor-pointer" @click="open = !open" @mouseenter.prevent="if (window.innerWidth > 768) { open = true; clearTimeout(timeout); }" @mouseleave.prevent="if (window.innerWidth > 768) { timeout = setTimeout(() => open = false, 500); }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 cursor-pointer">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
       </svg>
     </div>
     <%# Dropdown content %>
-    <div id="dropdown-content" 
-         class="absolute top-full left-0 mt-2 w-48 bg-black bg-opacity-80 shadow-lg rounded-lg py-2" 
-         x-show="open" 
-         @click.away="open = false"
-         @mouseenter.prevent="if (window.innerWidth > 768) { clearTimeout(timeout); }"
-         @mouseleave.prevent="if (window.innerWidth > 768) { timeout = setTimeout(() => open = false, 500); }"
-         x-transition:enter="transition ease-out duration-200" 
-         x-transition:enter-start="opacity-0 transform scale-95" 
-         x-transition:enter-end="opacity-100 transform scale-100" 
-         x-transition:leave="transition ease-in duration-150" 
-         x-transition:leave-start="opacity-100 transform scale-100" 
-         x-transition:leave-end="opacity-0 transform scale-95">
+    <div id="dropdown-content" class="absolute top-full left-0 mt-2 w-48 bg-black bg-opacity-80 shadow-lg rounded-lg py-2" x-show="open" @click.away="open = false" @mouseenter.prevent="if (window.innerWidth > 768) { clearTimeout(timeout); }" @mouseleave.prevent="if (window.innerWidth > 768) { timeout = setTimeout(() => open = false, 500); }" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95">
       <a href="/" class="block px-4 py-2 text-white hover:bg-gray-800">Home</a>
       <a href="/users" class="block px-4 py-2 text-white hover:bg-gray-800">Users</a>
       <a href="/forums" class="block px-4 py-2 text-white hover:bg-gray-800">Forums</a>
@@ -28,8 +14,9 @@
       <a href="/signup" class="block px-4 py-2 text-white hover:bg-gray-800">Sign Up</a>
       <% if (session?.user?.isAdmin) { %>
       <a href="/admin" class="block px-4 py-2 text-white hover:bg-gray-800">Admin</a>
-      <% } %>
-      <%# Add more links as needed %>
+      <% } %> <% if (session.user) { %>
+      <a href="/logout" class="block px-4 py-2 text-white hover:bg-gray-800">Logout</a>
+      <% } %> <%# Add more links as needed %>
     </div>
   </div>
 
@@ -69,13 +56,11 @@
       <div class="flex flex-row-reverse gap-2 align-middle items-center">
         <a class="profile-container" href="/player_page/<%= session.user.steamid %>">
           <img class="profile-pic" src="<%= session.user.avatar.small %>" alt="Avatar" />
-          <% const maxLength=15; let displayName=session.user.username; if (displayName.length> maxLength) {
-                displayName = displayName.slice(0,
-                maxLength) + '...'; } %>
+          <% const maxLength=15; let displayName=session.user.username; if
+          (displayName.length> maxLength) { displayName = displayName.slice(0,
+          maxLength) + '...'; } %>
         </a>
-        <span class="logged-in-username">
-          <%= displayName %>
-        </span>
+        <span class="logged-in-username"> <%= displayName %> </span>
       </div>
       <% } %>
     </div>
