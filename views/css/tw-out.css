@@ -1101,6 +1101,10 @@ html {
   background-color: rgb(9 9 11 / var(--tw-bg-opacity));
 }
 
+.bg-opacity-10 {
+  --tw-bg-opacity: 0.1;
+}
+
 .bg-opacity-20 {
   --tw-bg-opacity: 0.2;
 }
@@ -1115,14 +1119,6 @@ html {
 
 .bg-opacity-80 {
   --tw-bg-opacity: 0.8;
-}
-
-.bg-opacity-10 {
-  --tw-bg-opacity: 0.1;
-}
-
-.bg-opacity-0 {
-  --tw-bg-opacity: 0;
 }
 
 .bg-\[linear-gradient\(180deg\2c _\#1E293B_0\%\2c _rgba\(59\2c _130\2c _246\2c _0\.00\)_137\.53\%\2c _rgba\(32\2c _69\2c _129\2c _0\.00\)_195\%\)\] {
@@ -1461,6 +1457,10 @@ html {
 
 .text-shadow {
   text-shadow: 0 2px 4px var(--tw-shadow-color);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px var(--tw-shadow-color);
 }
 
 .scrollbar-thin {
