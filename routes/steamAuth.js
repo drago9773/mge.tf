@@ -1,9 +1,12 @@
 import SteamAuth from 'node-steam-openid';
 import express from 'express';
-import db, { isAdmin } from '../db.js'; 
+import { db, isAdmin } from '../db.js';
+import { users } from '../schema.js';
+import { eq } from 'drizzle-orm';
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
 const domain = process.env.DOMAIN || 'http://localhost:3005/';
+
 const steam = new SteamAuth({
     realm: domain,
     returnUrl: domain + 'verify',
@@ -24,44 +27,20 @@ router.get('/verify', async (req, res) => {
         req.session.user = user;
         req.session.user.isAdmin = await isAdmin(req.session.user.steamid);
 
-        const addOrUpdateUser = new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE steam_id = ?', [user.steamid], (err, row) => {
-                if (err) {
-                    console.error('Error querying database: ' + err.message);
-                    reject(err);
-                } else if (!row) {
-                    db.run('INSERT INTO users (steam_id, steam_username, steam_avatar) VALUES (?, ?, ?)',
-                        [user.steamid, user.username, user.avatar.large],
-                        function (err) {
-                            if (err) {
-                                console.error('Error inserting into database: ' + err.message);
-                                reject(err);
-                            } else {
-                                resolve(this.lastID);
-                            }
-                        }
-                    );
-                } else {
-                    if (row.steam_username !== user.username) {
-                        db.run('UPDATE users SET steam_username = ? WHERE steam_id = ?',
-                            [user.username, user.steamid],
-                            (err) => {
-                                if (err) {
-                                    console.error('Error updating username: ' + err.message);
-                                    reject(err);
-                                } else {
-                                    resolve(row.id);
-                                }
-                            }
-                        );
-                    } else {
-                        resolve(row.id);
-                    }
-                }
-            });
-        });
+        const existingUser = await db.select().from(users).where(eq(users.steamId, user.steamid)).get();
 
-        await addOrUpdateUser;
+        if (!existingUser) {
+            await db.insert(users).values({
+                steamId: user.steamid,
+                steamUsername: user.username,
+                steamAvatar: user.avatar.large
+            });
+        } else if (existingUser.steamUsername !== user.username) {
+            await db.update(users)
+                .set({ steamUsername: user.username })
+                .where(eq(users.steamId, user.steamid));
+        }
+
         const returnTo = req.session.returnTo || '/';
         delete req.session.returnTo;
         return res.redirect(returnTo);

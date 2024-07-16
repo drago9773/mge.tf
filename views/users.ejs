@@ -5,22 +5,22 @@
     <div class="md:w-1/2 flex flex-col justify-center align-middle">
       <ul id="users_container">
         <% users.forEach((user, index)=> { %>
-        <a href="/player_page/<%= user.steam_id %>">
+        <a href="/player_page/<%= user.steamId %>">
           <li id="card-<%= index %>" class="relative z-0 group overflow-hidden h-40 border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
             <div class="space-y-3 relative z-10 p-5 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
               <div class="text-gray-500 w-9 h-9 rounded-full bg-[linear-gradient(180deg,_rgba(39,_39,_42,_0.68)_0%,_rgba(39,_39,_42,_0.00)_100%)] flex items-center justify-center border border-zinc-700">
-                <img style="view-transition-name: persistent-image-1" class="object-contain h-40 w-40" src="<%= user.steam_avatar %>" alt="Avatar">
+                <img style="view-transition-name: persistent-image-1" class="object-contain h-40 w-40" src="<%= user.steamAvatar %>" alt="Avatar">
               </div>
-              <% const maxLength=30; let displayName=user.steam_username; if (displayName.length> maxLength) {
+              <% const maxLength=30; let displayName=user.steamUsername; if (displayName.length> maxLength) {
                   displayName = displayName.slice(0, maxLength) + '...';
                   } %>
               <h3 id="users_username" class="text-zinc-100 font-semibold">
                 <%= displayName %>
               </h3>
               <p id="users_steam_id" class="text-zinc-300">
-                <%= user.steam_id %>
+                <%= user.steamId %>
               </p>
-              <a class="users_username" href="/player_page/<%= user.steam_id %>">
+              <a class="users_username" href="/player_page/<%= user.steamId %>">
                 View Profile
               </a>
             </div>

@@ -1,0 +1,1 @@
+ALTER TABLE `posts` ADD `hidden` integer DEFAULT 0;

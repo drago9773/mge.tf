@@ -8,32 +8,23 @@
       <span>Create Thread</span>
     </a>
     <% threads.forEach(thread=> { %>
-    <div class="m-y-2 block border-t border-t-white">
-      <a href="/thread/<%= thread.id %>">
-        <div class="container p-2">
-          <ul>
-            <p class="steam-username">
-              <span class="text-rose-800 text-shadow shadow-white font-bold">
-                <%= thread.steam_username %>
-              </span>
-              <%= ' published at ' + thread.formatted_date %>
-            </p>
-            <p class="underline">
-              Topic: <%= thread.title %>
-            </p>
-            <p class="content">
-              <%= thread.content %>
-            </p>
-          </ul>
-        </div>
-      </a>
-      <% if (session.user && moderators.includes(session.user.steamid)) { %>
-      <form method="POST" action="/remove_thread" onsubmit="return confirmDelete('<%= thread.title %>')">
-        <input type="hidden" name="thread_id" value="<%= thread.id %>">
-        <button class="mb-2  bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">Remove Thread</button>
-      </form>
+    <% if (!thread?.hidden || moderators.includes(session?.user?.steamid)) { %>
+    <%- include('components/threadlink', {thread: thread}) %>
+    <% if (session.user && moderators.includes(session?.user?.steamid)) { %>
+    <form method="POST" action="/remove_thread" onsubmit="return confirmDelete('<%= thread.title %>')">
+      <input type="hidden" name="thread_id" value="<%= thread.id %>" />
+      <% if (!thread.hidden && moderators.includes(session?.user?.steamid)) { %>
+      <button class="mb-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">
+        Remove Thread
+      </button>
+      <% } else if (thread.hidden && moderators.includes(session?.user?.steamid)) { %>
+      <button class="mb-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">
+        Show Thread
+      </button>
       <% } %>
-    </div>
+    </form>
+    <% } %>
+    <% } %>
     <% }); %>
   </div>
 </div>
