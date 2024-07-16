@@ -1,8 +1,23 @@
-<div class="flex flex-col w-full items-center gap-2">
-  <h1 class="text-2xl font-bold underline">CHOOSE ONE</h1>
-
-  <div class="flex gap-2 my-2">
-    <a class="border-2 rounded-lg border-neutral-400 p-2" href="/signup/1v1signup">1v1</a>
-    <a class="border-2 rounded-lg border-neutral-400 p-2" href="/signup/2v2signup">2v2</a>
+<% if (session?.user) { %>
+<form method="POST" action="signup">
+  <div class="bg-black bg-opacity-25 p-2">
+    <fieldset>
+      <legend class="sr-only">Notifications</legend>
+      <div class="space-y-5">
+        <div class="relative flex items-start">
+          <div class="flex h-6 items-center">
+            <input id="comments" aria-describedby="comments-description" name="comments" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <label for="comments" class="font-medium text-white">Sign Up</label>
+            <p id="comments-description" class="text-neutral-300">I am interested in signing up for the upcoming 2v2 League.</p>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <button class="mt-1 border rounded border-neutral-300 p-1.5" type="submit">Confirm</button>
   </div>
-</div>
+</form>
+<% } else { %>
+<div>You must be signed in to view this page.</div>
+<% } %>

@@ -5,6 +5,7 @@ export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
   steamUsername: text('steam_username').notNull(),
   steamAvatar: text('steam_avatar'),
+  isSignedUp: integer('isSignedUp').default(0)
 });
 
 export const threads = sqliteTable('threads', {
