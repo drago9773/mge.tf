@@ -1,4 +1,7 @@
 import express from 'express';
+import { db } from '../db.js';
+import { eq } from 'drizzle-orm';
+import { users } from '../schema.js';
 
 const router = express.Router();
 
@@ -13,6 +16,13 @@ router.get('/2v2signup', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+  let { interested, ToS } = req.body;
+  if (interested && ToS) {
+    let updateResult = await db.update(users).set({ isSignedUp: 1 }).where(eq(users.steamId, req.session?.user?.steamid));
+  }
+  if (!interested && ToS) {
+    let updateResult = await db.update(users).set({ isSignedUp: 0 }).where(eq(users.steamId, req.session?.user?.steamid));
+  }
   res.status(200);
   return res.json({ status: 'Success' })
 })

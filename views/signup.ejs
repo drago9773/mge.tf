@@ -1,23 +1,37 @@
-<% if (session?.user) { %>
-<form method="POST" action="signup">
-  <div class="bg-black bg-opacity-25 p-2">
-    <fieldset>
-      <legend class="sr-only">Notifications</legend>
-      <div class="space-y-5">
-        <div class="relative flex items-start">
-          <div class="flex h-6 items-center">
-            <input id="comments" aria-describedby="comments-description" name="comments" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-          </div>
-          <div class="ml-3 text-sm leading-6">
-            <label for="comments" class="font-medium text-white">Sign Up</label>
-            <p id="comments-description" class="text-neutral-300">I am interested in signing up for the upcoming 2v2 League.</p>
+<div class="bg-black bg-opacity-50 flex justify-center items-center h-full">
+  <% if (session?.user) { %>
+  <form method="POST" action="signup">
+    <div class="bg-black bg-opacity-25 p-2">
+      <fieldset>
+        <div class="space-y-5">
+          <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+              <input id="interested" aria-describedby="interested-description" name="interested" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 text-sm leading-6">
+              <label for="interested" class="font-medium text-white">Sign Up</label>
+              <p id="comments-description" class="text-neutral-300">I am interested in signing up for the upcoming 2v2 League.</p>
+            </div>
           </div>
         </div>
+        <div class="space-y-5">
+          <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+              <input required id="ToS" aria-describedby="ToS-description" name="ToS" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 text-sm leading-6">
+              <label for="ToS" class="font-medium text-white">I Understand.</label>
+              <p id="ToS-description" class="text-neutral-300">I understand that the league will have an opt-in payment structure.</p>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <div class="w-full flex justify-center">
+        <button class="mt-1 border rounded border-neutral-300 p-1.5" type="submit">Confirm</button>
       </div>
-    </fieldset>
-    <button class="mt-1 border rounded border-neutral-300 p-1.5" type="submit">Confirm</button>
-  </div>
-</form>
-<% } else { %>
-<div>You must be signed in to view this page.</div>
-<% } %>
+    </div>
+  </form>
+  <% } else { %>
+  <div class="font-bold">You must be signed in to view this page.</div>
+  <% } %>
+</div>
