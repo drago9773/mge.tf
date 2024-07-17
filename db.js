@@ -14,5 +14,3 @@ export async function isAdmin(steamID) {
     const moderators = await db.select().from(schema.moderators).where(eq(schema.moderators.steamId, steamID));
     return moderators.length > 0;
 }
-
-console.log(await isAdmin(500));
