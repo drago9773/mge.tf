@@ -1,11 +1,19 @@
 import { sql } from 'drizzle-orm';
 import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
 
+export const UserRole = {
+  GUEST: 0,
+  USER: 1,
+  MODERATOR: 2,
+  ADMIN: 3,
+};
+
 export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
   steamUsername: text('steam_username').notNull(),
   steamAvatar: text('steam_avatar'),
-  isSignedUp: integer('isSignedUp').default(0)
+  isSignedUp: integer('isSignedUp').default(0),
+  permissionLevel: integer('permission_level').notNull().default(UserRole.GUEST),
 });
 
 export const threads = sqliteTable('threads', {
