@@ -1,3 +1,5 @@
 node_modules/
 pnpm-lock.yaml
 logs/*
+users.db
+sourcemod-local.db

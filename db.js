@@ -4,7 +4,7 @@ import Database from 'better-sqlite3';
 import { users, UserRole } from './schema.js';
 
 const sqlite = new Database('users.db');
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(sqlite);
 
 const mgeDb = new Database('sourcemod-local.sq3');
 export const eloDb = drizzle(mgeDb, { readonly: true });
