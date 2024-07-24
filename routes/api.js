@@ -90,4 +90,64 @@ router.get('/usersearch', async (req, res) => {
   }
 });
 
+router.post('/ban', async (req, res) => {
+  const adminSteamID = req.session?.user?.steamid;
+  const targetSteamID = req.body.steamId;
+
+  if (!adminSteamID || !targetSteamID) {
+    return res.status(400).json({ error: 'Missing admin or target Steam ID.' });
+  }
+
+  try {
+    const adminUser = db.select().from(users).where(eq(users.steamId, adminSteamID)).get();
+    if (!adminUser || adminUser.permissionLevel < UserRole.ADMIN) {
+      return res.status(403).json({ error: 'Unauthorized. Admin access required.' });
+    }
+
+    const result = db.update(users)
+      .set({ isBanned: 1 })
+      .where(eq(users.steamId, targetSteamID))
+      .run();
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User banned successfully.' });
+  } catch (error) {
+    console.error('Error banning user:', error);
+    res.status(500).json({ error: 'An error occurred while banning the user.' });
+  }
+});
+
+router.post('/unban', async (req, res) => {
+  const adminSteamID = req.session?.user?.steamid;
+  const targetSteamID = req.body.steamId;
+
+  if (!adminSteamID || !targetSteamID) {
+    return res.status(400).json({ error: 'Missing admin or target Steam ID.' });
+  }
+
+  try {
+    const adminUser = db.select().from(users).where(eq(users.steamId, adminSteamID)).get();
+    if (!adminUser || adminUser.permissionLevel < UserRole.ADMIN) {
+      return res.status(403).json({ error: 'Unauthorized. Admin access required.' });
+    }
+
+    const result = db.update(users)
+      .set({ isBanned: 0 })
+      .where(eq(users.steamId, targetSteamID))
+      .run();
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'User not found or already unbanned.' });
+    }
+
+    res.status(200).json({ message: 'User unbanned successfully.' });
+  } catch (error) {
+    console.error('Error unbanning user:', error);
+    res.status(500).json({ error: 'An error occurred while unbanning the user.' });
+  }
+});
+
 export default router;

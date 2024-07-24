@@ -1,7 +1,7 @@
 import SteamAuth from 'node-steam-openid';
 import express from 'express';
 import { db, isAdmin } from '../db.js';
-import { users } from '../schema.js';
+import { users, UserRole } from '../schema.js';
 import { eq } from 'drizzle-orm';
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';
@@ -39,6 +39,11 @@ router.get('/verify', async (req, res) => {
             await db.update(users)
                 .set({ steamUsername: user.username })
                 .where(eq(users.steamId, user.steamid));
+        }
+        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned == 1 ) {
+            delete req.session;
+            res.status(403);
+            return res.redirect('/');
         }
 
         const returnTo = req.session.returnTo || '/';
