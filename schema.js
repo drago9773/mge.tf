@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const UserRole = {
   GUEST: 0,
@@ -14,6 +14,7 @@ export const users = sqliteTable('users', {
   steamAvatar: text('steam_avatar'),
   isSignedUp: integer('isSignedUp').default(0),
   permissionLevel: integer('permission_level').notNull().default(UserRole.GUEST),
+  isBanned: integer('is_banned').notNull().default(0),
 });
 
 export const threads = sqliteTable('threads', {
@@ -92,8 +93,4 @@ export const playersInTeams = sqliteTable('players_in_teams', {
   teamId: integer('team_id').references(() => teams.id),
   startedAt: integer('started_at').default(sql`CURRENT_TIMESTAMP`),
   leftAt: integer('left_at'),
-}, (table) => {
-  return {
-    pk: primaryKey(table.playerId, table.teamId, table.startedAt),
-  }
 });

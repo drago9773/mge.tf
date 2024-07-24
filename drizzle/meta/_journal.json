@@ -36,6 +36,20 @@
       "when": 1721403581974,
       "tag": "0004_wise_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1721533281119,
+      "tag": "0005_mute_amphibian",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1721550153886,
+      "tag": "0006_hot_random",
+      "breakpoints": true
     }
   ]
 }

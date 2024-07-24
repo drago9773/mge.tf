@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.js';
-import { teams, matches, divisions, regions } from '../schema.js';
+import { users, teams, matches, divisions, regions } from '../schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 const router = express.Router();
@@ -11,6 +11,7 @@ router.get('/admin', async (req, res) => {
         res.status(404);
         return res.redirect('/');
     }
+    let allUsers = db.select().from(users).all();
     try {
         const allTeams = await db.select().from(teams);
         const allMatches = await db.select({
@@ -34,7 +35,8 @@ router.get('/admin', async (req, res) => {
             teams: allTeams,
             matches: allMatches,
             divisions: allDivisions,
-            regions: allRegions
+            regions: allRegions,
+            users: allUsers
         });
     } catch (err) {
         console.error('Error fetching data:', err);

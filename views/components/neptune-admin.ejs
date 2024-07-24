@@ -1,0 +1,194 @@
+<div class="bg-black bg-opacity-50">
+  <div class="max-w-md mx-auto mt-8">
+    <h1 class="text-2xl font-bold mb-4">Administrative</h1>
+    <h2 class="text-xl font-semibold mb-4">Create Team</h2>
+    <form action="/create_team" method="POST" class="space-y-4">
+      <%- include('input_admin', { id: "name", label: "Team Name:" }) %>
+      <%- include('input_admin', { id: "division_id", label: "Division ID:" }) %>
+      <%- include('input_admin', { id: "season_no", label: "Season Number:" }) %>
+      <%- include('input_admin', { id: "region", label: "Region:" }) %>
+      <div class="flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Team</button>
+      </div>
+    </form>
+  </div>
+
+  <h3>Teams</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% if (teams && teams.length > 0) { %>
+        <% teams.forEach((team, index) => { %>
+        <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= team.name %></td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            <% const division = divisions.find(div => div.id === team.division_id); %>
+            <%= division ? division.name : ' ' %>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.record %></td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.season_no %></td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            <% const region = regions.find(reg => reg.id === team.region_id); %>
+            <%= region ? region.name : ' ' %>
+          </td>
+        </tr>
+        <% }) %>
+        <% } else { %>
+        <tr>
+          <td colspan="5" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No teams created yet</td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="max-w-4xl mx-auto p-6 space-y-8">
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold">Create Match</h2>
+      <form action="/create_match" method="POST" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <%- include('input_admin', { id: "home_team_id", label: "Home Team ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "away_team_id", label: "Away Team ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "division_id", label: "Division ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "season_no", label: "Season Number:", type: "number" }) %>
+          <%- include('input_admin', { id: "week_no", label: "Week Number:", type: "number" }) %>
+          <%- include('input_admin', { id: "played_at", label: "Played at:", type: "text" }) %>
+        </div>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Match</button>
+      </form>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold">Submit Match Result</h2>
+      <form action="/submit_match_result" method="POST" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <%- include('input_admin', { id: "match_id", label: "Match ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "winner_id", label: "Winner Team ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "loser_score", label: "Loser Score:", type: "number" }) %>
+        </div>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Submit Match Result</button>
+      </form>
+    </section>
+
+    <section class="space-y-4">
+      <h3 class="text-xl font-semibold">Matches</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match ID</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Home Team</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Away Team</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season Number</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Week Number</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Played At</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Winner Team</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loser Score</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% if (matches && matches.length > 0) { %>
+            <% matches.forEach((match, index) => { %>
+            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= match.id %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.home_team_name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.away_team_name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.division_name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.season_no %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.week_no %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.played_at %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.winner_name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.loser_score %></td>
+            </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+              <td colspan="9" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No matches created yet</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold">Create Division</h2>
+      <form action="/create_division" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Division Name:", type: "text" }) %>
+        <button type="submit" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Create Division</button>
+      </form>
+    </section>
+
+    <section class="space-y-4">
+      <h3 class="text-xl font-semibold">Divisions</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% if (divisions && divisions.length > 0) { %>
+            <% divisions.forEach((division, index) => { %>
+            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= division.name %></td>
+            </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No divisions created yet</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold">Create Region</h2>
+      <form action="/create_region" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Region Name:", type: "text" }) %>
+        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Create Region</button>
+      </form>
+    </section>
+
+    <section class="space-y-4">
+      <h3 class="text-xl font-semibold">Regions</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% if (regions && regions.length > 0) { %>
+            <% regions.forEach((region, index) => { %>
+            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= region.name %></td>
+            </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <a href="/" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">HOME</a>
+  </div>
+</div>

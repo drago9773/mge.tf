@@ -1,0 +1,54 @@
+<div x-data="{ 
+  users: [], 
+  search: '', 
+  fetchUsers() {
+    fetch(`/api/usersearch?q=${this.search}`)
+      .then(response => response.json())
+      .then(data => this.users = data)
+      .catch(error => console.error('Error:', error))
+  }
+}" x-init="fetchUsers">
+
+  <div class="mb-4 bg-gray-800 p-4 rounded-lg shadow">
+    <input x-model="search" @input.debounce.300ms="fetchUsers" type="text" placeholder="Search users..." class="w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  </div>
+
+  <div class="overflow-x-auto bg-gray-900 rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-700">
+      <thead>
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+            Steam ID
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+            Steam Username
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+            Permission Level
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+            Signed Up
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+            Banned
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800 divide-y divide-gray-700">
+        <template x-for="(user, index) in users" :key="user.steamId">
+          <tr :class="index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300" x-text="user.steamId"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300" x-text="user.steamUsername"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300" x-text="user.permissionLevel"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="user.isSignedUp ? 'bg-green-800 text-green-100' : 'bg-red-800 text-red-100'" x-text="user.isSignedUp ? 'Yes' : 'No'"></span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="user.isBanned ? 'bg-red-800 text-red-100' : 'bg-green-800 text-green-100'" x-text="user.isBanned ? 'Yes' : 'No'"></span>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>
