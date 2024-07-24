@@ -1,41 +1,93 @@
-<div>
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/forums.css" />
-    <link rel="stylesheet" href="css/post.css" />
-    <div class="background-page"></div>
-    <h1 class="description">Forum Posts</h1>
-    <div class="forum-posts">
-        <button class="create_post" href="/load?page=create_post" hx-swap="outerHTML">Create Thread</button>
-
-        <% forums.forEach(forum=> { %>
-            <a hx-push-url="true" class="forum-strip" hx-get="/post/<%= forum.thread_id %>" hx-target="#main"
-                hx-swap="innerHTML">
-                <ul>
-                    <p class="steam-username">
-                        <%= forum.steam_username + ' published at ' + forum.formatted_date %>
-                    </p>
-                    <p class="title">
-                        <%= forum.title %>
-                    </p>
-                    <p class="content">
-                        <%= forum.content %>
-                    </p>
-
-                    <% if (session.user) { %>
-                        <% const isOwner=forum.steam_id===session.user.steamid; %>
-                            <% const isModerator=moderators.some(moderator=> moderator.steam_id ===
-                                session.user.steamid); %>
-                                <% if (isOwner || isModerator) { %>
-                                    <form hx-post="/remove_post" hx-target="#main" hx-swap="innerHTML">
-                                        <input type="hidden" name="post_id" value="<%= forum.thread_id %>">
-                                        <input type="hidden" name="is_owner" value="<%= isOwner %>">
-                                        <input type="hidden" name="is_moderator" value="<%= isModerator %>">
-                                        <button class="remove-post" type="submit">Remove Post</button>
-                                    </form>
-                                    <% } %>
-                                        <% } %>
-                </ul>
-            </a>
-            <% }); %>
-    </div>
+<div class="font-medium pl-2 bg-[url('/images/paper-background.png')] rounded-md flex flex-col">
+  <h1 class="flex justify-center text-4xl text-shadow shadow-black">Forum Posts</h1>
+  <div class="text-black forum-posts">
+    <a id="createThread" class="bg-amber-200 bg-opacity-20 shadow-sm shadow-black create_post flex rounded mb-2 p-2" href="/create_post" hx-swap="outerHTML">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="blue" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      <span>Create Thread</span>
+    </a>
+    <% threads.forEach(thread=> { %>
+    <% if (!thread?.hidden || moderators.includes(session?.user?.steamid)) { %>
+    <%- include('components/threadlink', {thread: thread}) %>
+    <% if (session.user && moderators.includes(session?.user?.steamid)) { %>
+    <form method="POST" action="/remove_thread" onsubmit="return confirmDelete('<%= thread.title %>')">
+      <input type="hidden" name="thread_id" value="<%= thread.id %>" />
+      <% if (!thread.hidden && moderators.includes(session?.user?.steamid)) { %>
+      <button class="mb-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">
+        Remove Thread
+      </button>
+      <% } else if (thread.hidden && moderators.includes(session?.user?.steamid)) { %>
+      <button class="mb-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mt-2" type="submit">
+        Show Thread
+      </button>
+      <% } %>
+    </form>
+    <% } %>
+    <% } %>
+    <% }); %>
+  </div>
 </div>
+<script>
+  function confirmDelete(threadTitle) {
+    return confirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`);
+  }
+  const nThreadButton = document.getElementById("createThread");
+  nThreadButton.addEventListener("mousedown", () => {
+    nThreadButton.classList.remove("shadow-sm");
+    nThreadButton.classList.add("shadow-inner");
+
+  });
+  nThreadButton.addEventListener("mouseup", () => {
+    nThreadButton.classList.remove("shadow-inner");
+    nThreadButton.classList.add("shadow-sm");
+  })
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const createPostLink = document.getElementById('createThread');
+
+    if (createPostLink) {
+      createPostLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        try {
+          const response = await fetch('/create_post');
+
+          if (response.ok) {
+            window.location.href = '/create_post';
+          } else {
+            const data = await response.json();
+            showPopup(data.error);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showPopup('An error occurred. Please try again.');
+        }
+      });
+    }
+
+    function showPopup(message) {
+      // Create and show a popup with the message
+      const popup = document.createElement('div');
+      popup.textContent = message;
+      popup.style.cssText = `
+            position: absolute;
+            top: 5%;
+            right: 50%;
+            transform: translateX(50%);
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1000;
+        `;
+      document.body.appendChild(popup);
+
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+  });
+</script>
