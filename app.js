@@ -62,6 +62,24 @@ app.get('/signup', (req, res) => {
     res.render('layout', { title: 'Signup', body: 'signup', session: req.session });
 });
 
+
+app.post('/signup', async (req, res) => {
+    if (req.session?.user) {
+        try {
+            await db.update(users)
+                .set({ isSignedUp: 1 })
+                .where(eq(users.steamId, req.session.user.steamId));
+            req.session.user.isSignedUp = 1;
+            res.redirect('/signup');
+        } catch (error) {
+            console.error('Error updating user signup status:', error);
+            res.status(500).send('An error occurred during signup');
+        }
+    } else {
+        res.status(401).send('Unauthorized');
+    }
+});
+
 app.get('/player_page/:steamid', async (req, res) => {
     const steamid = req.params.steamid;
     try {

@@ -1,37 +1,61 @@
-<div class="bg-black bg-opacity-50 flex justify-center items-center h-full">
-  <% if (session?.user) { %>
-  <form method="POST" action="signup">
-    <div class="bg-black bg-opacity-25 p-2">
-      <fieldset>
-        <div class="space-y-5">
-          <div class="relative flex items-start">
-            <div class="flex h-6 items-center">
-              <input id="interested" aria-describedby="interested-description" name="interested" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+<!-- views/signup.ejs -->
+<div class="bg-slate-950 py-16 sm:py-24">
+  <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="relative isolate overflow-hidden bg-black bg-opacity-50 px-6 py-24 shadow-2xl sm:rounded-3xl sm:px-24 xl:py-32">
+      <h2 class="mx-auto max-w-3xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">Interested in the upcoming 2v2 League?</h2>
+      <p class="mx-auto mt-2 max-w-xl text-center text-lg leading-8 text-gray-300">Let us know if you want to join our competitive gaming community and showcase your skills in our upcoming league.</p>
+      
+      <% if (session?.user) { %>
+        <% if (!session.user.isSignedUp) { %>
+          <form method="POST" action="/signup" class="mx-auto mt-10 max-w-md">
+            <fieldset>
+              <div class="space-y-5">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="interested" name="interested" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="interested" class="font-medium text-white">I'm interested</label>
+                    <p id="interested-description" class="text-neutral-300">I am interested in signing up for the upcoming 2v2 League.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-5 mt-5">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input required id="ToS" name="ToS" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="ToS" class="font-medium text-white">I Understand</label>
+                    <p id="ToS-description" class="text-neutral-300">I understand that the league will have an opt-in payment structure.</p>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <div class="w-full flex justify-center mt-6">
+              <button type="submit" class="flex-none rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Confirm</button>
             </div>
-            <div class="ml-3 text-sm leading-6">
-              <label for="interested" class="font-medium text-white">Sign Up</label>
-              <p id="comments-description" class="text-neutral-300">I am interested in signing up for the upcoming 2v2 League.</p>
-            </div>
+          </form>
+        <% } else { %>
+          <div class="mt-10 text-center text-green-400 font-semibold">
+            Confirmed! Your interest in our league has been recorded. Stay tuned for more information!
           </div>
+        <% } %>
+      <% } else { %>
+        <div class="mt-10 text-center text-white font-bold">
+          You must be signed in to view this page.
         </div>
-        <div class="space-y-5">
-          <div class="relative flex items-start">
-            <div class="flex h-6 items-center">
-              <input required id="ToS" aria-describedby="ToS-description" name="ToS" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-            </div>
-            <div class="ml-3 text-sm leading-6">
-              <label for="ToS" class="font-medium text-white">I Understand.</label>
-              <p id="ToS-description" class="text-neutral-300">I understand that the league will have an opt-in payment structure.</p>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-      <div class="w-full flex justify-center">
-        <button class="mt-1 border rounded border-neutral-300 p-1.5" type="submit">Confirm</button>
-      </div>
+      <% } %>
+
+      <svg viewBox="0 0 1024 1024" class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2" aria-hidden="true">
+        <circle cx="512" cy="512" r="512" fill="url(#759c1415-0410-454c-8f7c-9a820de03641)" fill-opacity="0.7" />
+        <defs>
+          <radialGradient id="759c1415-0410-454c-8f7c-9a820de03641" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 512) rotate(90) scale(512)">
+            <stop stop-color="#7775D6" />
+            <stop offset="1" stop-color="#E935C1" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+      </svg>
     </div>
-  </form>
-  <% } else { %>
-  <div class="font-bold">You must be signed in to view this page.</div>
-  <% } %>
+  </div>
 </div>
