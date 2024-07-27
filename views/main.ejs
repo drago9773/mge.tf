@@ -20,25 +20,37 @@
           </tr>
         </thead>
         <tbody id="eloTableBody" class="text-gray-50 divide-y">
-          <% elo.forEach((player, index)=> { %>
+          <% elo.forEach((player, index) => { %>
           <tr style="cursor:pointer">
             <td class="px-6 py-4 whitespace-nowrap">
-              <%= index + 1 %>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= index + 1 %>
+              </a>
             </td>
             <td class="overflow-x-auto px-6 py-4 break-words">
-              <a href="/player_page/<%= player.steamid %>"><%= player.name %></a>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= player.name %>
+              </a>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <%= player.rating %>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= player.rating %>
+              </a>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <%= player.wins %>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= player.wins %>
+              </a>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <%= player.losses %>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= player.losses %>
+              </a>
             </td>
             <td class="hidden">
-              <%= player.steamid %>
+              <a href="/player_page/<%= player.steamid %>" style="display:block; color: inherit; text-decoration: none;">
+                <%= player.steamid %>
+              </a>
             </td>
           </tr>
           <% }) %>
