@@ -27,8 +27,9 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+// FIXME: CHANGE THIS TO ENV!!!
 app.use(session({
-    secret: 'your-secret-key',
+    secret: '4d20d22d-65b9-429e-9f4a-b8e6f8cf866bx',
     resave: false,
     saveUninitialized: true
 }));
