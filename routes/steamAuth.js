@@ -40,7 +40,7 @@ router.get('/verify', async (req, res) => {
                 .set({ steamUsername: user.username })
                 .where(eq(users.steamId, user.steamid));
         }
-        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned == 1 ) {
+        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned == 1) {
             delete req.session;
             res.status(403);
             return res.redirect('/');
