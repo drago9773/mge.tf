@@ -4,3 +4,4 @@ logs/*
 .idea
 users.db
 sourcemod-local.db
+drizzle/meta/_journal.json
