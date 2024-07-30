@@ -13,9 +13,12 @@
       <a href="/league" class="block px-4 py-2 text-white hover:bg-gray-800">League</a>
       <a href="/2v2cup" class="block px-4 py-2 text-white hover:bg-gray-800">2v2 Cup</a>
       <a href="/signup" class="block px-4 py-2 text-white hover:bg-gray-800">Sign Up</a>
-      <% if (session?.user?.isAdmin) { %>
+      <% if (session?.user?.permissionLevel === 3) { %>
       <a href="/admin" class="block px-4 py-2 text-white hover:bg-gray-800">Admin</a>
-      <% } %> <% if (session.user) { %>
+      <% } else if (session?.user?.permissionLevel === 2) { %>
+      <a href="/moderation" class="block px-4 py-2 text-white hover:bg-gray-800">Moderation</a>
+      <% } %>
+      <% if (session.user) { %>
       <a href="/logout" class="block px-4 py-2 text-white hover:bg-gray-800">Logout</a>
       <% } %> <%# Add more links as needed %>
     </div>

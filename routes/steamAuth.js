@@ -1,6 +1,6 @@
 import SteamAuth from 'node-steam-openid';
 import express from 'express';
-import { db, isAdmin } from '../db.js';
+import { db, permissionLevelFromSteamId } from '../db.js';
 import { users, UserRole } from '../schema.js';
 import { eq } from 'drizzle-orm';
 
@@ -25,9 +25,9 @@ router.get('/verify', async (req, res) => {
     try {
         const user = await steam.authenticate(req);
         req.session.user = user;
-        req.session.user.isAdmin = await isAdmin(req.session.user.steamid);
+        req.session.user.permissionLevel = permissionLevelFromSteamId(req.session.user.steamid);
 
-        const existingUser = await db.select().from(users).where(eq(users.steamId, user.steamid)).get();
+        const existingUser = db.select().from(users).where(eq(users.steamId, user.steamid)).get();
 
         if (!existingUser) {
             await db.insert(users).values({
@@ -35,17 +35,19 @@ router.get('/verify', async (req, res) => {
                 steamUsername: user.username,
                 steamAvatar: user.avatar.large
             });
-        } else if (existingUser.steamUsername !== user.username) {
+        } else if (!existingUser.nameOverride && existingUser.steamUsername !== user.username) {
             await db.update(users)
                 .set({ steamUsername: user.username })
                 .where(eq(users.steamId, user.steamid));
         }
-        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned == 1) {
-            delete req.session;
+        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned === 1) {
+            req.session.destroy();
             res.status(403);
             return res.redirect('/');
         }
-
+        if (existingUser) {
+            req.session.user.isSignedUp = existingUser.isSignedUp;
+        }
         const returnTo = req.session.returnTo || '/';
         delete req.session.returnTo;
         return res.redirect(returnTo);

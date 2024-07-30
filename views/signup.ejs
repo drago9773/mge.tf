@@ -3,7 +3,6 @@
     <div class="relative isolate overflow-hidden bg-black px-6 py-24 shadow-2xl sm:rounded-3xl sm:px-24 xl:py-32">
       <h2 class="mx-auto max-w-3xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">Interested in the upcoming 2v2 League?</h2>
       <p class="mx-auto mt-2 max-w-xl text-center text-lg leading-8 text-gray-300">Let us know if you want to join our competitive gaming community and showcase your skills in our upcoming league.</p>
-     
       <% if (session?.user) { %>
         <% if (!session.user.isSignedUp) { %>
           <form method="POST" action="/signup" class="mx-auto mt-10 max-w-md">

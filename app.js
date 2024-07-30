@@ -9,6 +9,7 @@ import steamRoutes from './routes/steamAuth.js';
 import signupRoutes from './routes/signup.js';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
+import moderatorRoutes from './routes/moderation.js';
 import { db, eloDb } from './db.js';
 import { steamId64FromSteamId32 } from './helpers/steamid.js';
 import { users, moderators } from './schema.js';
@@ -39,6 +40,7 @@ app.use('/', steamRoutes);
 app.use('/signup', signupRoutes);
 app.use('/api', apiRoutes);
 app.use('/', adminRoutes);
+app.use('/moderation', moderatorRoutes);
 
 // TODO: Cache the elo stuff and cron job it
 app.get('/', async (req, res) => {
@@ -69,7 +71,7 @@ app.post('/signup', async (req, res) => {
         try {
             await db.update(users)
                 .set({ isSignedUp: 1 })
-                .where(eq(users.steamId, req.session.user.steamId));
+                .where(eq(users.steamId, req.session.user.steamid));
             req.session.user.isSignedUp = 1;
             res.redirect('/signup');
         } catch (error) {
