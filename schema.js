@@ -12,7 +12,7 @@ export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
   steamUsername: text('steam_username').notNull(),
   steamAvatar: text('steam_avatar'),
-  isSignedUp: integer('isSignedUp').default(0),
+  isSignedUp: integer('isSignedUp').notNull().default(0),
   permissionLevel: integer('permission_level').notNull().default(UserRole.GUEST),
   isBanned: integer('is_banned').notNull().default(0),
 });
