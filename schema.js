@@ -15,6 +15,7 @@ export const users = sqliteTable('users', {
   isSignedUp: integer('isSignedUp').notNull().default(0),
   permissionLevel: integer('permission_level').notNull().default(UserRole.GUEST),
   isBanned: integer('is_banned').notNull().default(0),
+  nameOverride: integer('name_override').notNull().default(0),
 });
 
 export const threads = sqliteTable('threads', {
