@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4391e95f-ea3b-4c1e-90d9-3ac0c08410d2",
-  "prevId": "ff68f8bb-d8af-45a6-97f3-52a4821bc06b",
+  "id": "a965eea4-0604-4d6c-a442-487e7052980b",
+  "prevId": "2e6e4186-f75c-43bf-abcf-48f8d79f4b16",
   "tables": {
     "activity": {
       "name": "activity",
@@ -283,71 +283,6 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "players_in_teams": {
-      "name": "players_in_teams",
-      "columns": {
-        "player_id": {
-          "name": "player_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "team_id": {
-          "name": "team_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "started_at": {
-          "name": "started_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "left_at": {
-          "name": "left_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "players_in_teams_player_id_players_id_fk": {
-          "name": "players_in_teams_player_id_players_id_fk",
-          "tableFrom": "players_in_teams",
-          "tableTo": "players",
-          "columnsFrom": [
-            "player_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "players_in_teams_team_id_teams_id_fk": {
-          "name": "players_in_teams_team_id_teams_id_fk",
-          "tableFrom": "players_in_teams",
-          "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },

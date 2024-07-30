@@ -12,7 +12,7 @@ export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
   steamUsername: text('steam_username').notNull(),
   steamAvatar: text('steam_avatar'),
-  isSignedUp: integer('isSignedUp').notNull().default(0),
+  isSignedUp: integer('isSignedUp').default(0),
   permissionLevel: integer('permission_level').notNull().default(UserRole.GUEST),
   isBanned: integer('is_banned').notNull().default(0),
   nameOverride: integer('name_override').notNull().default(0),
@@ -87,11 +87,4 @@ export const players = sqliteTable('players', {
   steamUsername: text('steam_username'),
   steamAvatar: text('steam_avatar'),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const playersInTeams = sqliteTable('players_in_teams', {
-  playerId: integer('player_id').references(() => players.id),
-  teamId: integer('team_id').references(() => teams.id),
-  startedAt: integer('started_at').default(sql`CURRENT_TIMESTAMP`),
-  leftAt: integer('left_at'),
 });
