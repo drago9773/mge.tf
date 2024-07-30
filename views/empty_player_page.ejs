@@ -1,25 +1,18 @@
-<div class="dashboard-container">
-    <link rel="stylesheet" href="css/player-page.css" />
-    <title>User Profile</title>
-
-    <h1><%= name %></h1>
-    <p>This player has not logged into mge.tf</p>
-    <div class="logos-container">
-        <div class="logo">
-            <a href="https://steamcommunity.com/profiles/<%= steamid %>" target="_blank">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
-            </a>
-        </div>
-        <div class="logo">
-            <a href="https://logs.tf/profile/<%= steamid %>" target="_blank">
-                <img src="images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
-            </a>
-        </div>
-        <div class="logo rgl-logo">
-            <a href="https://rgl.gg/Public/PlayerProfile?p=<%= steamid %>&r=40" target="_blank">
-                <img src="images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
-            </a>
-        </div>
-    </div>
+<div class="text-black flex flex-col mx-auto max-w-5xl w-3/5 bg-white shadow-md rounded-lg p-6 gap-4 mt-2">
+  <div class="flex flex-col justify-center align-middle items-center">
+    <h1 class="text-3xl font-bold m-2">
+      Player has not signed into mge.tf
+    </h1>
+  </div>
+  <div class="flex flex-col gap-2">
+    <a href="https://steamcommunity.com/profiles/<%= steamid %>" target="_blank">
+      <img class="h-10 w-28 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
+    </a>
+    <a href="https://logs.tf/profile/<%= steamid %>" target="_blank">
+      <img class="h-14 w-28 object-contain" src="/images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
+    </a>
+    <a href="https://rgl.gg/Public/PlayerProfile?p=<%= steamid %>&r=40" target="_blank">
+      <img class="h-14 w-28 object-contain" src="/images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
+    </a>
+  </div>
 </div>
-
