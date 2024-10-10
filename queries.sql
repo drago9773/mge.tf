@@ -22,15 +22,11 @@ CREATE TABLE IF NOT EXISTS moderators(
             FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS moderators(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
+UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 
 SELECT users.steam_id
 FROM moderators
 JOIN users ON moderators.user_id = users.id;
 
 select posts.id FROM posts;
+

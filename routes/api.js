@@ -4,7 +4,7 @@ import { eq, or, like } from 'drizzle-orm';
 import { users, moderators, UserRole } from '../schema.js';
 
 const router = express.Router();
-const supermods = ['76561199032212844'];
+const supermods = ['76561199032212844', '76561198082657536'];
 
 router.get('/', async (req, res) => {
   const steamID = req?.session?.user?.steamid;

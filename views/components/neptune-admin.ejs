@@ -6,7 +6,7 @@
       <%- include('input_admin', { id: "name", label: "Team Name:" }) %>
       <%- include('input_admin', { id: "division_id", label: "Division ID:" }) %>
       <%- include('input_admin', { id: "season_no", label: "Season Number:" }) %>
-      <%- include('input_admin', { id: "region", label: "Region:" }) %>
+      <%- include('input_admin', { id: "region_id", label: "Region:" }) %>
       <div class="flex justify-end">
         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Team</button>
       </div>
@@ -23,6 +23,7 @@
           <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
           <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season</th>
           <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -31,51 +32,46 @@
         <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
           <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= team.name %></td>
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-            <% const division = divisions.find(div => div.id === team.division_id); %>
+            <% const division = divisions.find(div => div.id === team.divisionId); %>
             <%= division ? division.name : ' ' %>
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.record %></td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.season_no %></td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.seasonNo %></td>
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-            <% const region = regions.find(reg => reg.id === team.region_id); %>
+            <% const region = regions.find(reg => reg.id === team.regionId); %>
             <%= region ? region.name : ' ' %>
           </td>
-        </tr>
-        <% }) %>
-        <% } else { %>
-        <tr>
-          <td colspan="5" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No teams created yet</td>
-        </tr>
-        <% } %>
-      </tbody>
-    </table>
-  </div>
+          <td class="px-4 py-4 whitespace-nowrap text-sm">
+          <form action="/remove_team" method="POST" class="inline ml-2">
+            <input type="hidden" name="team_id" value="<%= team.id %>">
+            <button type="submit" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+              Remove
+            </button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+      <% } else { %>
+      <tr>
+        <td colspan="6" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No teams created yet</td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
 
   <div class="max-w-4xl mx-auto p-6 space-y-8">
     <section class="space-y-4">
       <h2 class="text-2xl font-bold">Create Match</h2>
       <form action="/create_match" method="POST" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
-          <%- include('input_admin', { id: "home_team_id", label: "Home Team ID:", type: "number" }) %>
-          <%- include('input_admin', { id: "away_team_id", label: "Away Team ID:", type: "number" }) %>
-          <%- include('input_admin', { id: "division_id", label: "Division ID:", type: "number" }) %>
-          <%- include('input_admin', { id: "season_no", label: "Season Number:", type: "number" }) %>
-          <%- include('input_admin', { id: "week_no", label: "Week Number:", type: "number" }) %>
-          <%- include('input_admin', { id: "played_at", label: "Played at:", type: "text" }) %>
+          <%- include('input_admin', { id: "home_team_id", label: "Home Team ID:", type: "number", name: "home_team_id" }) %>
+          <%- include('input_admin', { id: "away_team_id", label: "Away Team ID:", type: "number", name: "away_team_id" }) %>
+          <%- include('input_admin', { id: "division_id", label: "Division ID:", type: "number", name: "division_id" }) %>
+          <%- include('input_admin', { id: "season_no", label: "Season Number:", type: "number", name: "season_no" }) %>
+          <%- include('input_admin', { id: "week_no", label: "Week Number:", type: "number", name: "week_no" }) %>
         </div>
         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Match</button>
-      </form>
-    </section>
-
-    <section class="space-y-4">
-      <h2 class="text-2xl font-bold">Submit Match Result</h2>
-      <form action="/submit_match_result" method="POST" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-          <%- include('input_admin', { id: "match_id", label: "Match ID:", type: "number" }) %>
-          <%- include('input_admin', { id: "winner_id", label: "Winner Team ID:", type: "number" }) %>
-          <%- include('input_admin', { id: "loser_score", label: "Loser Score:", type: "number" }) %>
-        </div>
-        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Submit Match Result</button>
       </form>
     </section>
 
@@ -100,15 +96,19 @@
             <% if (matches && matches.length > 0) { %>
             <% matches.forEach((match, index) => { %>
             <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+              <% const homeTeam = teams.find(team => team.id === match.homeTeamId); %>
+              <% const awayTeam = teams.find(team => team.id === match.awayTeamId); %>
+              <% const division = divisions.find(division => division.id === match.divisionId); %>
+              <% const winnerTeam = teams.find(team => team.id === match.winnerId); %>
               <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= match.id %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.home_team_name %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.away_team_name %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.division_name %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.season_no %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.week_no %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.played_at %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.winner_name %></td>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.loser_score %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= homeTeam.name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= awayTeam.name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= division.name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.seasonNo %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.weekNo %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.playedAt %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= winnerTeam.name %></td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.loserScore %></td>
             </tr>
             <% }) %>
             <% } else { %>
@@ -119,6 +119,18 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold">Submit Match Result</h2>
+      <form action="/submit_match_result" method="POST" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <%- include('input_admin', { id: "match_id", label: "Match ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "winner_id", label: "Winner Team ID:", type: "number" }) %>
+          <%- include('input_admin', { id: "loser_score", label: "Loser Score:", type: "number" }) %>
+        </div>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Submit Match Result</button>
+      </form>
     </section>
 
     <section class="space-y-4">

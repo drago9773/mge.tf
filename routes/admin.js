@@ -11,7 +11,7 @@ router.get('/admin', async (req, res) => {
         res.status(404);
         return res.redirect('/');
     }
-    let allUsers = db.select().from(users).all();
+    let allUsers = await db.select().from(users).all();
     try {
         const allTeams = await db.select().from(teams);
         const allMatches = await db.select({
@@ -63,18 +63,37 @@ router.post('/create_team', async (req, res) => {
     }
 });
 
+router.post('/remove_team', async (req, res) => {
+    const { team_id } = req.body;
+
+    try {
+        const result = await db.delete(teams).where(eq(teams.id, team_id));
+
+        if (result.changes === 0) {
+            return res.status(404).send('Team not found.');
+        }
+
+        // Redirect to the admin page after successful deletion
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error removing team:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 router.post('/create_match', async (req, res) => {
-    const { home_team_id, away_team_id, division_id, season_no, week_no, winner_id } = req.body;
+    const { home_team_id, away_team_id, division_id, season_no, week_no } = req.body;
 
     try {
         await db.insert(matches).values({
-            homeTeamId: home_team_id,
-            awayTeamId: away_team_id,
-            divisionId: division_id,
-            seasonNo: season_no,
-            weekNo: week_no,
-            winnerId: winner_id,
-            createdAt: new Date()
+            homeTeamId: Number(home_team_id),   // Ensure these are numbers
+            awayTeamId: Number(away_team_id),
+            divisionId: Number(division_id),
+            seasonNo: Number(season_no),
+            weekNo: Number(week_no),
+            playedAt: null,  // Set playedAt to null
+            winnerId: null,  // Set winnerId to null
+            createdAt: Math.floor(Date.now() / 1000)  // Current timestamp
         });
         res.redirect('/admin');
     } catch (err) {
@@ -82,6 +101,7 @@ router.post('/create_match', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 router.post('/create_division', async (req, res) => {
     const { name } = req.body;

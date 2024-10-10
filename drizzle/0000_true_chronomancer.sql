@@ -12,20 +12,26 @@ CREATE TABLE IF NOT EXISTS `divisions` (
 	`name` text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `matches` (
+CREATE TABLE IF NOT EXISTS `regions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`home_team_id` integer NOT NULL,
-	`away_team_id` integer NOT NULL,
-	`division_id` integer NOT NULL,
-	`loser_score` integer,
-	`season_no` integer NOT NULL,
-	`week_no` integer NOT NULL,
-	`winner_id` integer,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action
+	`name` text NOT NULL
+);
+SELECT * FROM divisions;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS `matches` (
+    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `home_team_id` integer NOT NULL,
+    `away_team_id` integer NOT NULL,
+    `division_id` integer NOT NULL,
+    `loser_score` integer,
+    `season_no` integer NOT NULL,
+    `week_no` integer NOT NULL,
+    `winner_id` integer,
+    `created_at` integer DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
+    FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
+    FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE CASCADE,
+    FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `moderators` (
@@ -61,11 +67,6 @@ CREATE TABLE IF NOT EXISTS `posts` (
 	FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS `regions` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `teams` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -73,10 +74,13 @@ CREATE TABLE IF NOT EXISTS `teams` (
 	`division_id` integer,
 	`region_id` integer,
 	`season_no` integer,
+    `status` INTEGER DEFAULT 0,
 	`created_at` integer DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE CASCADE,
+	FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE no action ON DELETE CASCADE
 );
+SELECT * FROM teams;
+
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `threads` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
