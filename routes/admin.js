@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.js';
-import { users, teams, matches, divisions, regions } from '../schema.js';
+import { users, teams, matches, divisions, regions, seasons } from '../schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 const router = express.Router();
@@ -102,7 +102,6 @@ router.post('/create_match', async (req, res) => {
     }
 });
 
-
 router.post('/create_division', async (req, res) => {
     const { name } = req.body;
     try {
@@ -110,17 +109,6 @@ router.post('/create_division', async (req, res) => {
         res.redirect('/admin');
     } catch (err) {
         console.error('Error creating division:', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-router.post('/create_region', async (req, res) => {
-    const { name } = req.body;
-    try {
-        await db.insert(regions).values({ name });
-        res.redirect('/admin');
-    } catch (err) {
-        console.error('Error creating region:', err);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -155,6 +143,27 @@ router.post('/submit_match_result', async (req, res) => {
         res.redirect('/admin');
     } catch (err) {
         console.error('Error updating match result:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/create_region', async (req, res) => {
+    const { name } = req.body;
+    try {
+        await db.insert(regions).values({ name });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error creating region:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/create_season', async (req, res) => {
+    try {
+        await db.insert('seasons').values({});
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error creating season:', err);
         res.status(500).send('Internal Server Error');
     }
 });

@@ -59,13 +59,17 @@ export const regions = sqliteTable('regions', {
   name: text('name').notNull(),
 });
 
+export const seasons = sqliteTable('seasons', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+});
+
 export const teams = sqliteTable('teams', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   record: text('record'),
   divisionId: integer('division_id').references(() => divisions.id),
   regionId: integer('region_id').references(() => regions.id),
-  seasonNo: integer('season_no'),
+  seasonNo: integer('season_no').references(() => seasons.id),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -75,7 +79,7 @@ export const matches = sqliteTable('matches', {
   awayTeamId: integer('away_team_id').notNull().references(() => teams.id),
   divisionId: integer('division_id').notNull().references(() => divisions.id),
   loserScore: integer('loser_score'),
-  seasonNo: integer('season_no').notNull(),
+  seasonNo: integer('season_no').notNull().references(() => seasons.id),
   weekNo: integer('week_no').notNull(),
   winnerId: integer('winner_id').references(() => teams.id),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),

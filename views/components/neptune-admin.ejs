@@ -4,9 +4,9 @@
     <h2 class="text-xl font-semibold mb-4">Create Team</h2>
     <form action="/create_team" method="POST" class="space-y-4">
       <%- include('input_admin', { id: "name", label: "Team Name:" }) %>
-      <%- include('input_admin', { id: "division_id", label: "Division ID:" }) %>
-      <%- include('input_admin', { id: "season_no", label: "Season Number:" }) %>
-      <%- include('input_admin', { id: "region_id", label: "Region:" }) %>
+      <%- include('input_admin', { id: "division_id", label: "Division ID (1 for OPEN, 2 for INVITE):" }) %>
+      <%- include('input_admin', { id: "season_no", label: "Season No:" }) %>
+      <%- include('input_admin', { id: "region_id", label: "Region ID (1 for NA, 2 for EU):" }) %>
       <div class="flex justify-end">
         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Team</button>
       </div>
@@ -31,16 +31,23 @@
         <% teams.forEach((team, index) => { %>
         <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
           <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= team.name %></td>
+          
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             <% const division = divisions.find(div => div.id === team.divisionId); %>
             <%= division ? division.name : ' ' %>
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.record %></td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= team.seasonNo %></td>
+
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            <% const season = seasons.find(szn => szn.id === team.seasonNo); %>
+            <%= season ? season.id : ' ' %>
+          </td>
+
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
             <% const region = regions.find(reg => reg.id === team.regionId); %>
             <%= region ? region.name : ' ' %>
           </td>
+
           <td class="px-4 py-4 whitespace-nowrap text-sm">
           <form action="/remove_team" method="POST" class="inline ml-2">
             <input type="hidden" name="team_id" value="<%= team.id %>">
@@ -200,6 +207,35 @@
         </table>
       </div>
     </section>
+
+    <section class="space-y-4">
+      <h3 class="text-xl font-semibold">Seasons</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Index</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season ID</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% if (seasons && seasons.length > 0) { %>
+            <% seasons.forEach((season, index) => { %>
+            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= index + 1 %></td> <!-- Incremental index -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= season.id %></td> <!-- Season ID -->
+            </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+              <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
 
     <a href="/" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">HOME</a>
   </div>
