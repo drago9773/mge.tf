@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
 CREATE TABLE IF NOT EXISTS `teams` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
+	`tean_avatar` text,
 	`record` text,
 	`division_id` integer,
 	`region_id` integer,
