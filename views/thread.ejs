@@ -1,0 +1,94 @@
+<%#
+    TODO: Do we display avatars?
+    TODO: Display real ELO
+    TODO: Display real post count
+    TODO: Change username color based on ELO
+    TODO: Potentially display badges based on MGE achievements
+ %>
+<div class="font-medium post text-black border-black shadow shadow-black h-full flex flex-col">
+  <title>
+    <%= thread.title %>
+  </title>
+  <div class="px-2 py-2 gap-2 h-screen overflow-y-auto border-lg bg-[url('/images/paper-background.png')]">
+    <a href="/forums">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="filter: url(#shadow);">
+        <filter id="shadow">
+          <feDropShadow dx="2" dy="2" stdDeviation="1" />
+        </filter>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+    </a>
+    <div class="w-full flex justify-center text-2xl text-shadow-sm shadow-black">
+      <%= thread.title %>
+    </div>
+    <div class="my-2 border border-black rounded shadow shadow-black bg-black bg-opacity-10">
+      <div class="flex">
+        <div class="w-1/5 min-w-[150px] p-2 border-r border-black">
+          <a href="/player_page/<%= thread.owner %>" hx-target="#main" hx-swap="innerHtml">
+            <div class="text-rose-800 font-bold text-center">
+              <%= thread.steamUsername %>
+            </div>
+            <div class="text-center">Elo</div>
+            <div class="text-center">Posts</div>
+          </a>
+        </div>
+        <div class="w-3/4 flex flex-col flex-grow">
+          <p class="p-2 text-left whitespace-pre-wrap">
+            <%= thread.content %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <% replies.forEach(reply=> { %>
+    <div class="border mb-2 border-black rounded shadow shadow-black bg-black bg-opacity-10">
+      <div class="flex">
+        <div class="w-1/5 min-w-[150px] p-2 border-r border-black">
+          <a href="/player_page/<%= reply.owner %>" hx-target="#main" hx-swap="innerHtml">
+            <div class="text-rose-800 font-bold text-center">
+              <%= reply.steamUsername %>
+            </div>
+            <div class="text-center">Elo</div>
+            <div class="text-center">Posts</div>
+          </a>
+        </div>
+        <div class="w-3/4 flex flex-col flex-grow">
+          <p class="p-2">
+            <%= reply.content %>
+          </p>
+        </div>
+      </div>
+      <% if (session.user && (moderators.includes(session.user.steamid) ||
+                            reply.owner===session.user.steamid)) { %>
+      <div class="border-t border-black">
+        <form method="POST" class="p-2" action="/remove_reply">
+          <input type="hidden" name="reply_id" value="<%= reply.id %>">
+          <button class="text-red-700 font-bold" type="submit">Remove Reply</button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+    <% }); %>
+    <% if (session.user) { %>
+    <form action="/thread/<%= thread.id %>/reply" method="POST" class="reply-textbox">
+      <input type="hidden" name="thread_id" value="<%= thread.id %>">
+      <label for="content" class="block mb-2 text-sm font-medium text-black">Reply to
+        thread:</label>
+      <textarea class="block p-2.5 w-full text-sm rounded-lg border border-gray-900 bg-transparent text-black" id="content" name="content" rows="4"></textarea>
+      <button id="replyButton" class="mt-1 shadow-black shadow p-2 rounded" type="submit">Post
+        Reply</button>
+    </form>
+    <% } else { %>
+    <div>You must be logged in to reply.</div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  const replyButton = document.getElementById('replyButton');
+  replyButton.addEventListener('mousedown', () => {
+    replyButton.classList.toggle('shadow-inner')
+  })
+  replyButton.addEventListener('mouseup', () => {
+    replyButton.classList.toggle('shadow-inner')
+  })
+</script>

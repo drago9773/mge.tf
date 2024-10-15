@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-custom-background {
+  background-image: url('/images/badlands-mid.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* @view-transition {
+  navigation: auto;
+} */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100vh;
+  background-color: #1a202c;
+  transition: left 0.3s ease;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+@layer base {
+  html {
+    font-family: Inter, system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-dark {
+    scrollbar-color: #4B5563 #1F2937;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-track {
+    background: #1F2937;
+  }
+  
+  .scrollbar-dark::-webkit-scrollbar-thumb {
+    background-color: #4B5563;
+    border-radius: 20px;
+    border: 2px solid #1F2937;
+  }
+}
+
+/* Apply to all elements */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+/* For Webkit browsers (Chrome, Safari, etc.) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #4B5563;
+  border-radius: 20px;
+  border: 2px solid #1F2937;
+}
+
+/* If you prefer to apply only to html and body */
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: #4B5563;
+  border-radius: 20px;
+  border: 2px solid #1F2937;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+::view-transition-old(persistent-image-1),
+::view-transition-new(persistent-image-1) {
+  animation-duration: 0.1s;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-old(persistent-image-1):only-child {
+  animation: fade-out 0.2s ease-out forwards;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
