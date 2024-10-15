@@ -12,7 +12,7 @@ import adminRoutes from './routes/admin.js';
 import moderatorRoutes from './routes/moderation.js';
 import { db, eloDb } from './db.js';
 import { steamId64FromSteamId32 } from './helpers/steamid.js';
-import { users, moderators } from './schema.js';
+import { users, moderators, teams, regions, divisions } from './schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -99,6 +99,35 @@ app.get('/player_page/:steamid', async (req, res) => {
     }
 });
 
+app.get('/team_page/:teamid', async (req, res) => {
+    const teamid = req.params.teamid;
+
+    try {
+        const team = await db.select().from(teams).where(eq(teams.id, teamid)).get();
+        
+        if (!team) {
+            res.status(404).send('Team not found');
+            return;
+        }
+
+        const allRegions = await db.select().from(regions);
+        const allDivisions = await db.select().from(divisions);
+        
+        res.render('layout', {
+            body: 'team_page',
+            title: team.name,
+            team: team,
+            regions: allRegions,
+            divisions: allDivisions,
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + err.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 app.get('/users', async (req, res) => {
     try {
         const allUsers = await db.select().from(users);
@@ -116,6 +145,22 @@ app.get('/users', async (req, res) => {
             body: 'users',
             users: allUsers,
             mods: usersWithModStatus,
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + err.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/teams', async (req, res) => {
+    try {
+        const allTeams = await db.select().from(teams);
+
+        res.render('layout', {
+            title: 'Teams',
+            body: 'teams',
+            teams: allTeams,
             session: req.session
         });
     } catch (err) {
