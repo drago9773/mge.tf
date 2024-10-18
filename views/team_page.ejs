@@ -30,35 +30,56 @@
 
     <% for (const season in matchesBySeason) { %>
       <h3 class="text-xl font-bold mt-4">Season <%= season %></h3>
+
+      <% 
+        // Sort the matches by week number
+        const seasonMatches = matchesBySeason[season].sort((a, b) => a.weekNo - b.weekNo);
+      %>
+
       <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-4">
         <thead>
           <tr class="w-full bg-gray-200 text-gray-700 text-left text-sm uppercase">
             <th class="px-4 py-2">Week No</th>
             <th class="px-4 py-2">Match ID</th>
-            <th class="px-4 py-2">Home Team</th>
-            <th class="px-4 py-2">Away Team</th>
-            <th class="px-4 py-2">Winner</th>
-            <th class="px-4 py-2">Loser Score</th>
+            <th class="px-4 py-2">Team 1</th>
+            <th class="px-4 py-2">Score</th>
+            <th class="px-4 py-2">Team 2</th>
             <th class="px-4 py-2">Created At</th>
           </tr>
         </thead>
         <tbody>
-          <% const seasonMatches = matchesBySeason[season]; %>
           <% seasonMatches.forEach(match => { %>
             <tr onclick="window.location.href='/match_page/<%= match.id %>'" style="cursor: pointer;">
-              <td class="border px-4 py-2"><%= match.weekNo %></td>
-              <td class="border px-4 py-2"><%= match.id %></td>
-              <% const homeTeam = teams.find(team => team.id === match.homeTeamId); %>
-              <td class="border px-4 py-2"><%= homeTeam ? homeTeam.name : ' ' %></td>
-              <% const awayTeam = teams.find(team => team.id === match.awayTeamId); %>
-              <td class="border px-4 py-2"><%= awayTeam ? awayTeam.name : ' ' %></td>
-              <% const winnerTeam = teams.find(team => team.id === match.winnerId); %>
-              <td class="border px-4 py-2"><%= winnerTeam ? winnerTeam.name : ' ' %></td>
-              <td class="border px-4 py-2"><%= new Date(match.created_at * 1000).toLocaleDateString() %></td>
+              <td class="border px-4"><%= match.weekNo %></td>
+              <td class="border px-4"><%= match.id %></td>
+
+              <% const homeTeam = teams.find(t => t.id === match.homeTeamId); %>
+              <% const awayTeam = teams.find(t => t.id === match.awayTeamId); %>
+
+              <% if (team.id === match.homeTeamId) { %>
+                <td class="border px-4"><%= homeTeam ? homeTeam.name : ' ' %></td>
+                <td class="border px-4">
+                  <%= match.winnerId === match.homeTeamId 
+                    ? `${match.winnerScore} - ${match.loserScore}` 
+                    : `${match.loserScore} - ${match.winnerScore}` 
+                  %>
+                </td>
+                <td class="border px-4"><%= awayTeam ? awayTeam.name : ' ' %></td>
+              <% } else { %>
+                <td class="border px-4"><%= awayTeam ? awayTeam.name : ' ' %></td>
+                <td class="border px-4">
+                  <%= match.winnerId === match.awayTeamId 
+                    ? `${match.winnerScore} - ${match.loserScore}` 
+                    : `${match.loserScore} - ${match.winnerScore}` 
+                  %>
+                </td>
+                <td class="border px-4"><%= homeTeam ? homeTeam.name : ' ' %></td>
+              <% } %>
+
+              <td class="border px-4"><%= new Date(match.created_at * 1000).toLocaleDateString() %></td>
             </tr>
           <% }) %>
-        </tbody>
-        
+        </tbody>        
       </table>
       <% if (seasonMatches.length === 0) { %>
         <p class="text-gray-500">No matches found for this season.</p>

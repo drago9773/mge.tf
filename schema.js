@@ -87,6 +87,7 @@ export const matches = sqliteTable('matches', {
   homeTeamId: integer('home_team_id').notNull().references(() => teams.id),
   awayTeamId: integer('away_team_id').notNull().references(() => teams.id),
   divisionId: integer('division_id').notNull().references(() => divisions.id),
+  winnerId: integer('winner_id').references(() => teams.id),
   winnerScore: integer('winner_score'),
   loserScore: integer('loser_score'),
   seasonNo: integer('season_no').notNull().references(() => seasons.id),

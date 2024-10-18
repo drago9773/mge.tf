@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `matches` (
     `home_team_id` integer NOT NULL,
     `away_team_id` integer NOT NULL,
     `division_id` integer NOT NULL,
+	`winner_id` integer,
     `winner_score` integer, -- num matches winner team won in the BO series
     `loser_score` integer, -- num matches loser team won in the BO series
     `season_no` integer NOT NULL,
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `matches` (
     FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE CASCADE,
+	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE
 );
 

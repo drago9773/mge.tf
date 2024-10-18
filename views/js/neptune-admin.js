@@ -1,5 +1,5 @@
 const boSeriesSelect = document.getElementById('bo_series');
-const gameInputsContainer = document.getElementById('game_inputs'); // Assuming you have this element in your HTML
+const gameInputsContainer = document.getElementById('game_inputs'); 
 
 async function fetchArenas() {
     const response = await fetch('/get-arenas');

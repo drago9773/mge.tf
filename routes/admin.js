@@ -77,7 +77,6 @@ router.post('/remove_team', async (req, res) => {
             return res.status(404).send('Team not found.');
         }
 
-        // Redirect to the admin page after successful deletion
         res.redirect('/admin');
     } catch (err) {
         console.error('Error removing team:', err);
@@ -101,14 +100,14 @@ router.post('/create_match', async (req, res) => {
 
     try {
         await db.insert(matches).values({
-            homeTeamId: (home_team_id),   // Ensure these are numbers
+            homeTeamId: (home_team_id),
             awayTeamId: (away_team_id),
             divisionId: (division_id),
             seasonNo: (season_no),
             weekNo: (week_no),
-            playedAt: null,  // Set playedAt to null
-            winnerId: null,  // Set winnerId to null
-            createdAt: Math.floor(Date.now() / 1000)  // Current timestamp
+            playedAt: null, 
+            winnerId: null,
+            createdAt: Math.floor(Date.now() / 1000)
         });
         res.redirect('/admin');
     } catch (err) {
@@ -147,48 +146,31 @@ router.post('/submit_match_result', async (req, res) => {
         let homeWins = 0;
         let awayWins = 0;
         const requiredWins = Math.floor(bo_series / 2) + 1;
-        console.log("Request body for match submission:", req.body);  // Log full request body
-        // Loop through the submitted game scores to calculate wins
+        console.log("Request body for match submission:", req.body); 
         for (let i = 1; i <= bo_series; i++) {
             const homeScore = Number(req.body[`game_${i}_home_score`]);
             const awayScore = Number(req.body[`game_${i}_away_score`]);
             const arenaId = Number(req.body[`game_${i}_arena`]);
-            console.log(1);
-            console.log("HomeScore: ", homeScore);
-            console.log("awayScore: ", awayScore);
-            console.log("arenaId: ", arenaId);
-            
-            console.log("Home wins: ", homeWins);
-            console.log("Away wins: ", awayWins);
-            console.log("requiredWins: ", requiredWins);
-            console.log(2);
+
             if (homeWins >= requiredWins || awayWins >= requiredWins) {
-                console.log(3);
                 if ((homeScore === 0) && (awayScore === 0) && !arenaId) { 
                     await db.delete(games)
                     .where(
                         eq(games.id, i)
                     );
-                    console.log(4);
                 }
             }
             else if (!homeScore || !awayScore || !arenaId) {
                 console.log(`Incomplete data for game ${i}: homeScore, awayScore, or arenaId is missing.`);
                 return res.status(400).send(`Error: Incomplete data for game ${i}. Please fill out all fields.`);
-                
             }
             else{
-                console.log(6);
                 if (homeScore > awayScore) {
                     homeWins++;
                 } else {
                     awayWins++;
                 }
 
-                console.log("Match_id: ", match_id);
-                console.log("homeScore: ", homeScore)
-                console.log("arena ID: ", Number(req.body[`game_${i}_arena`]));
-                
                 const gameData = {
                     matchId: match_id,
                     homeTeamScore: homeScore,
@@ -197,15 +179,13 @@ router.post('/submit_match_result', async (req, res) => {
                 };
 
                 await db.insert(games).values(gameData);
-                console.log(7);
             }
         }
  
         if (homeWins > awayWins) {
             await db.update(matches)
                 .set({
-                    winnerId: homeTeamId,
-                    loserId: awayTeamId,
+                    winnerId: awayTeamId,
                     winnerScore: homeWins,
                     loserScore: awayWins
                 })
@@ -216,7 +196,6 @@ router.post('/submit_match_result', async (req, res) => {
             await db.update(matches)
                 .set({
                     winnerId: awayTeamId,
-                    loserId: homeTeamId,
                     winnerScore: awayWins,
                     loserScore: homeWins
                 })
@@ -266,7 +245,7 @@ router.get('/get-weeks/:seasonId', async (req, res) => {
 
 router.get('/get-arenas', async (req, res) => {
     try {
-      const allArenas = await db.select().from(arenas); // Adjust as necessary to match your database structure
+      const allArenas = await db.select().from(arenas);
       res.json(allArenas);
     } catch (error) {
       console.error('Error fetching arenas:', error);
