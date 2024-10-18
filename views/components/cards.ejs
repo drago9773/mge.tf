@@ -1,0 +1,48 @@
+  <section class="custom-screen mt-32">
+    <div class="max-w-xl mx-auto space-y-4 text-center">
+      <h2 class="text-4xl heading">Turn your ideas into reality</h2>
+      <p class="text-zinc-400">
+        Float UI offers all the vital building blocks you need to transform your idea into a great-looking startup.
+      </p>
+    </div>
+    <ul class="space-y-6 gap-6 mt-8 max-w-7xl mx-auto grid-cols-2 sm:grid lg:grid-cols-3 sm:space-y-0">
+      <% features.forEach(function(feature, index) { %>
+        <li id="card-<%= index %>" class="relative z-0 group overflow-hidden h-full border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
+          <div class="space-y-3 relative z-10 p-5 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
+            <div class="text-gray-500 w-9 h-9 rounded-full bg-[linear-gradient(180deg,_rgba(39,_39,_42,_0.68)_0%,_rgba(39,_39,_42,_0.00)_100%)] flex items-center justify-center border border-zinc-700">
+              <i class="<%= feature.icon %>"></i>
+            </div>
+            <h3 class="text-zinc-100 font-semibold"><%= feature.title %></h3>
+            <p class="text-zinc-300"><%= feature.desc %></p>
+            <div>
+              <img src="/public/feature-cover.svg" alt="Float UI" class="absolute inset-0 -z-10">
+            </div>
+          </div>
+          <div id="shadow-<%= index %>" class="bg-[linear-gradient(180deg,_#1E293B_0%,_rgba(59,_130,_246,_0.00)_137.53%,_rgba(32,_69,_129,_0.00)_195%)] blur-[70px] opacity-0 absolute top-0 left-0 w-4/5 h-4/5 duration-150 group-hover:opacity-90"></div>
+          <div class="absolute inset-[1px] -z-10 rounded-xl bg-zinc-950"></div>
+        </li>
+      <% }); %>
+    </ul>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('li[id^="card-"]');
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left; // x position within the element.
+          const y = e.clientY - rect.top;  // y position within the element.
+
+          const shadow = document.getElementById(`shadow-${card.id.split('-')[1]}`);
+          if (shadow) {
+            shadow.style.top = `${y}px`;
+            shadow.style.left = `${x}px`;
+            shadow.style.transform = "translate(-50%, -50%)";
+            card.style.setProperty('--cursor-x', `${x}px`);
+            card.style.setProperty('--cursor-y', `${y}px`);
+          }
+        });
+      });
+    });
+</script>
