@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5bcbd9f0-eb94-4408-b880-b16d6f5a193f",
-  "prevId": "a965eea4-0604-4d6c-a442-487e7052980b",
+  "id": "01ce0f7a-75bf-41fd-9a54-287916380c50",
+  "prevId": "5bcbd9f0-eb94-4408-b880-b16d6f5a193f",
   "tables": {
     "activity": {
       "name": "activity",
@@ -116,6 +116,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "winner_score": {
+          "name": "winner_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "loser_score": {
           "name": "loser_score",
           "type": "integer",
@@ -139,6 +146,13 @@
         },
         "winner_id": {
           "name": "winner_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "loser_id": {
+          "name": "loser_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -213,6 +227,19 @@
           "tableTo": "teams",
           "columnsFrom": [
             "winner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matches_loser_id_teams_id_fk": {
+          "name": "matches_loser_id_teams_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "loser_id"
           ],
           "columnsTo": [
             "id"

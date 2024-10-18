@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5bcbd9f0-eb94-4408-b880-b16d6f5a193f",
-  "prevId": "a965eea4-0604-4d6c-a442-487e7052980b",
+  "id": "b190894d-66c3-4d13-8eb4-c301e6eecf36",
+  "prevId": "01ce0f7a-75bf-41fd-9a54-287916380c50",
   "tables": {
     "activity": {
       "name": "activity",
@@ -62,6 +62,29 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "arenas": {
+      "name": "arenas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "divisions": {
       "name": "divisions",
       "columns": {
@@ -82,6 +105,57 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "games": {
+      "name": "games",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "match_id": {
+          "name": "match_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "home_team_score": {
+          "name": "home_team_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "away_team_score": {
+          "name": "away_team_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "games_match_id_matches_id_fk": {
+          "name": "games_match_id_matches_id_fk",
+          "tableFrom": "games",
+          "tableTo": "matches",
+          "columnsFrom": [
+            "match_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -116,6 +190,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "winner_score": {
+          "name": "winner_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "loser_score": {
           "name": "loser_score",
           "type": "integer",
@@ -137,8 +218,22 @@
           "notNull": true,
           "autoincrement": false
         },
+        "bo_series": {
+          "name": "bo_series",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "winner_id": {
           "name": "winner_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "loser_id": {
+          "name": "loser_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -151,6 +246,13 @@
           "notNull": false,
           "autoincrement": false,
           "default": "CURRENT_TIMESTAMP"
+        },
+        "played_at": {
+          "name": "played_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -213,6 +315,19 @@
           "tableTo": "teams",
           "columnsFrom": [
             "winner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matches_loser_id_teams_id_fk": {
+          "name": "matches_loser_id_teams_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "loser_id"
           ],
           "columnsTo": [
             "id"
@@ -435,12 +550,28 @@
           "notNull": true,
           "autoincrement": false
         },
-        "record": {
-          "name": "record",
+        "team_avatar": {
+          "name": "team_avatar",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "wins": {
+          "name": "wins",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "losses": {
+          "name": "losses",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
         },
         "division_id": {
           "name": "division_id",
@@ -462,6 +593,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
         },
         "created_at": {
           "name": "created_at",

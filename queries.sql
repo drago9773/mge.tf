@@ -15,14 +15,13 @@ CREATE TABLE IF NOT EXISTS forums (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (steam_id) REFERENCES users(steam_id)
 );
+UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 
 CREATE TABLE IF NOT EXISTS moderators(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 
 SELECT users.steam_id
 FROM moderators

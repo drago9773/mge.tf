@@ -49,6 +49,11 @@ export const moderators = sqliteTable('moderators', {
   steamId: text('steam_id').primaryKey().references(() => users.steamId),
 });
 
+export const arenas = sqliteTable('arenas', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+});
+
 export const divisions = sqliteTable('divisions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -61,15 +66,19 @@ export const regions = sqliteTable('regions', {
 
 export const seasons = sqliteTable('seasons', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  numWeeks: integer('num_weeks').default(0)
 });
 
 export const teams = sqliteTable('teams', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  record: text('record'),
+  teamAvatar: text('team_avatar'),
+  wins: text('wins').default(0),
+  losses: text('losses').default(0),
   divisionId: integer('division_id').references(() => divisions.id),
   regionId: integer('region_id').references(() => regions.id),
   seasonNo: integer('season_no').references(() => seasons.id),
+  status: integer('status').default(0),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -78,11 +87,21 @@ export const matches = sqliteTable('matches', {
   homeTeamId: integer('home_team_id').notNull().references(() => teams.id),
   awayTeamId: integer('away_team_id').notNull().references(() => teams.id),
   divisionId: integer('division_id').notNull().references(() => divisions.id),
+  winnerScore: integer('winner_score'),
   loserScore: integer('loser_score'),
   seasonNo: integer('season_no').notNull().references(() => seasons.id),
   weekNo: integer('week_no').notNull(),
-  winnerId: integer('winner_id').references(() => teams.id),
+  boSeries: integer('bo_series'),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+  playedAt: integer('played_at')
+});
+
+export const games = sqliteTable('games', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  matchId: integer('match_id').notNull().references(() => matches.id),
+  homeTeamScore: integer('home_team_score').notNull(),
+  awayTeamScore: integer('away_team_score').notNull(),
+  arenaId: integer('arena_id').notNull().references(() => arenas.id)
 });
 
 export const players = sqliteTable('players', {

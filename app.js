@@ -12,7 +12,7 @@ import adminRoutes from './routes/admin.js';
 import moderatorRoutes from './routes/moderation.js';
 import { db, eloDb } from './db.js';
 import { steamId64FromSteamId32 } from './helpers/steamid.js';
-import { users, moderators, teams, regions, divisions } from './schema.js';
+import { users, moderators, teams, regions, divisions, seasons, matches, arenas, games } from './schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -110,15 +110,62 @@ app.get('/team_page/:teamid', async (req, res) => {
             return;
         }
 
-        const allRegions = await db.select().from(regions);
+        const homeMatches = await db.select().from(matches).where(eq(matches.homeTeamId, teamid));
+        const awayMatches = await db.select().from(matches).where(eq(matches.awayTeamId, teamid));
+        const teamMatches = [...homeMatches, ...awayMatches];
+
+        const allTeams = await db.select().from(teams);
+        const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
+        const allSeasons = await db.select().from(seasons);
+        const allRegions = await db.select().from(regions);
         
         res.render('layout', {
             body: 'team_page',
             title: team.name,
             team: team,
-            regions: allRegions,
+            teams: allTeams,
+            arenas: allArenas,
+            matches: teamMatches,
             divisions: allDivisions,
+            seasons: allSeasons,
+            regions: allRegions,            
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + err.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/match_page/:matchid', async (req, res) => {
+    const matchid = req.params.matchid;
+
+    try {
+        const match = await db.select().from(matches).where(eq(matches.id, matchid)).get();
+        
+        if (!match) {
+            res.status(404).send('Match not found');
+            return;
+        }
+        const allTeams = await db.select().from(teams);
+        const allArenas = await db.select().from(arenas);
+        const allDivisions = await db.select().from(divisions);
+        const allSeasons = await db.select().from(seasons);
+        const allRegions = await db.select().from(regions);
+        const allGames = await db.select().from(games);
+        console.log("All games ", allGames)
+
+        res.render('layout', {
+            body: 'match_page',
+            title: match.id,
+            match,
+            teams: allTeams,
+            arenas: allArenas,
+            divisions: allDivisions,
+            seasons: allSeasons,
+            regions: allRegions,
+            games: allGames,            
             session: req.session
         });
     } catch (err) {
