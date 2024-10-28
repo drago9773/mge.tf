@@ -1,0 +1,121 @@
+<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+    <h1 class="text-3xl font-bold m-2">Edit Team: <%= team.name %></h1>
+
+    <form action="/edit_team/<%= team.id %>" method="POST" class="flex flex-col gap-4">
+        <div class="form-group">
+            <label for="team_name" class="font-semibold">Team Name</label>
+            <input type="text" id="team_name" name="team_name" value="<%= team.name %>" required class="text-black form-control border-gray-300 rounded p-2 w-full">
+        </div>
+
+        <div class="form-group">
+            <h2 class="font-semibold text-xl mb-4">Team Members</h2>
+            <table class="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden mb-4">
+                <thead class="bg-gray-200 text-gray-700 text-left text-sm uppercase">
+                    <tr>
+                        <th class="px-4 py-2">Player</th>
+                        <th class="px-4 py-2">Role</th>
+                        <th class="px-4 py-2">Remove Player</th>
+                        <th class="px-4 py-2">Promote</th>
+                        <th class="px-4 py-2">Demote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% const teamPlayers = players_in_teams.filter(p => p.teamId === team.id && p.active === 1); %> 
+                    <% teamPlayers.forEach(playerInTeam => { %>
+                        <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+                        <tr class="bg-gray-900">
+                            <td class="px-4 py-2 flex items-center">
+                                <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
+                                     alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
+                                     class="w-10 rounded-full mr-4">
+                                <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
+                            </td>
+                            <td class="px-4 py-2">
+                                <% if (playerInTeam.permissionLevel === 0) { %>
+                                    Member
+                                <% } else if (playerInTeam.permissionLevel === 1) { %>
+                                    Admin
+                                <% } else if (playerInTeam.permissionLevel === 2) { %>
+                                    Owner
+                                <% } %>
+                            </td>
+                            <td class="px-4 py-2">
+                                <% if (playerInTeam.permissionLevel === 2) { %>
+                                    <span class="text-gray-500">Cannot Remove</span>
+                                <% } else { %>
+                                    <form action="/remove_player/<%= team.id %>" method="POST" class="inline">
+                                        <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
+                                        <button type="submit" class="bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600">Remove Player</button>
+                                    </form>
+                                <% } %>
+                            </td>                            
+                            <td class="px-4 py-2">
+                                <form action="/promote_player/<%= team.id %>" method="POST" class="inline">
+                                    <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
+                                    <button type="submit" class="bg-blue-500 text-white font-bold py-1 px-3 rounded hover:bg-blue-600" <%= playerInTeam.permissionLevel === 2 ? 'disabled' : '' %>>Promote</button>
+                                </form>
+                            </td>
+                            <td class="px-4 py-2">
+                                <form action="/demote_player/<%= team.id %>" method="POST" class="inline">
+                                    <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
+                                    <button type="submit" class="bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600" <%= playerInTeam.permissionLevel === 1 ? '' : 'disabled' %>>Demote</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    <% if (teamPlayers.length === 0) { %>
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">No players in this team.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
+            Save Changes
+        </button>
+    </form>
+    </div>
+
+<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+    <h2 class="text-2xl font-bold">Pending Players</h2>
+    <table class="min-w-full bg-gray-900 shadow-md rounded-lg overflow-hidden mb-4">
+        <thead class="bg-gray-700 text-gray-700 text-left text-sm uppercase">
+            <tr>
+                <th class="px-4 py-2">Player</th>
+                <th class="px-4 py-2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% const pendingPlayers = pending_players.filter(p => p.teamId === team.id); %>
+            <% pendingPlayers.forEach(playerInTeam => { %>
+                <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+                <tr class="bg-gray-900">
+                    <td class="px-4 py-2 flex items-center">
+                        <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
+                                alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
+                                class="w-10 rounded-full mr-4">
+                        <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
+                    </td>
+                    <td class="px-4 py-2">
+                        <form action="/approve_player/<%= team.id %>" method="POST" class="inline">
+                            <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
+                            <button type="submit" class="bg-green-500 text-white font-bold py-1 px-3 rounded hover:bg-green-600">Approve</button>
+                        </form>
+                        <form action="/decline_player/<%= team.id %>" method="POST" class="inline ml-2">
+                            <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
+                            <button type="submit" class="bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600">Decline</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+            <% if (pendingPlayers.length === 0) { %>
+                <tr>
+                    <td colspan="2" class="text-center py-4 text-gray-500">No pending players</td>
+                </tr>
+            <% } %>
+        </tbody>      
+    </table>
+    </div>
+</div>

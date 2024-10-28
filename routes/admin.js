@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.js';
-import { users, teams, matches, divisions, regions, seasons, arenas, games } from '../schema.js';
+import { users, teams, matches, divisions, regions, seasons, arenas, games, players_in_teams } from '../schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 const router = express.Router();
@@ -11,25 +11,21 @@ router.get('/admin', async (req, res) => {
         res.status(404);
         return res.redirect('/');
     }
-    let allUsers = await db.select().from(users).all();
+
     try {
         const allTeams = await db.select().from(teams);
         const allMatches = await db.select({
-            ...matches,
-            homeTeamName: teams.name,
-            awayTeamName: sql`away.name`.as('away_team_name'),
-            divisionName: divisions.name,
-        })
-            .from(matches)
-            .innerJoin(teams, eq(matches.homeTeamId, teams.id))
-            .innerJoin(sql`teams as away`, eq(matches.awayTeamId, sql`away.id`))
-            .innerJoin(divisions, eq(matches.divisionId, divisions.id));
+                ...matches,homeTeamName: teams.name,awayTeamName: sql`away.name`.as('away_team_name'),divisionName: divisions.name,})
+            .from(matches).innerJoin(teams, eq(matches.homeTeamId, teams.id)).innerJoin(sql`teams as away`, eq(matches.awayTeamId, sql`away.id`)).innerJoin(divisions, eq(matches.divisionId, divisions.id));
 
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allRegions = await db.select().from(regions);
         const allSeasons = await db.select().from(seasons);
-
+        const allUsers = await db.select().from(users);
+        const allPlayersInTeams = await db.select({playerSteamId: players_in_teams.playerSteamId, teamId: players_in_teams.teamId, startedAt: players_in_teams.startedAt,})
+            .from(players_in_teams).innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId)).innerJoin(teams, eq(players_in_teams.teamId, teams.id));
+        
         res.render('layout', {
             body: 'admin',
             title: 'Admin',
@@ -40,6 +36,7 @@ router.get('/admin', async (req, res) => {
             divisions: allDivisions,
             seasons: allSeasons,
             regions: allRegions,
+            players_in_teams: allPlayersInTeams,
             users: allUsers
         });
     } catch (err) {
@@ -50,12 +47,10 @@ router.get('/admin', async (req, res) => {
 
 router.post('/create_team', async (req, res) => {
     const { name, division_id, season_no, region_id } = req.body;
-    const record = '0-0';
 
     try {
         await db.insert(teams).values({
             name,
-            record,
             divisionId: division_id,
             regionId: region_id,
             seasonNo: season_no
@@ -212,8 +207,6 @@ router.post('/submit_match_result', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 router.post('/create_region', async (req, res) => {
     const { name } = req.body;

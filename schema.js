@@ -78,7 +78,9 @@ export const teams = sqliteTable('teams', {
   divisionId: integer('division_id').references(() => divisions.id),
   regionId: integer('region_id').references(() => regions.id),
   seasonNo: integer('season_no').references(() => seasons.id),
+  is1v1: integer('is_1v1').default(0),
   status: integer('status').default(0),
+  joinPassword: text('join_password'),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -111,4 +113,18 @@ export const players = sqliteTable('players', {
   steamUsername: text('steam_username'),
   steamAvatar: text('steam_avatar'),
   createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const pending_players = sqliteTable('pending_players', {
+  playerSteamId: text('player_steam_id').references(() => users.steamId),
+  teamId: integer('team_id').references(() => teams.id),
+});
+
+export const players_in_teams = sqliteTable('players_in_teams', {
+  playerSteamId: text('player_steam_id').references(() => users.steamId),
+  teamId: integer('team_id').references(() => teams.id),
+  active: integer('active').default(1),
+  permissionLevel: integer('permission_level').default(0),
+  startedAt: integer('started_at').default(sql`CURRENT_TIMESTAMP`),
+  leftAt: integer('left_at').default(null)
 });

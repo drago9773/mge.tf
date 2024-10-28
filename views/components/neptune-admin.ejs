@@ -125,6 +125,48 @@
       </div>
     </section>
 
+    <section class="space-y-4">
+      <h3 class="text-xl font-semibold">Players in Teams</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player Name</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Namet</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% if (players_in_teams && players_in_teams.length > 0) { %>
+              <% players_in_teams.forEach((playerInTeam, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
+                  <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" class="w-6 h-6 rounded-full" />
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <%= playerUser ? playerUser.steamUsername : ' ' %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <% const team = teams.find(t => t.id === playerInTeam.teamId); %>
+                    <%= team ? team.name : ' ' %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= new Date(playerInTeam.startedAt).toLocaleString() %></td>
+                  
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="4" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No players in teams yet</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>  
+    
+
     <section class="space-y-4 max-w-md">
       <h2 class="text-2xl font-bold">Create Arena</h2>
       <form action="/create_arena" method="POST" class="space-y-4">
@@ -256,7 +298,8 @@
               <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                 <%= match.winnerScore !== null ? match.winnerScore : ' ' %> - <%= match.loserScore !== null ? match.loserScore : ' ' %>
             </td>
-            </tr>
+            </tr><p class="mb-4 text-red-500">You have already requested to join this team.</p>
+
             <% }) %>
             <% } else { %>
             <tr>
