@@ -1,4 +1,4 @@
-<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-opacity-55 backgdrop-blur-lg backdrop-filter bg-black shadow-sm rounded-lg p-6 gap-4 mt-2">
+<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 rounded-lg p-6 gap-4 mt-2">
 
   <div class="flex flex-col justify-center align-middle items-center">
     <h1 class="text-3xl font-bold m-2 text-gray-100">
@@ -19,12 +19,12 @@
     </a>
   </div>
 
-  <div class="text-gray-300 flex flex-col mx-auto max-w-5xl w-full bg-gray-800 shadow-md border rounded-lg p-6 gap-4 mt-2">
+  <div class="text-gray-300 flex flex-col mx-auto max-w-5xl w-full bg-gray-800 rounded-lg p-6 gap-4 mt-2">
     <h2 class="text-2xl mx-auto font-bold mb-4">Teams</h2>
     
     <h3 class="text-xl font-bold text-gray-300">1v1</h3>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-gray-900 shadow-md rounded-lg mb-4 w-full">
+    <div class="overflow-x-auto rounded-lg">
+      <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
         <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
           <tr>
             <th class="px-4 py-2">TEAM</th>
@@ -36,12 +36,12 @@
         </thead>
         <tbody class="divide-y divide-gray-600">
           <% teamsForPlayer.filter(team => team.is1v1 === 1).reverse().forEach(team => { %>
-            <tr class="hover:bg-gray-700 transition duration-200 cursor-pointer">
-              <td class="px-4 py-2 text-gray-300"><%= team.teamName %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.division %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
+            <tr class="cursor-pointer">
+              <td class="px-4 py-4"><%= team.teamName %></td>
+              <td class="px-4 py-4"><%= team.division %></td>
+              <td class="px-4 py-4"><%= team.wins %> - <%= team.losses %></td>
+              <td class="px-4 py-4"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
+              <td class="px-4 py-4"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
             </tr>
           <% }); %>
           
@@ -54,9 +54,9 @@
       </table>
     </div>
     
-    <h3 class="text-xl font-bold text-gray-300">2v2</h3>
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-gray-900 shadow-md rounded-lg mb-4 w-full">
+    <h3 class="text-xl font-bold text-gray-300 mt-4">2v2</h3>
+    <div class="overflow-x-auto rounded-lg">
+      <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
         <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
           <tr>
             <th class="px-4 py-2">TEAM</th>
@@ -66,14 +66,14 @@
             <th class="px-4 py-2">LEFT</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-600">
+        <tbody>
           <% teamsForPlayer.filter(team => team.is1v1 === 0).reverse().forEach(team => { %>
-            <tr class="hover:bg-gray-700 transition duration-200 cursor-pointer">
-              <td class="px-4 py-2 text-gray-300"><%= team.teamName %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.division %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
-              <td class="px-4 py-2 text-gray-300"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
+            <tr class="cursor-pointer clickable" onclick="window.location.href='/team_page/<%= team ? team.teamId : 'unknown' %>'">
+              <td class="px-4 py-4"><%= team.teamName %></td>
+              <td class="px-4 py-4"><%= team.division %></td>
+              <td class="px-4 py-4"><%= team.wins %> - <%= team.losses %></td>
+              <td class="px-4 py-4"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
+              <td class="px-4 py-4"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
             </tr>
           <% }); %>
           
@@ -87,3 +87,21 @@
     </div>
   </div>
 </div>
+
+
+<style>
+  tbody tr {
+    transition: background-color 0.5s ease; 
+  }
+
+  tbody tr.clickable:hover {
+    background-color: rgb(255, 255, 255);
+    transition-duration: 0s;
+    color: black;
+  }
+
+  tbody tr.linger {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: black;
+  }
+</style>

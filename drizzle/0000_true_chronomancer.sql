@@ -2,7 +2,6 @@
 -- drop table if exists players_in_teams;
 -- select * from teams;
 -- select * from players_in_teams;
-
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`thread_count` integer NOT NULL,
@@ -48,6 +47,13 @@ CREATE TABLE IF NOT EXISTS `teams` (
     FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
     FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
     FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `teamname_history` (
+    `team_id` integer,
+    `name` text,
+    `change_date` datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS `team_season_history` (
@@ -108,10 +114,11 @@ CREATE TABLE IF NOT EXISTS `players` (
 );
 
 CREATE TABLE IF NOT EXISTS `pending_players` (
-    `player_steam_id` text,
+    `name` text,
     `team_id` integer,
-    FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
-    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+    `date` datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (`name`) REFERENCES `teams`(`name`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS `players_in_teams` (

@@ -120,6 +120,13 @@ export const pending_players = sqliteTable('pending_players', {
   teamId: integer('team_id').references(() => teams.id),
 });
 
+export const teamname_history = sqliteTable('teamname_history', {
+  teamId: integer('team_id').references(() => teams.id),
+  name: text('name'),
+  changeDate: integer('change_date').default(sql`CURRENT_TIMESTAMP`),
+});
+
+
 export const players_in_teams = sqliteTable('players_in_teams', {
   playerSteamId: text('player_steam_id').references(() => users.steamId),
   teamId: integer('team_id').references(() => teams.id),

@@ -1,7 +1,7 @@
 import express from 'express';
-import { db, isAdmin } from '../db.js';
-import { users, teams, pending_players, players_in_teams } from '../schema.js';
-import { eq, sql, and} from 'drizzle-orm';
+import { db } from '../db.js';
+import { users, teams, pending_players, players_in_teams, teamname_history } from '../schema.js';
+import { eq, and } from 'drizzle-orm';
 
 const router = express.Router();
 
@@ -81,6 +81,11 @@ router.post('/edit_team/:teamid', async (req, res) => {
     try {
         const { team_name, avatar_url } = req.body;
 
+        await db.insert(teamname_history).values({
+            name: team_name,
+            teamId: teamid
+        })
+        
         await db.update(teams)
             .set({
                 name: team_name,

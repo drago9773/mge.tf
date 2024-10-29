@@ -1,4 +1,4 @@
-<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 overflow-x-auto shadow-sm rounded-lg p-6 gap-4 mt-2">
     <h1 class="text-3xl font-bold m-2">Edit Team: <%= team.name %></h1>
 
     <form action="/edit_team/<%= team.id %>" method="POST" class="flex flex-col gap-4">
@@ -23,14 +23,14 @@
                     <% const teamPlayers = players_in_teams.filter(p => p.teamId === team.id && p.active === 1); %> 
                     <% teamPlayers.forEach(playerInTeam => { %>
                         <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
-                        <tr class="bg-gray-900">
+                        <tr class="bg-gray-900 overflow-hidden">
                             <td class="px-4 py-2 flex items-center">
                                 <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
                                      alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
-                                     class="w-10 rounded-full mr-4">
+                                     class="overflow-hidden w-10 rounded-full mr-4">
                                 <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
                             </td>
-                            <td class="px-4 py-2">
+                            <td class="overflow-hidden px-4 py-2">
                                 <% if (playerInTeam.permissionLevel === 0) { %>
                                     Member
                                 <% } else if (playerInTeam.permissionLevel === 1) { %>
@@ -95,7 +95,7 @@
                     <td class="px-4 py-2 flex items-center">
                         <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
                                 alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
-                                class="w-10 rounded-full mr-4">
+                                class="overflow-hidden w-10 rounded-full mr-4">
                         <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
                     </td>
                     <td class="px-4 py-2">
