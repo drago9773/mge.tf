@@ -4,9 +4,26 @@ const SEASON_ID = 1;
 import express from 'express';
 import { db } from '../db.js';
 import { teams, players_in_teams, teamname_history, divisions, regions, seasons } from '../schema.js';
+import multer from 'multer';
+import path from 'path';
 import { eq, and} from 'drizzle-orm';
+import fs from 'fs';
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './views/images/team_avatars');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 router.get('/1v1signup', async (req, res) => {
   res.status(200);
@@ -19,58 +36,64 @@ router.get('/2v2signup', async (req, res) => {
 })
 
 
-router.post('/team_signup', async (req, res) => {
-  const { name, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
-  const player_steam_id = req.session.user.steamid;
+router.post('/team_signup', upload.single('avatar'), async (req, res) => {
+    const { name, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
+    const player_steam_id = req.session.user.steamid;
+    
+    try {
+        // check if they are in a 1v1/2v2 team and if active
+        const existingTeam = await db
+            .select()
+            .from(players_in_teams)
+            .innerJoin(teams, eq(players_in_teams.teamId, teams.id))
+            .where(and(
+                eq(players_in_teams.playerSteamId, player_steam_id),
+                eq(teams.is1v1, is_1v1),
+                eq(players_in_teams.active, 1)
+            ))
+            .get();
 
-  try {
-      // check if they are in a 1v1/2v2 team and if active
-      const existingTeam = await db
-      .select()
-      .from(players_in_teams)
-      .innerJoin(teams, eq(players_in_teams.teamId, teams.id))
-      .where(and(
-          eq(players_in_teams.playerSteamId, player_steam_id), 
-          eq(teams.is1v1, is_1v1),
-          eq(players_in_teams.active, 1)
-      ))
-      .get();
-  
+        if (existingTeam) {
+            return res.status(400).send(`Error: You are already in a ${is_1v1 ? '1v1' : '2v2'} team.`);
+        }
+        const result = await db.insert(teams).values({
+            name,
+            teamAvatar: req.file ? req.file.filename : null,
+            divisionId: division_id,
+            regionId: region_id,
+            seasonNo: SEASON_ID,
+            is1v1: is_1v1,
+            joinPassword: join_password
+        });
+        const team_id = result.lastInsertRowid;
+        const timestamp = Date.now();
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            const newFilename = `team${team_id}_avatarCreatedAt${timestamp}${ext}`; 
+            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
+            const newPath = `./views/images/team_avatars/${newFilename}`;
 
-      if (existingTeam) {
-          if (is_1v1 == 1) {
-              return res.status(400).send('Error: You are already in a 1v1 team.');
-          } else {
-              return res.status(400).send('Error: You are already in a 2v2 team.');
-          }
-      }
+            fs.renameSync(oldPath, newPath);
 
-      const result = await db.insert(teams).values({
-          name, 
-          divisionId: division_id, 
-          regionId: region_id, 
-          seasonNo: SEASON_ID, 
-          is1v1: is_1v1, 
-          joinPassword: join_password
-      });
+            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, team_id));
+        }
 
-      const team_id = result.lastInsertRowid;
+        await db.insert(players_in_teams).values({
+            playerSteamId: player_steam_id,
+            teamId: team_id,
+            permissionLevel: permission_level
+        });
 
-      await db.insert(players_in_teams).values({
-          playerSteamId: player_steam_id, 
-          teamId: team_id, 
-          permissionLevel: permission_level
-      });
-      await db.insert(teamname_history).values({
-          name: name,
-          teamId: team_id
-      })
+        await db.insert(teamname_history).values({
+            name,
+            teamId: team_id
+        });
 
-      res.redirect('/signup');
-  } catch (err) {
-      console.error('Error creating team or adding player:', err);
-      res.status(500).send('Internal Server Error');
-  }
+        res.redirect('/signup');
+    } catch (err) {
+        console.error('Error creating team or adding player:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 router.get('/signup', async (req, res) => {

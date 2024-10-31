@@ -37,11 +37,17 @@
         <tbody class="divide-y divide-gray-600">
           <% teamsForPlayer.filter(team => team.is1v1 === 1).reverse().forEach(team => { %>
             <tr class="cursor-pointer">
-              <td class="px-4 py-4"><%= team.teamName %></td>
-              <td class="px-4 py-4"><%= team.division %></td>
-              <td class="px-4 py-4"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-4"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
-              <td class="px-4 py-4"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
+              <td class="px-4 py-2"><%= team.teamName %></td>
+              <td class="px-4 py-2"><%= team.division %></td>
+              <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
+              <td class="px-4 py-2"> 
+                <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
+                <div class="text-gray-500">Season <%= team.season %></div>
+              </td>
+              <td class="px-4 py-2">
+                  <div><%= new Date(team.leftAt).toLocaleDateString() %></div>
+                  <div class="text-gray-500">Season <%= team.season %></div>
+              </td>
             </tr>
           <% }); %>
           
@@ -69,11 +75,17 @@
         <tbody>
           <% teamsForPlayer.filter(team => team.is1v1 === 0).reverse().forEach(team => { %>
             <tr class="cursor-pointer clickable" onclick="window.location.href='/team_page/<%= team ? team.teamId : 'unknown' %>'">
-              <td class="px-4 py-4"><%= team.teamName %></td>
-              <td class="px-4 py-4"><%= team.division %></td>
-              <td class="px-4 py-4"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-4"><%= team.startedAt ? new Date(team.startedAt).toLocaleDateString() : 'N/A' %></td>
-              <td class="px-4 py-4"><%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %></td>
+              <td class="px-4 py-2"><%= team.teamName %></td>
+              <td class="px-4 py-2"><%= team.division %></td>
+              <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
+              <td class="px-4 py-2"> 
+                <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
+                <div class="text-gray-500">Season <%= team.season %></div>
+              </td>
+              <td class="px-4 py-2">
+                  <div><%= new Date(team.leftAt).toLocaleDateString() %></div>
+                  <div class="text-gray-500">Season <%= team.season %></div>
+              </td>
             </tr>
           <% }); %>
           

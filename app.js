@@ -1,9 +1,13 @@
 //TODO
+
 //'match' (team vs team) page, agreeing on date
-//'you have already requested to join this team'
+//arena map pictures
 
 //FUTURE
-//previous team records (store team history for each season?)
+//1. In admin panel, needs to be a 'commit team history' button to move all teams from current
+//season into the teams_history table to preserve name/record/division etc at the end of each season
+/// 1a. Then the players can keep the same team and the record/division can change for next season
+/// 1b. Then player_page and team_page will need to be updated to display team history
 
 import express from 'express';
 import path from 'path';

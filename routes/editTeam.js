@@ -2,8 +2,25 @@ import express from 'express';
 import { db } from '../db.js';
 import { users, teams, pending_players, players_in_teams, teamname_history } from '../schema.js';
 import { eq, and } from 'drizzle-orm';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './views/images/team_avatars');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 router.get('/edit_team/:teamid', async (req, res) => {
     const teamid = req.params.teamid;
@@ -75,25 +92,59 @@ router.get('/edit_team/:teamid', async (req, res) => {
     }
 });
 
-router.post('/edit_team/:teamid', async (req, res) => {
+router.post('/edit_team/:teamid', upload.single('avatar'), async (req, res) => {
     const teamid = req.params.teamid;
+    console.log(req.file);
 
     try {
-        const { team_name, avatar_url } = req.body;
+        const { team_name, join_password } = req.body;
 
         await db.insert(teamname_history).values({
             name: team_name,
             teamId: teamid
         })
+        const timestamp = Date.now();
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            const newFilename = `team${teamid}_avatarCreatedAt${timestamp}${ext}`; 
+            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
+            const newPath = `./views/images/team_avatars/${newFilename}`;
+    
+            fs.renameSync(oldPath, newPath);
+    
+            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, teamid));
+        }
         
         await db.update(teams)
             .set({
                 name: team_name,
-                avatar: avatar_url,
+                joinPassword: join_password,
             })
             .where(eq(teams.id, teamid));
 
         res.redirect(`/teams`);
+    } catch (err) {
+        console.error('Error querying database: ', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, res) => {
+    const teamid = req.params.teamid;
+    console.log("upload: ", req.file);
+
+    const timestamp = Date.now();
+    try {
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            const newFilename = `team${teamid}_avatarCreatedAt${timestamp}${ext}`; 
+            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
+            const newPath = `./views/images/team_avatars/${newFilename}`;
+            
+            fs.renameSync(oldPath, newPath);
+            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, teamid));
+        }
+        return res.redirect(`/team_page/${teamid}`);
     } catch (err) {
         console.error('Error querying database: ', err);
         res.status(500).send('Internal Server Error');
@@ -169,7 +220,6 @@ router.post('/approve_player/:teamid', async (req, res) => {
                 return res.status(404).send('Team not found');
             }
 
-            // Get the active players in the team
             const activePlayers = await db
                 .select()
                 .from(players_in_teams)
@@ -178,7 +228,6 @@ router.post('/approve_player/:teamid', async (req, res) => {
                     eq(players_in_teams.active, 1)
                 ));
 
-            // Check if the active players count exceeds the limit
             if (activePlayers.length >= 3) {
                 return res.status(400).send('This team is full');
             }

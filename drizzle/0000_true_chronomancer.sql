@@ -1,7 +1,9 @@
 -- drop table if exists teams;
 -- drop table if exists players_in_teams;
--- select * from teams;
+select * from teams;
 -- select * from players_in_teams;
+select * from pending_players;
+
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`thread_count` integer NOT NULL,
@@ -49,23 +51,26 @@ CREATE TABLE IF NOT EXISTS `teams` (
     FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS `teams_history` (
+    `team_id` integer NOT NULL,
+    `season_no` integer NOT NULL,
+    `region_id` integer NOT NULL,
+    `division_id` integer NOT NULL,
+    `wins` integer DEFAULT 0,
+    `losses` integer DEFAULT 0,
+    `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+    FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+    FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+    UNIQUE (`team_id`, `season_no`)
+);
+
 CREATE TABLE IF NOT EXISTS `teamname_history` (
     `team_id` integer,
     `name` text,
     `change_date` datetime DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
-CREATE TABLE IF NOT EXISTS `team_season_history` (
-    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `team_id` integer NOT NULL,
-    `season_no` integer NOT NULL,
-    `wins` integer DEFAULT 0,
-    `losses` integer DEFAULT 0,
-    `created_at` integer DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
-    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
-    UNIQUE (`team_id`, `season_no`)
 );
 
 CREATE TABLE IF NOT EXISTS `matches` (
@@ -114,11 +119,10 @@ CREATE TABLE IF NOT EXISTS `players` (
 );
 
 CREATE TABLE IF NOT EXISTS `pending_players` (
-    `name` text,
+    `players_steam_id` text,
     `team_id` integer,
-    `date` datetime DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
-    FOREIGN KEY (`name`) REFERENCES `teams`(`name`) ON UPDATE NO ACTION ON DELETE NO ACTION
+    FOREIGN KEY (`players_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS `players_in_teams` (

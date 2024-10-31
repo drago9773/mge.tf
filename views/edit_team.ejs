@@ -1,10 +1,22 @@
 <div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 overflow-x-auto shadow-sm rounded-lg p-6 gap-4 mt-2">
     <h1 class="text-3xl font-bold m-2">Edit Team: <%= team.name %></h1>
 
+    <form action="/upload_team_avatar/<%= team.id %>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+        <div class="space-y-5 mt-5">
+                <label for="team_image" class="block text-sm font-medium text-white">Upload Team Image:</label>
+                <input id="avatar" name="avatar" type="file" accept="image/*">
+                <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Upload Image</button>
+        </div>
+    </form>
+
     <form action="/edit_team/<%= team.id %>" method="POST" class="flex flex-col gap-4">
         <div class="form-group">
             <label for="team_name" class="font-semibold">Team Name</label>
             <input type="text" id="team_name" name="team_name" value="<%= team.name %>" required class="text-black form-control border-gray-300 rounded p-2 w-full">
+        </div>
+        <div class="form-group">
+            <label for="join_password" class="font-semibold">Join Password</label>
+            <input type="text" id="join_password" name="join_password" value="<%= team.joinPassword %>" required class="text-black form-control border-gray-300 rounded p-2 w-full">
         </div>
 
         <div class="form-group">
@@ -52,15 +64,35 @@
                             <td class="px-4 py-2">
                                 <form action="/promote_player/<%= team.id %>" method="POST" class="inline">
                                     <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
-                                    <button type="submit" class="bg-blue-500 text-white font-bold py-1 px-3 rounded hover:bg-blue-600" <%= playerInTeam.permissionLevel === 2 ? 'disabled' : '' %>>Promote</button>
+                                    <button type="submit" class="font-bold py-1 px-3 rounded 
+                                        <% if (playerInTeam.permissionLevel === 2) { %>
+                                            bg-gray-500 text-gray-300 cursor-not-allowed
+                                        <% } else { %>
+                                            bg-blue-500 text-white hover:bg-blue-600
+                                        <% } %>"
+                                        <% if (playerInTeam.permissionLevel === 2) { %>
+                                            disabled
+                                        <% } %>>
+                                        Promote
+                                    </button>
                                 </form>
                             </td>
                             <td class="px-4 py-2">
                                 <form action="/demote_player/<%= team.id %>" method="POST" class="inline">
                                     <input type="hidden" name="player_steamid" value="<%= playerInTeam.playerSteamId %>">
-                                    <button type="submit" class="bg-red-500 text-white font-bold py-1 px-3 rounded hover:bg-red-600" <%= playerInTeam.permissionLevel === 1 ? '' : 'disabled' %>>Demote</button>
+                                    <button type="submit" class="font-bold py-1 px-3 rounded 
+                                        <% if (playerInTeam.permissionLevel === 1) { %>
+                                            bg-red-500 text-white hover:bg-red-600
+                                        <% } else { %>
+                                            bg-gray-500 text-gray-300 cursor-not-allowed
+                                        <% } %>"
+                                        <% if (playerInTeam.permissionLevel === 0 || playerInTeam.permissionLevel === 2 ) { %>
+                                            disabled
+                                        <% } %>>
+                                        Demote
+                                    </button>
                                 </form>
-                            </td>
+                            </td>                            
                         </tr>
                     <% }); %>
                     <% if (teamPlayers.length === 0) { %>
@@ -119,3 +151,12 @@
     </table>
     </div>
 </div>
+<script>
+    document.getElementById('team_name').addEventListener('input', function() {
+        const maxLength = 20;
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+            alert(`Team names must be ${maxLength} characters or less.`);
+        }
+    });
+</script>

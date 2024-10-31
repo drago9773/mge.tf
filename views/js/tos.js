@@ -4,19 +4,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const tosModal = document.getElementById('TOSpopup');
 
   openTOSPopup.addEventListener('click', function (event) {
-    event.preventDefault(); // Prevent default action (if it was a link)
-    tosModal.classList.remove('hidden'); // Show the modal
+    event.preventDefault(); 
+    tosModal.classList.remove('hidden');
   });
 
-  // Close the Terms of Service popup
   closeTOSPopup.addEventListener('click', function () {
-    tosModal.classList.add('hidden'); // Hide the modal
+    tosModal.classList.add('hidden');
   });
 
-  // Close modal when clicking outside of it
   window.addEventListener('click', function (event) {
     if (event.target == tosModal) {
-      tosModal.classList.add('hidden'); // Hide the modal
+      tosModal.classList.add('hidden'); 
     }
   });
 });

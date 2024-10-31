@@ -54,20 +54,23 @@ router.get('/team_page/:teamid', async (req, res) => {
         .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
         .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
     
-        // const existingRequest = null;
-        // if (req.session?.user) {
-        //     const userSteamId = req.session.user.steamid;
-        // }
-        // const existingRequest = await db
-        //         .select()
-        //         .from(pending_players)
-        //         .innerJoin(teams, eq(pending_players.teamId, teams.id))
-        //         .where(and(
-        //             eq(pending_players.playerSteamId, userSteamId),
-        //         ))
-        //         .get();
-        // }
-        // console.log(existingRequest/*  */);
+        let request = 0;
+        if (req.session?.user) {
+            const userSteamId = req.session.user.steamid;
+            const existingRequest = await db
+                .select()
+                .from(pending_players)
+                .innerJoin(teams, eq(pending_players.teamId, teams.id))
+                .where(and(
+                    eq(pending_players.playerSteamId, userSteamId),
+                    eq(pending_players.teamId, teamid)
+                ))
+                .get();
+            if (existingRequest) {
+                request = 1;
+            }
+        }
+
         res.render('layout', {
             body: 'team_page',
             title: team.name,
@@ -81,6 +84,7 @@ router.get('/team_page/:teamid', async (req, res) => {
             regions: allRegions,   
             players_in_teams: allPlayersInTeams,  
             teamname_history: allTeamnameHistory,
+            existingRequest: request,
             session: req.session
         });
     } catch (err) {
@@ -146,22 +150,16 @@ router.post('/join_team', async (req, res) => {
                 return res.status(404).send('Team not found');
             }
 
-            // const existingRequest = await db
-            //     .select()
-            //     .from(pending_players)
-            //     .where(eq(pending_players.playerSteamId, userSteamId))
-            //     .where(eq(pending_players.teamId, teamId))
-            //     .get();
-
             const existingRequest = await db
                 .select()
                 .from(pending_players)
                 .innerJoin(teams, eq(pending_players.teamId, teams.id))
                 .where(and(
                     eq(pending_players.playerSteamId, userSteamId),
+                    eq(pending_players.teamId, teamId)
                 ))
                 .get();
-
+            console.log("exist req for join team line 163: ", existingRequest);
             if (existingRequest) {
                 return res.status(400).send('You have already requested to join this team.');
             }
@@ -209,6 +207,38 @@ router.post('/leave_team/:teamid', async (req, res) => {
                     eq(players_in_teams.teamId, teamId)
                 )
             );
+
+            return res.redirect('/'); 
+        } catch (err) {
+            console.error('Error querying database: ' + err.message);
+            return res.status(500).send('Internal Server Error');
+        }
+    } else {
+        return res.status(401).send('Please sign in');
+    }
+});
+
+router.post('/remove_request/:teamid', async (req, res) => {
+    if (req.session?.user) {
+        const teamId = req.params.teamid;
+        const userSteamId = req.session.user.steamid;
+        try {
+            const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();
+            if (!team) {
+                return res.status(404).send('Team not found');
+            }
+
+            const deleteResult = await db.delete(pending_players)
+                .where(
+                    and(
+                        eq(pending_players.playerSteamId, userSteamId),
+                        eq(pending_players.teamId, teamId)
+                    )
+                );
+
+            if (deleteResult === 0) {
+                return res.status(404).send('Pending request not found');
+            }
 
             return res.redirect('/'); 
         } catch (err) {
