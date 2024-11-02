@@ -14,18 +14,14 @@
   <% } %>
 
   <div class="mx-auto w-3/5 flex flex-col justify-center items-center bg-gray-900 shadow-sm">
-    <h1 class="text-3xl font-bold m-2">
-      <%= team.name %>
-      <% if (team.permissionLevel === 2) { %>
-        <span class="text-yellow-500 ml-2" title="Your Team">&#9819;</span>
-      <% } %>
-    </h1>
-    <img src="/images/team_avatars/<%= team.teamAvatar %>" alt="Team Avatar" class="h-40 rounded-md object-contain">
-    <p class="text-xl">Division: <%= division ? division.name : ' ' %></p>
-    <p class="text-xl">Region: <%= region ? region.name : ' ' %></p>
-    <p class="text-xl">Record: <%= team.record %></p>
-    <p class="text-xl">Status: <%= team.status === 0 ? 'Inactive' : 'Active' %></p>
-    <p class="text-sm text-gray-500">Created at: <%= new Date(team.createdAt).toLocaleDateString() %></p>
+    <h1 class="text-3xl font-bold m-2"><%= team.name %></h1>
+    <h1 class="text-3xl font-bold m-2"><%= team.acronym %></h1>
+    <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-40 rounded-md object-contain">
+    <p class="text-xl"><%= division ? division.name : ' ' %></p>
+    <p class="text-xl"><%= region ? region.name : ' ' %></p>
+    <p class="text-xl">Record: <%= team.wins %> - <%= team.losses %></p>
+    <p class="text-xl">Status: <% if (team.status === -1) { %> Dead <% } else if (team.status === 0) { %> Unready <% } else if (team.status === 1) { %> Pending Admin Approval <% } else if (team.status === 2) { %> Ready <% } %>
+    </p>    <p class="text-sm text-gray-500">Created at: <%= new Date(team.createdAt).toLocaleDateString() %></p>
     <% const teamPlayers = players_in_teams.filter(p => p.teamId === team.id && p.active === 1); %>
     <% const rosterSize = teamPlayers.length; %>
     <p class="text-lg text-gray-700 mb-4">Roster Size: <%= rosterSize %> / 3</p>
@@ -41,6 +37,17 @@
         <a href="/edit_team/<%= team.id %>" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">Edit Team</a>
       </div>
     <% } %>
+    
+    <% if (playerInTeam && playerInTeam.permissionLevel >= 2) { %>
+      <div class="mx-auto flex items-center mt-4">
+        <form action="/toggle_team/<%= team.id %>" method="POST">
+          <button type="submit" class="text-white font-bold py-2 px-4 rounded bg-yellow-500">
+            <%= team.status === 0 ? 'Ready' : 'Unready' %>
+          </button>
+        </form>
+      </div>
+    <% } %>
+    
 
     <% if (!team.is1v1 && !playerInTeam) { %>
       <div class="flex justify-center mt-4">

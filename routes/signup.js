@@ -37,7 +37,7 @@ router.get('/2v2signup', async (req, res) => {
 
 
 router.post('/team_signup', upload.single('avatar'), async (req, res) => {
-    const { name, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
+    const { name, acronym, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
     const player_steam_id = req.session.user.steamid;
     
     try {
@@ -52,19 +52,20 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
                 eq(players_in_teams.active, 1)
             ))
             .get();
-
         if (existingTeam) {
             return res.status(400).send(`Error: You are already in a ${is_1v1 ? '1v1' : '2v2'} team.`);
         }
         const result = await db.insert(teams).values({
             name,
-            teamAvatar: req.file ? req.file.filename : null,
+            acronym,
+            avatar: req.file ? req.file.filename : null,
             divisionId: division_id,
             regionId: region_id,
             seasonNo: SEASON_ID,
             is1v1: is_1v1,
             joinPassword: join_password
         });
+        
         const team_id = result.lastInsertRowid;
         const timestamp = Date.now();
         if (req.file) {
@@ -75,7 +76,7 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
 
             fs.renameSync(oldPath, newPath);
 
-            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, team_id));
+            await db.update(teams).set({ avatar: newFilename }).where(eq(teams.id, team_id));
         }
 
         await db.insert(players_in_teams).values({
@@ -89,7 +90,7 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
             teamId: team_id
         });
 
-        res.redirect('/signup');
+        return res.redirect(`/team_page/${team_id}`);
     } catch (err) {
         console.error('Error creating team or adding player:', err);
         res.status(500).send('Internal Server Error');

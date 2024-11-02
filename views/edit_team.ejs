@@ -1,6 +1,6 @@
 <div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 overflow-x-auto shadow-sm rounded-lg p-6 gap-4 mt-2">
     <h1 class="text-3xl font-bold m-2">Edit Team: <%= team.name %></h1>
-
+    <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-40 rounded-md object-contain">
     <form action="/upload_team_avatar/<%= team.id %>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
         <div class="space-y-5 mt-5">
                 <label for="team_image" class="block text-sm font-medium text-white">Upload Team Image:</label>
@@ -11,8 +11,12 @@
 
     <form action="/edit_team/<%= team.id %>" method="POST" class="flex flex-col gap-4">
         <div class="form-group">
-            <label for="team_name" class="font-semibold">Team Name</label>
-            <input type="text" id="team_name" name="team_name" value="<%= team.name %>" required class="text-black form-control border-gray-300 rounded p-2 w-full">
+            <label for="team_name" class="font-semibold">Change Team Name</label>
+            <input type="text" id="team_name" name="team_name" value="<%= team.name %>" class="text-black form-control border-gray-300 rounded p-2 w-full">
+        </div>
+        <div class="form-group">
+            <label for="acronym" class="font-semibold">Team Acronym</label>
+            <input type="text" id="acronym" name="acronym" value="<%= team.acronym %>" class="text-black form-control border-gray-300 rounded p-2 w-full">
         </div>
         <div class="form-group">
             <label for="join_password" class="font-semibold">Join Password</label>
@@ -153,7 +157,16 @@
 </div>
 <script>
     document.getElementById('team_name').addEventListener('input', function() {
-        const maxLength = 20;
+        const maxLength = 25;
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+            alert(`Team names must be ${maxLength} characters or less.`);
+        }
+    });
+</script>
+<script>
+    document.getElementById('acronym').addEventListener('input', function() {
+        const maxLength = 4;
         if (this.value.length > maxLength) {
             this.value = this.value.slice(0, maxLength);
             alert(`Team names must be ${maxLength} characters or less.`);

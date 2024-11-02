@@ -53,11 +53,10 @@ router.get('/team_page/:teamid', async (req, res) => {
         .from(players_in_teams)
         .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
         .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
-    
         let request = 0;
         if (req.session?.user) {
             const userSteamId = req.session.user.steamid;
-            const existingRequest = await db
+                const existingRequest = await db
                 .select()
                 .from(pending_players)
                 .innerJoin(teams, eq(pending_players.teamId, teams.id))
@@ -66,11 +65,12 @@ router.get('/team_page/:teamid', async (req, res) => {
                     eq(pending_players.teamId, teamid)
                 ))
                 .get();
+
             if (existingRequest) {
                 request = 1;
             }
-        }
-
+        }  
+        
         res.render('layout', {
             body: 'team_page',
             title: team.name,
@@ -159,7 +159,6 @@ router.post('/join_team', async (req, res) => {
                     eq(pending_players.teamId, teamId)
                 ))
                 .get();
-            console.log("exist req for join team line 163: ", existingRequest);
             if (existingRequest) {
                 return res.status(400).send('You have already requested to join this team.');
             }
@@ -169,7 +168,7 @@ router.post('/join_team', async (req, res) => {
                     playerSteamId: userSteamId,
                     teamId: teamId,
                 });
-                return res.redirect('/');
+                return res.redirect(`/team_page/${teamId}`);
             } else {
                 return res.status(403).send('Incorrect password');
             }
@@ -182,12 +181,11 @@ router.post('/join_team', async (req, res) => {
     }
 });
 
-
 router.post('/leave_team/:teamid', async (req, res) => {
     if (req.session?.user) {
-        const teamId = req.params.teamid; // Get teamId from URL parameters
-        const userSteamId = req.session.user.steamid; // Get user Steam ID from session
-        
+        const teamId = req.params.teamid;
+        const userSteamId = req.session.user.steamid;
+
         try {
             const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
@@ -195,22 +193,34 @@ router.post('/leave_team/:teamid', async (req, res) => {
             }
 
             const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
             await db.update(players_in_teams)
-            .set({
-                active: 0,
-                permissionLevel: -2,
-                leftAt: currentDateTime
-            })
-            .where(
-                and(
+                .set({
+                    active: 0,
+                    permissionLevel: -2,
+                    leftAt: currentDateTime
+                })
+                .where(and(
                     eq(players_in_teams.playerSteamId, userSteamId),
                     eq(players_in_teams.teamId, teamId)
-                )
-            );
+                ));
 
-            return res.redirect('/'); 
+            const remainingPlayers = await db.select()
+                .from(players_in_teams)
+                .where(and(
+                    eq(players_in_teams.teamId, teamId),
+                    eq(players_in_teams.active, 1)
+                )).get();
+
+            if (!remainingPlayers) {
+                await db.update(teams)
+                    .set({ status: -1 })
+                    .where(eq(teams.id, teamId));
+            }
+
+            return res.redirect(`/`);
         } catch (err) {
-            console.error('Error querying database: ' + err.message);
+            console.error('Error querying database: ', err);
             return res.status(500).send('Internal Server Error');
         }
     } else {
@@ -240,7 +250,35 @@ router.post('/remove_request/:teamid', async (req, res) => {
                 return res.status(404).send('Pending request not found');
             }
 
-            return res.redirect('/'); 
+            return res.redirect(`/team_page/${teamId}`);
+        } catch (err) {
+            console.error('Error querying database: ' + err.message);
+            return res.status(500).send('Internal Server Error');
+        }
+    } else {
+        return res.status(401).send('Please sign in');
+    }
+});
+
+router.post('/toggle_team/:teamid', async (req, res) => {
+    if (req.session?.user) {
+        const teamId = req.params.teamid;
+        try {
+            const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();
+            if (!team) {
+                return res.status(404).send('Team not found');
+            }
+
+            const newStatus = team.status === 0 ? 1 : 0;
+            const result = await db.update(teams)
+                .set({ status: newStatus })
+                .where(eq(teams.id, teamId));
+
+            if (result === 0) {
+                return res.status(404).send('Failed to update team status');
+            }
+
+            return res.redirect(`/team_page/${teamId}`);
         } catch (err) {
             console.error('Error querying database: ' + err.message);
             return res.status(500).send('Internal Server Error');

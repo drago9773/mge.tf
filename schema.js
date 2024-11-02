@@ -72,7 +72,8 @@ export const seasons = sqliteTable('seasons', {
 export const teams = sqliteTable('teams', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  teamAvatar: text('team_avatar'),
+  acronym: text('acronym'),
+  avatar: text('avatar'),
   wins: text('wins').default(0),
   losses: text('losses').default(0),
   divisionId: integer('division_id').references(() => divisions.id),

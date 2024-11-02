@@ -1,7 +1,18 @@
 //TODO
+    //TOS popup on signup
+    //admin pannel
+    ////edit seasons/divisions table names
 
-//'match' (team vs team) page, agreeing on date
-//arena map pictures
+    //team stuff
+    ////when signup, have div/region actually be the table value
+    ////will pending players need to be confirmed by staff? (most likely)
+
+    //match stuff
+    ////'match' (team vs team) page, agreeing on date
+    //arena map pictures
+
+//questions
+////What happens if we change or add divisions in the future, will this backlog and change teams divions from previous season
 
 //FUTURE
 //1. In admin panel, needs to be a 'commit team history' button to move all teams from current

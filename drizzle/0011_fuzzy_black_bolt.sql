@@ -1,0 +1,1 @@
+ALTER TABLE `teams` RENAME COLUMN `team_avatar` TO `avatar`;

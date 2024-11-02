@@ -8,24 +8,49 @@ const router = express.Router();
 router.get('/admin', async (req, res) => {
     const adminStatus = await isAdmin(req.session?.user?.steamid);
     if (!adminStatus) {
-        res.status(404);
-        return res.redirect('/');
+        return res.status(403).redirect('/');
     }
 
     try {
         const allTeams = await db.select().from(teams);
-        const allMatches = await db.select({
-                ...matches,homeTeamName: teams.name,awayTeamName: sql`away.name`.as('away_team_name'),divisionName: divisions.name,})
-            .from(matches).innerJoin(teams, eq(matches.homeTeamId, teams.id)).innerJoin(sql`teams as away`, eq(matches.awayTeamId, sql`away.id`)).innerJoin(divisions, eq(matches.divisionId, divisions.id));
+
+        const allMatches = await db
+            .select({
+                ...matches,
+                homeTeamName: teams.name,
+                awayTeamName: sql`away.name`.as('away_team_name'),
+                divisionName: divisions.name,
+            })
+            .from(matches)
+            .innerJoin(teams, eq(matches.homeTeamId, teams.id))
+            .innerJoin(sql`teams as away`, eq(matches.awayTeamId, sql`away.id`))
+            .innerJoin(divisions, eq(matches.divisionId, divisions.id));
 
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allRegions = await db.select().from(regions);
         const allSeasons = await db.select().from(seasons);
         const allUsers = await db.select().from(users);
-        const allPlayersInTeams = await db.select({playerSteamId: players_in_teams.playerSteamId, teamId: players_in_teams.teamId, startedAt: players_in_teams.startedAt,})
-            .from(players_in_teams).innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId)).innerJoin(teams, eq(players_in_teams.teamId, teams.id));
         
+        const allPlayersInTeams = await db
+            .select({
+                playerSteamId: players_in_teams.playerSteamId,
+                playerAvatar: users.steamAvatar,
+                playerName: users.steamUsername,
+                playerSteamId: users.steamId,
+                teamId: players_in_teams.teamId,
+                startedAt: players_in_teams.startedAt,
+                permissionLevel: players_in_teams.permissionLevel
+            })
+            .from(players_in_teams)
+            .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
+            .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
+        
+            const playersByTeam = allTeams.map(team => ({
+                ...team,
+                players: allPlayersInTeams.filter(player => player.teamId === team.id)
+            }));
+
         res.render('layout', {
             body: 'admin',
             title: 'Admin',
@@ -37,10 +62,11 @@ router.get('/admin', async (req, res) => {
             seasons: allSeasons,
             regions: allRegions,
             players_in_teams: allPlayersInTeams,
-            users: allUsers
+            teamsWithPlayers: playersByTeam,
+            users: allUsers,
         });
     } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error('Error fetching data in /admin:', err.message);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -107,6 +133,17 @@ router.post('/create_match', async (req, res) => {
         res.redirect('/admin');
     } catch (err) {
         console.error('Error creating match:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/create_season', async (req, res) => {
+    const { num_weeks } = req.body;
+    try {
+        await db.insert(seasons).values({ num_weeks });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error creating season:', err);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -246,5 +283,64 @@ router.get('/get-arenas', async (req, res) => {
     }
   });
   
+  router.post('/remove_season', async (req, res) => {
+    const seasonId = req.body.season_id;
+    try{
+        await db.delete(seasons).where(eq(seasons.id, seasonId));
+    } catch (error) {
+        console.log("Unable to remove season: ", error);
+    }
+    res.redirect('/admin');
+
+  });
+  
+  router.post('/remove_division', async (req, res) => {
+    const divisionId = req.body.division_id;
+    try{
+        await db.delete(divisions).where(eq(divisions.id, divisionId));
+    } catch (error) {
+        console.log("Unable to remove division: ", error);
+    }
+    res.redirect('/admin');
+  });
+  
+  router.post('/remove_region', async (req, res) => {
+    const regionId = req.body.region_id;
+    try{
+        await db.delete(regions).where(eq(regions.id, regionId));
+    } catch (error) {
+        console.log("Unable to remove region: ", error);
+    }
+    res.redirect('/admin');
+  });
+
+  router.post('/remove_arena', async (req, res) => {
+    const arenaId = req.body.arena_id;
+    try{
+        await db.delete(arenas).where(eq(arenas.id, arenaId));
+    } catch (error) {
+        console.log("Unable to remove region: ", error);
+    }
+    res.redirect('/admin');
+  });
+
+  router.post('/admin_update_status', async (req, res) => {
+    const { teamId, status } = req.body; 
+    try {
+        const result = await db.update(teams)
+            .set({ status: status }) 
+            .where(eq(teams.id, teamId));
+
+        if (result.changes === 0) {
+            return res.status(404).send('Team not found or status unchanged.');
+        }
+
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error updating team status:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 export default router;

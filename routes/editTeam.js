@@ -37,7 +37,6 @@ router.get('/edit_team/:teamid', async (req, res) => {
         if (!team) {
             return res.status(404).send('Team not found');
         }
-
         const allPendingPlayers = await db.select({
             playerSteamId: pending_players.playerSteamId,
             teamId: pending_players.teamId,
@@ -47,6 +46,7 @@ router.get('/edit_team/:teamid', async (req, res) => {
         .from(pending_players)
         .innerJoin(users, eq(pending_players.playerSteamId, users.steamId))
         .innerJoin(teams, eq(pending_players.teamId, teams.id));
+    
 
 
         const allPlayersInTeams = await db.select({
@@ -92,32 +92,24 @@ router.get('/edit_team/:teamid', async (req, res) => {
     }
 });
 
-router.post('/edit_team/:teamid', upload.single('avatar'), async (req, res) => {
+router.post('/edit_team/:teamid', async (req, res) => {
     const teamid = req.params.teamid;
-    console.log(req.file);
 
     try {
-        const { team_name, join_password } = req.body;
+        const { team_name, acronym, join_password } = req.body;
+        const teamData = await db.select().from(teams).where(eq(teams.id, teamid)).get();
 
-        await db.insert(teamname_history).values({
-            name: team_name,
-            teamId: teamid
-        })
-        const timestamp = Date.now();
-        if (req.file) {
-            const ext = path.extname(req.file.originalname);
-            const newFilename = `team${teamid}_avatarCreatedAt${timestamp}${ext}`; 
-            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
-            const newPath = `./views/images/team_avatars/${newFilename}`;
-    
-            fs.renameSync(oldPath, newPath);
-    
-            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, teamid));
+        if (teamData && teamData.name !== team_name) {
+            await db.insert(teamname_history).values({
+                name: team_name,
+                teamId: teamid
+            });
         }
-        
+
         await db.update(teams)
             .set({
                 name: team_name,
+                acronym,
                 joinPassword: join_password,
             })
             .where(eq(teams.id, teamid));
@@ -128,6 +120,7 @@ router.post('/edit_team/:teamid', upload.single('avatar'), async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, res) => {
     const teamid = req.params.teamid;
@@ -142,9 +135,9 @@ router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, 
             const newPath = `./views/images/team_avatars/${newFilename}`;
             
             fs.renameSync(oldPath, newPath);
-            await db.update(teams).set({ teamAvatar: newFilename }).where(eq(teams.id, teamid));
+            await db.update(teams).set({ avatar: newFilename }).where(eq(teams.id, teamid));
         }
-        return res.redirect(`/team_page/${teamid}`);
+        return res.redirect(`/edit_team/${teamid}`);
     } catch (err) {
         console.error('Error querying database: ', err);
         res.status(500).send('Internal Server Error');

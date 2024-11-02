@@ -1,204 +1,140 @@
-<!-- TODO -->
-<!-- Make matches display look better and games within matches -->
- <!-- setup team signups and adding plaeyrs to teams -->
+<div class="bg-gray-800">
+  <div class="max-w-2xl mx-auto p-6 space-y-8">
+  <h1 class="text-4xl font-bold mb-10">Administrative Dashboard </h1>
 
-<div class="bg-black bg-opacity-50">
-  <div class="max-w-4xl mx-auto p-6 space-y-8">
-  <h1 class="text-4xl font-bold mb-10">Administrative</h1>
-
-    <section class="space-y-4">
+  <section class="space-y-4 max-w-md">
       <h2 class="text-2xl font-bold">Seasons</h2>
       <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
+        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
             <tr> 
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season Number</th>
+              <th class="px-4 py-2 text-left text-xs font-mediumuppercase tracking-wider">Season Number</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Number of Weeks</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
             <% if (seasons && seasons.length > 0) { %>
-            <% seasons.forEach((season, index) => { %>
-            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= season.id %></td>
-            </tr>
-            <% }) %>
-            <% } else { %>
-            <tr>
-              <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="space-y-4 max-w-md">
-      <h2 class="text-2xl font-bold">Create Team</h2>
-      <form action="/create_team" method="POST" class="space-y-4">
-        <%- include('input_admin', { id: "name", label: "Team Name:" }) %>
-        <div>
-          <label for="division_id" class="block text-sm font-medium text-gray-700 whitespace-nowrap">Division ID:</label>
-          <select id="division_id" name="division_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
-            <option value="" disabled selected>-</option>
-            <option value="1">OPEN</option>
-            <option value="2">INVITE</option>
-          </select>
-        </div>
-    
-        <div>
-          <label for="season_no" class="block text-sm font-medium text-gray-700 whitespace-nowrap">Season No:</label>
-          <select id="season_no" name="season_no" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
-            <option value="" disabled selected>-</option>
-            <% seasons.forEach(season => { %>
-              <option value="<%= season.id %>"><%= season.id %></option>
-            <% }) %>
-          </select>
-        </div>
-    
-        <div>
-          <label for="region_id" class="block text-sm font-medium text-gray-700 whitespace-nowrap">Region ID:</label>
-          <select id="region_id" name="region_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
-            <option value="" disabled selected>-</option>
-            <option value="1">NA</option>
-            <option value="2">EU</option>
-          </select>
-        </div>
-    
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Team</button>
-      </form>
-    </section>
-
-    <section class="space-y-4">
-      <h3 class="text-xl font-semibold">Teams</h3>
-      <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Name</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% if (teams && teams.length > 0) { %>
-              <% teams.forEach((team, index) => { %>
-                <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= team.name %></td>
-                
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <% const division = divisions.find(div => div.id === team.divisionId); %>
-                  <%= division ? division.name : ' ' %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= team.wins %> - <%= team.losses %>
-              </td>      
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <% const season = seasons.find(szn => szn.id === team.seasonNo); %>
-                  <%= season ? season.id : ' ' %>
-                </td>
-
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <% const region = regions.find(reg => reg.id === team.regionId); %>
-                  <%= region ? region.name : ' ' %>
-                </td>
-
-                <td class="px-4 py-4 whitespace-nowrap text-sm">
-                <form action="/remove_team" method="POST" class="inline ml-2">
-                  <input type="hidden" name="team_id" value="<%= team.id %>">
-                  <button type="submit" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                    Remove
-                  </button>
-                </form>
-              </td>
-            </tr>
-            <% }) %>
-            <% } else { %>
-            <tr>
-              <td colspan="6" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No teams created yet</td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="space-y-4">
-      <h3 class="text-xl font-semibold">Players in Teams</h3>
-      <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> </th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player Name</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Namet</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join date</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% if (players_in_teams && players_in_teams.length > 0) { %>
-              <% players_in_teams.forEach((playerInTeam, index) => { %>
-                <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-                  <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
-                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" class="w-6 h-6 rounded-full" />
-                  </td>
-                  <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    <%= playerUser ? playerUser.steamUsername : ' ' %>
-                  </td>
-                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <% const team = teams.find(t => t.id === playerInTeam.teamId); %>
-                    <%= team ? team.name : ' ' %>
-                  </td>
-                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"><%= new Date(playerInTeam.startedAt).toLocaleString() %></td>
-                  
+              <% seasons.forEach((season, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.id %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.numWeeks %></td>
                 </tr>
               <% }) %>
             <% } else { %>
               <tr>
-                <td colspan="4" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No players in teams yet</td>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
+              </tr>
+            <% } %>
+          </tbody>          
+        </table>
+      </div>
+      <h2 class="font-bold">Create Season</h2>
+      <form action="/create_season" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Number of Weeks:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Season</button>
+      </form>
+    </section>
+
+    <section class="space-y-4 max-w-md">
+      <h3 class="text-xl font-semibold">Divisions</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-auto shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Division Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (divisions && divisions.length > 0) { %>
+              <% divisions.forEach((division, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= division.name %></td>
+                </tr>
+            <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No divisions created yet</td>
               </tr>
             <% } %>
           </tbody>
         </table>
       </div>
-    </section>  
-    
-
-    <section class="space-y-4 max-w-md">
-      <h2 class="text-2xl font-bold">Create Arena</h2>
-      <form action="/create_arena" method="POST" class="space-y-4">
-        <%- include('input_admin', { id: "name", label: "Arena Name:", type: "text" }) %>
-        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Create Arena</button>
+      <h2 class="font-bold">Create Division</h2>
+      <form action="/create_division" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Division Name:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Division</button>
       </form>
     </section>
-  
-    <section class="space-y-4">
-      <h3 class="text-xl font-semibold">Arenas</h3>
+
+    <section class="space-y-4 max-w-md">
+
+      <h3 class="text-xl font-semibold">Regions</h3>
       <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
+        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
             <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arena Name</th>
+              <th class="px-4 py-2 text-left text-xs font-mediumuppercase tracking-wider">Region Name</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% if (arenas && arenas.length > 0) { %>
-            <% arenas.forEach((arena, index) => { %>
-            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= arena.name %></td>
-            </tr>
-            <% }) %>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (regions && regions.length > 0) { %>
+              <% regions.forEach((region, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= region.name %></td>
+                </tr>
+              <% }) %>
             <% } else { %>
-            <tr>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No arenas created yet</td>
-            </tr>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+              </tr>
             <% } %>
-          </tbody>
+          </tbody>          
         </table>
       </div>
+      <h2 class="font-bold">Create Region</h2>
+      <form action="/create_region" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Region Name:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Region</button>
+      </form>
+    </section>
+
+    <section class="space-y-4 max-w-md">
+      <h3 class="text-xl font-semibold">Arenas</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (arenas && arenas.length > 0) { %>
+              <% arenas.forEach((arena, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= arena.name %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/remove_arena" method="POST" class="inline ml-2">
+                      <input type="hidden" name="region_id" value="<%= arena.id %>">
+                      <button type="submit" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                        Remove
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+              </tr>
+            <% } %>
+          </tbody>   
+        </table>
+      </div>
+      <h2 class="font-bold">Create Arena</h2>
+      <form action="/create_arena" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Arena Name:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-gray-900 text-white rounded hover:bg-gray-600">Create Arena</button>
+      </form>
     </section>
 
     <section class="space-y-4">
@@ -332,74 +268,6 @@
         <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Submit Match Result</button>
       </form>
     </section>    
-
-    <section class="space-y-4 max-w-md">
-      <h2 class="text-2xl font-bold">Create Division</h2>
-      <form action="/create_division" method="POST" class="space-y-4">
-        <%- include('input_admin', { id: "name", label: "Division Name:", type: "text" }) %>
-        <button type="submit" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Create Division</button>
-      </form>
-    </section>
-
-    <section class="space-y-4">
-      <h3 class="text-xl font-semibold">Divisions</h3>
-      <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division Name</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% if (divisions && divisions.length > 0) { %>
-            <% divisions.forEach((division, index) => { %>
-            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= division.name %></td>
-            </tr>
-            <% }) %>
-            <% } else { %>
-            <tr>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No divisions created yet</td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="space-y-4 max-w-md">
-      <h2 class="text-2xl font-bold">Create Region</h2>
-      <form action="/create_region" method="POST" class="space-y-4">
-        <%- include('input_admin', { id: "name", label: "Region Name:", type: "text" }) %>
-        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Create Region</button>
-      </form>
-    </section>
-
-    <section class="space-y-4">
-      <h3 class="text-xl font-semibold">Regions</h3>
-      <div class="overflow-x-auto">
-        <table class="min-w-auto bg-white shadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region Name</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% if (regions && regions.length > 0) { %>
-            <% regions.forEach((region, index) => { %>
-            <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %>">
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= region.name %></td>
-            </tr>
-            <% }) %>
-            <% } else { %>
-            <tr>
-              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </section>
 
     <a href="/" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">HOME</a>
   </div>

@@ -6,8 +6,8 @@
         <ul id="teams_container">
           <% teams.forEach((team, index)=> { %>
           <a href="/team_page/<%= team.id %>">
-            <li id="card-<%= index %>" class="relative z-0 group overflow-hidden h-40 border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
-              <div class="space-y-3 relative z-10 p-5 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
+            <li id="card-<%= index %>" class="relative z-0 group overflow-hidden h-20 border border-zinc-800 rounded-xl bg-[radial-gradient(500px_circle_at_var(--cursor-x)_var(--cursor-y),#22d3ee_0,transparent,transparent_70%)]">
+              <div class="space-y-1 relative z-10 p-1 bg-[linear-gradient(180deg,_rgba(24,_24,_27,_0.60)_0%,_rgba(24,_24,_27,_0.00)_100%)]">
 
                 <% const maxLength=30; let teamName=team.name; if (teamName.length > maxLength) {
                     teamName = teamName.slice(0, maxLength) + '...';
