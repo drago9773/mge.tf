@@ -33,6 +33,12 @@
     <% const ownersCount = teamPlayers.filter(p => p.permissionLevel === 2).length; %>
 
     <% if (playerInTeam && playerInTeam.permissionLevel >= 1) { %>
+      <h1 class="mx-auto text-black font-bold py-2 px-4 rounded bg-yellow-500">
+        You have pending players requesting to join the team
+      </h1>
+    <% } %>
+
+    <% if (playerInTeam && playerInTeam.permissionLevel >= 1) { %>
       <div class="mx-auto flex items-center mt-4">
         <a href="/edit_team/<%= team.id %>" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">Edit Team</a>
       </div>
@@ -41,7 +47,7 @@
     <% if (playerInTeam && playerInTeam.permissionLevel >= 2) { %>
       <div class="mx-auto flex items-center mt-4">
         <form action="/toggle_team/<%= team.id %>" method="POST">
-          <button type="submit" class="text-white font-bold py-2 px-4 rounded bg-yellow-500">
+          <button type="submit" class="text-black font-bold py-2 px-4 rounded bg-yellow-500">
             <%= team.status === 0 ? 'Ready' : 'Unready' %>
           </button>
         </form>
@@ -180,7 +186,7 @@
                   ? teams.find(t => t.id === match.awayTeamId)
                   : teams.find(t => t.id === match.homeTeamId);
                 %>
-                <tr>
+                <tr onclick="window.location.href='/match_page/<%= match.id %>'" style="cursor: pointer;">
                   <td class="px-4 py-2"><%= new Date(match.matchDate).toLocaleDateString() %></td>
                   <td class="px-4 py-2">
                     <%= opponent ? opponent.name : 'Unknown Opponent' %>

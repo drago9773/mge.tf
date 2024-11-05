@@ -1,7 +1,6 @@
 //TODO
     //TOS popup on signup
     //admin pannel
-    ////edit seasons/divisions table names
 
     //team stuff
     ////when signup, have div/region actually be the table value

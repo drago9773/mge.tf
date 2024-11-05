@@ -103,9 +103,9 @@ export const matches = sqliteTable('matches', {
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   matchId: integer('match_id').notNull().references(() => matches.id),
-  homeTeamScore: integer('home_team_score').notNull(),
-  awayTeamScore: integer('away_team_score').notNull(),
-  arenaId: integer('arena_id').notNull().references(() => arenas.id)
+  homeTeamScore: integer('home_team_score'),
+  awayTeamScore: integer('away_team_score'),
+  arenaId: integer('arena_id').references(() => arenas.id)
 });
 
 export const players = sqliteTable('players', {

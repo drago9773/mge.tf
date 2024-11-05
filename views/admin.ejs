@@ -3,8 +3,10 @@
     <button class="p-2" @click="panel = 'neptune'">Admin</button>
     <button class="p-2" @click="panel = 'users'">Users</button>
     <button class="p-2" @click="panel = 'teams'">Teams</button>
+    <button class="p-2" @click="panel = 'matches'">Matches</button>
   </div>
   <div x-show="panel == 'neptune'"><%- include('components/neptune-admin') %></div>
-  <div x-show="panel == 'users'"><%- include('components/users_admin') %></div>
-  <div x-show="panel == 'teams'"><%- include('components/teams_admin') %></div>
+  <div x-show="panel == 'users'"><%- include('components/admin_users') %></div>
+  <div x-show="panel == 'teams'"><%- include('components/admin_teams') %></div>
+  <div x-show="panel == 'matches'"><%- include('components/admin_matches') %></div>
 </div>

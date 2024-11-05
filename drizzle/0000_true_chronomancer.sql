@@ -1,3 +1,5 @@
+select * from teams;
+
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`thread_count` integer NOT NULL,
@@ -9,7 +11,8 @@ CREATE TABLE IF NOT EXISTS `activity` (
 
 CREATE TABLE IF NOT EXISTS `arenas` (
     `name` PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `name` text NOT NULL
+    `name` text NOT NULL,
+    `image` text
 );
 
 CREATE TABLE IF NOT EXISTS `divisions` (
@@ -91,9 +94,9 @@ CREATE TABLE IF NOT EXISTS `matches` (
 CREATE TABLE IF NOT EXISTS `games` (
     `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
     `match_id` integer NOT NULL,
-    `home_team_score` integer NOT NULL,
-    `away_team_score` integer NOT NULL,
-    `arena_id` integer NOT NULL,  -- Reference to arenas table
+    `home_team_score` integer,
+    `away_team_score` integer,
+    `arena_id` integer,  -- Reference to arenas table
     FOREIGN KEY (`match_id`) REFERENCES `matches`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
     FOREIGN KEY (`arena_id`) REFERENCES `arenas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
 );

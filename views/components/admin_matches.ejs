@@ -1,0 +1,148 @@
+<div class="bg-gray-700 px-4 py-2">
+    <section class="space-y-4">
+        <h2 class="text-2xl font-bold">Create Match</h2>
+        <form action="/create_match" method="POST" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="home_team_id" class="block text-sm font-medium text-gray-700">Home Team ID:</label>
+                    <select id="home_team_id" name="home_team_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                        <option value="" disabled selected>-</option>
+                        <% teams.forEach(team => { %>
+                        <option value="<%= team.id %>"><%= team.name %> (ID: <%= team.id %>)</option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="away_team_id" class="block text-sm font-medium text-gray-700">Away Team ID:</label>
+                    <select id="away_team_id" name="away_team_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                        <option value="" disabled selected>-</option>
+                        <% teams.forEach(team => { %>
+                        <option value="<%= team.id %>"><%= team.name %> (ID: <%= team.id %>)</option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="division_id" class="block text-sm font-medium text-gray-700">Division</label>
+                    <select id="division_id" name="division_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                        <option value="" disabled selected>-</option>
+                        <option value="1">OPEN</option>
+                        <option value="2">INVITE</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="season_no" class="block text-sm font-medium text-gray-700">Season Number:</label>
+                    <select id="match_season_no" name="season_no" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black" onchange="updateWeeksDropdown()">
+                        <option value="" disabled selected>-</option>
+                        <% seasons.forEach(season => { %>
+                        <option value="<%= season.id %>" data-weeks="<%= season.numWeeks %>"><%= season.id %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="week_no" class="block text-sm font-medium text-gray-700">Week Number:</label>
+                    <select id="week_no" name="week_no" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                        <option value="" disabled selected>Select a Week</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="bo_series" class="block text-sm font-medium text-gray-700">Best of Series</label>
+                    <select id="bo_series" name="bo_series" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                        <option value="1">1</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                        <option value="9">9</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Create Match</button>
+        </form>
+    </section>
+
+    <section class="space-y-4">
+        <h3 class="text-xl font-semibold">Matches</h3>
+        <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match ID</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Home Team</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Away Team</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season Number</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Week Number</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Played At</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Winner Team</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            <% if (matches && matches.length > 0) { %>
+            <% matches.forEach((match, index) => { %>
+                <tr class="cursor-pointer clickable" onclick="window.location.href='/match_page/<%= match.id %>'">
+
+                <% const homeTeam = teams.find(team => team.id === match.homeTeamId); %>
+                <% const awayTeam = teams.find(team => team.id === match.awayTeamId); %>
+                
+                <% const division = divisions.find(division => division.id === match.divisionId); %>
+                <% const winnerTeam = teams.find(team => team.id === match.winnerId); %>
+
+                <% const winnerScore = 1; %>
+                <% const loserScore = 1; %>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900"><%= match.id %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= homeTeam ? homeTeam.name : ' ' %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= awayTeam ? awayTeam.name : ' ' %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= division ? division.name : ' ' %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.seasonNo %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.weekNo %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= match.played_at ? new Date(match.played_at * 1000).toLocaleDateString() : 'Not Played' %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500"><%= winnerTeam ? winnerTeam.name : ' ' %></td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                <%= match.winnerScore !== null ? match.winnerScore : ' ' %> - <%= match.loserScore !== null ? match.loserScore : ' ' %>
+            </td>
+            </tr>
+
+            <% }) %>
+            <% } else { %>
+            <tr>
+                <td colspan="9" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No matches created yet</td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-semibold">Submit Match Result</h2>
+        <form action="/submit_match_result" method="POST" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <%- include('input_admin', { id: "match_id", label: "Match ID:", type: "number" }) %>    
+            </div>
+            <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Submit Match Result</button>
+        </form>
+    </section>
+</div>
+
+<script>
+    function updateWeeksDropdown() {
+        const seasonDropdown = document.getElementById("match_season_no");
+        const weekDropdown = document.getElementById("week_no");
+        const selectedSeason = seasonDropdown.options[seasonDropdown.selectedIndex];
+        const numberOfWeeks = selectedSeason.getAttribute("data-weeks");
+
+        weekDropdown.innerHTML = '<option value="" disabled selected>Select a Week</option>';
+        
+        for (let i = 1; i <= numberOfWeeks; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            weekDropdown.appendChild(option);
+        }
+    }
+</script>

@@ -25,7 +25,6 @@ router.get('/admin', async (req, res) => {
             .innerJoin(teams, eq(matches.homeTeamId, teams.id))
             .innerJoin(sql`teams as away`, eq(matches.awayTeamId, sql`away.id`))
             .innerJoin(divisions, eq(matches.divisionId, divisions.id));
-
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allRegions = await db.select().from(regions);
@@ -117,19 +116,27 @@ router.post('/create_arena', async (req, res) => {
 });
 
 router.post('/create_match', async (req, res) => {
-    const { home_team_id, away_team_id, division_id, season_no, week_no } = req.body;
+    const { home_team_id, away_team_id, division_id, season_no, week_no, bo_series } = req.body;
 
-    try {
-        await db.insert(matches).values({
-            homeTeamId: (home_team_id),
-            awayTeamId: (away_team_id),
-            divisionId: (division_id),
-            seasonNo: (season_no),
-            weekNo: (week_no),
+    try {    
+        const result = await db.insert(matches).values({
+            homeTeamId: home_team_id,
+            awayTeamId: away_team_id,
+            divisionId: division_id,
+            seasonNo: season_no,
+            weekNo: week_no,
+            boSeries: bo_series,
             playedAt: null, 
             winnerId: null,
             createdAt: Math.floor(Date.now() / 1000)
         });
+        const match_id = result.lastInsertRowid;
+        for (let i = 1; i <= bo_series; i++) {
+            await db.insert(games).values({
+                matchId: match_id
+            });
+        }
+
         res.redirect('/admin');
     } catch (err) {
         console.error('Error creating match:', err);
@@ -138,9 +145,10 @@ router.post('/create_match', async (req, res) => {
 });
 
 router.post('/create_season', async (req, res) => {
-    const { num_weeks } = req.body;
+    const { numWeeks } = req.body;
+    console.log(req.body);
     try {
-        await db.insert(seasons).values({ num_weeks });
+        await db.insert(seasons).values({ numWeeks });
         res.redirect('/admin');
     } catch (err) {
         console.error('Error creating season:', err);
@@ -324,7 +332,7 @@ router.get('/get-arenas', async (req, res) => {
     res.redirect('/admin');
   });
 
-  router.post('/admin_update_status', async (req, res) => {
+router.post('/admin_update_team_status', async (req, res) => {
     const { teamId, status } = req.body; 
     try {
         const result = await db.update(teams)
@@ -342,5 +350,58 @@ router.get('/get-arenas', async (req, res) => {
     }
 });
 
+router.post('/admin_update_num_weeks', async (req, res) => {
+    const { numWeeks, seasonId } = req.body; 
+    try {
+        const result = await db.update(seasons)
+            .set({ numWeeks }) 
+            .where(eq(seasons.id, seasonId));
+
+        if (result.changes === 0) {
+            return res.status(404).send('Season not found or weeks unchanged.');
+        }
+
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error updating season:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/admin_update_division_name', async (req, res) => {
+    const { divisionId, name } = req.body; 
+    try {
+        const result = await db.update(divisions)
+            .set({ name }) 
+            .where(eq(divisions.id, divisionId));
+
+        if (result.changes === 0) {
+            return res.status(404).send('Division not found or name unchanged.');
+        }
+
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error updating division:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/admin_update_region_name', async (req, res) => {
+    const { regionId, name } = req.body; 
+    try {
+        const result = await db.update(regions)
+            .set({ name }) 
+            .where(eq(regions.id, regionId));
+
+        if (result.changes === 0) {
+            return res.status(404).send('Season not found or name unchanged.');
+        }
+
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error updating season:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 export default router;

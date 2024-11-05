@@ -83,8 +83,10 @@
                 <div class="text-gray-500">Season <%= team.season %></div>
               </td>
               <td class="px-4 py-2">
-                  <div><%= new Date(team.leftAt).toLocaleDateString() %></div>
-                  <div class="text-gray-500">Season <%= team.season %></div>
+                <div>
+                  <%= team.leftAt ? (new Date(team.leftAt).toLocaleDateString()) : '' %>
+                </div>
+                <div class="text-gray-500"><%= team.leftAt ? 'Season ' + team.season : '' %></div>
               </td>
             </tr>
           <% }); %>
@@ -99,7 +101,6 @@
     </div>
   </div>
 </div>
-
 
 <style>
   tbody tr {

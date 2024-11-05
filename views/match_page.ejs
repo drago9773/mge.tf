@@ -8,8 +8,8 @@
             <thead>
                 <tr>
                     <th class="px-4 py-2">Game No</th>
-                    <th class="px-4 py-2"><%= teams.find(team => team.id === match.homeTeamId).name %></th>
-                    <th class="px-4 py-2"><%= teams.find(team => team.id === match.awayTeamId).name %></th>
+                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.homeTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2"><%= teams.find(team => team.id === match.homeTeamId).name %></th>
+                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.awayTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2"><%= teams.find(team => team.id === match.awayTeamId).name %></th>
                     <th class="px-4 py-2">Arena</th>
                 </tr>
             </thead>
