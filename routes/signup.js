@@ -20,6 +20,7 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
+
 const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }
@@ -70,7 +71,7 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
         const timestamp = Date.now();
         if (req.file) {
             const ext = path.extname(req.file.originalname);
-            const newFilename = `team${team_id}_avatarCreatedAt${timestamp}${ext}`; 
+            const newFilename = `team${team_id.name}_avatarCreatedAt${timestamp}${ext}`; 
             const oldPath = `./views/images/team_avatars/${req.file.filename}`;
             const newPath = `./views/images/team_avatars/${newFilename}`;
 

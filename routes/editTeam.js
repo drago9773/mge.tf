@@ -64,15 +64,12 @@ router.get('/edit_team/:teamid', async (req, res) => {
         .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
 
         const playerInTeam = await db
-            .select()
-            .from(players_in_teams)
-            .where(
+            .select().from(players_in_teams).where(
                 and(
                     eq(players_in_teams.playerSteamId, playerSteamId),
                     eq(players_in_teams.teamId, teamid)
                 )
-            )
-            .get();
+            ).get();
 
         if (!playerInTeam || playerInTeam.permissionLevel < 1) {
             return res.status(403).send('You do not have permission to edit this team');
@@ -124,8 +121,6 @@ router.post('/edit_team/:teamid', async (req, res) => {
 
 router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, res) => {
     const teamid = req.params.teamid;
-    console.log("upload: ", req.file);
-
     const timestamp = Date.now();
     try {
         if (req.file) {

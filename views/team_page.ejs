@@ -2,7 +2,7 @@
 <% const division = divisions.find(div => div.id === team.divisionId); %>
 
 <div class="flex flex-col mx-auto max-w-7xl w-full bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
-  <% if (existingRequest) { %>
+  <% if (existing_request) { %>
     <h1 class="text-center w-full rounded-lg" style="font-size: 20px; color: #ff0000; background-color: #fce516;">
         You have requested to join this team.
     </h1>
@@ -31,12 +31,13 @@
   <% if (currentPlayerSteamId) { %>
     <% const playerInTeam = players_in_teams.find(p => p.playerSteamId === session.user.steamid && p.teamId === team.id && p.active === 1); %>
     <% const ownersCount = teamPlayers.filter(p => p.permissionLevel === 2).length; %>
-
-    <% if (playerInTeam && playerInTeam.permissionLevel >= 1) { %>
+    
+    <% if (pending_player_exists && playerInTeam && playerInTeam.permissionLevel >= 1) { %>
       <h1 class="mx-auto text-black font-bold py-2 px-4 rounded bg-yellow-500">
         You have pending players requesting to join the team
       </h1>
     <% } %>
+
 
     <% if (playerInTeam && playerInTeam.permissionLevel >= 1) { %>
       <div class="mx-auto flex items-center mt-4">

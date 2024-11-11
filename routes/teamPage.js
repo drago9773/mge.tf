@@ -70,6 +70,13 @@ router.get('/team_page/:teamid', async (req, res) => {
                 request = 1;
             }
         }  
+        const pendingPlayerExists = await db
+                .select()
+                .from(pending_players)
+                .where(and(
+                    eq(pending_players.teamId, teamid)
+                ))
+                .get();
         
         res.render('layout', {
             body: 'team_page',
@@ -84,7 +91,8 @@ router.get('/team_page/:teamid', async (req, res) => {
             regions: allRegions,   
             players_in_teams: allPlayersInTeams,  
             teamname_history: allTeamnameHistory,
-            existingRequest: request,
+            existing_request: request,
+            pending_player_exists: pendingPlayerExists,
             session: req.session
         });
     } catch (err) {

@@ -1,4 +1,6 @@
 select * from teams;
+select * from matches;
+select * from arenas;
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -10,9 +12,9 @@ CREATE TABLE IF NOT EXISTS `activity` (
 );
 
 CREATE TABLE IF NOT EXISTS `arenas` (
-    `name` PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
     `name` text NOT NULL,
-    `image` text
+    `avatar` text
 );
 
 CREATE TABLE IF NOT EXISTS `divisions` (
@@ -37,6 +39,8 @@ CREATE TABLE IF NOT EXISTS `teams` (
     `avatar` text,
     `wins` integer DEFAULT 0,
     `losses` integer DEFAULT 0,
+    `points_scored` integer DEFAULT 0,
+    `points_scored_against` integer DEFAULT 0,
     `division_id` integer,
     `region_id` integer,
     `season_no` integer,
@@ -75,7 +79,6 @@ CREATE TABLE IF NOT EXISTS `matches` (
     `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
     `home_team_id` integer NOT NULL,
     `away_team_id` integer NOT NULL,
-    `division_id` integer NOT NULL,
 	`winner_id` integer,
     `winner_score` integer, -- num matches winner team won in the BO series
     `loser_score` integer, -- num matches loser team won in the BO series
@@ -86,7 +89,6 @@ CREATE TABLE IF NOT EXISTS `matches` (
 	`played_at` integer,
     FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
-    FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE CASCADE,
 	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE
 );

@@ -1,17 +1,26 @@
-//TODO
-    //TOS popup on signup
-    //admin pannel
+//THIS SESSION
+////dropped division_id from matches (in case of multi divisional match)
+////preview matches
 
-    //team stuff
-    ////when signup, have div/region actually be the table value
-    ////will pending players need to be confirmed by staff? (most likely)
+//TODO
+    //signup
+    ////TOS popup on signup
+    ////have div/region actually be the table value
+
+    //admin
+    ////assign/approve team division requests from signup
+    ////pending players need to be confirmed by staff?
 
     //match stuff
     ////'match' (team vs team) page, agreeing on date
+
     //arena map pictures
 
+    //payment on signup
+    //link discord
+
 //questions
-////What happens if we change or add divisions in the future, will this backlog and change teams divions from previous season
+////do we want a list of viable MGE maps and then arenas associated with each map?
 
 //FUTURE
 //1. In admin panel, needs to be a 'commit team history' button to move all teams from current
@@ -35,6 +44,8 @@ import steamRoutes from './routes/steamAuth.js';
 import signupRoutes from './routes/signup.js';
 import apiRoutes from './routes/api.js';
 import adminRoutes from './routes/admin.js';
+import adminMatchesRoutes from './routes/adminMatches.js';
+import adminDashboardRoutes from './routes/adminDashboard.js';
 import moderatorRoutes from './routes/moderation.js';
 import editTeamRoutes from './routes/editTeam.js';
 import teamPageRoutes from './routes/teamPage.js';
@@ -63,6 +74,8 @@ app.use(session({
 app.use('/', forumPostRoutes);
 app.use('/', steamRoutes);
 app.use('/', adminRoutes);
+app.use('/', adminMatchesRoutes);
+app.use('/', adminDashboardRoutes);
 app.use('/', editTeamRoutes);
 app.use('/', teamPageRoutes);
 app.use('/', matchesRoutes);

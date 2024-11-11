@@ -4,16 +4,16 @@
 
         <h2 class="text-2xl mb-2 text-white">Games:</h2>
         
-        <table class="min-w-[600px] mx-auto divide-y divide-gray-200 bg-white rounded-lg shadow-lg text-black">
+        <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
             <thead>
                 <tr>
-                    <th class="px-4 py-2">Game No</th>
-                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.homeTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2"><%= teams.find(team => team.id === match.homeTeamId).name %></th>
-                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.awayTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2"><%= teams.find(team => team.id === match.awayTeamId).name %></th>
-                    <th class="px-4 py-2">Arena</th>
+                    <th class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider">Game No</th>
+                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.homeTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider"><%= teams.find(team => team.id === match.homeTeamId).name %></th>
+                    <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.awayTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider"><%= teams.find(team => team.id === match.awayTeamId).name %></th>
+                    <th class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider">Arena</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
                 <% games.filter(game => game.matchId === match.id).forEach((game, index) => { %>
                     <tr>
                         <td class="border px-4 py-2"><%= index + 1 %></td>

@@ -127,20 +127,33 @@
         <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
           <thead class="bg-gray-700">
             <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Avatar</th>
               <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Name</th>
+
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-gray-900">
             <% if (arenas && arenas.length > 0) { %>
               <% arenas.forEach((arena, index) => { %>
                 <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
-                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= arena.name %></td>
+                  <td class="overflow-x-hidden h-10 px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
+                    <img src="/images/arena_avatars/<%= arena.avatar %>" alt="Arena Avatar" class="px-4 py-2 h-10 rounded-md">
+                    <span><%= arena.name %></span>
+                  </td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm">
-                    <form action="/remove_arena" method="POST" class="inline ml-2">
-                      <input type="hidden" name="region_id" value="<%= arena.id %>">
-                      <button type="submit" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                        Remove
-                      </button>
+                    <form action="/admin_update_arena_avatar/<%= arena.id %>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+                      <div class="space-y-5 mt-5">
+                              <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
+                              <input id="avatar" name="avatar" type="file" accept="image/*">
+                              <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Upload Image</button>
+                      </div>
+                    </form>
+                  </td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_arena_name" method="POST" class="flex items-center">
+                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="hidden" name="arenaId" value="<%= arena.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
                     </form>
                   </td>
                 </tr>
@@ -154,9 +167,13 @@
         </table>
       </div>
       <h2 class="font-bold">Create Arena</h2>
-      <form action="/create_arena" method="POST" class="space-y-4">
+      <form action="/create_arena" method="POST" enctype="multipart/form-data" class="space-y-4">
         <%- include('input_admin', { id: "name", label: "Arena Name:", type: "text" }) %>
-        <button type="submit" class="px-2 bg-gray-900 text-white rounded hover:bg-gray-600">Create Arena</button>
+        <div class="space-y-5 mt-5">
+          <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
+          <input id="avatar" name="avatar" type="file" accept="image/*">
+        </div>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Arena</button>
       </form>
     </section>
     
