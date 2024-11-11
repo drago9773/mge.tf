@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "822fc117-bbe6-47e5-b564-9ab4553046ee",
-  "prevId": "b190894d-66c3-4d13-8eb4-c301e6eecf36",
+  "id": "31ac09bc-7ab4-447f-8e9f-69df677e419c",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "activity": {
       "name": "activity",
@@ -78,6 +78,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -129,21 +136,21 @@
           "name": "home_team_score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "away_team_score": {
           "name": "away_team_score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "arena_id": {
           "name": "arena_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -203,11 +210,11 @@
           "notNull": true,
           "autoincrement": false
         },
-        "division_id": {
-          "name": "division_id",
+        "winner_id": {
+          "name": "winner_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "winner_score": {
@@ -289,12 +296,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "matches_division_id_divisions_id_fk": {
-          "name": "matches_division_id_divisions_id_fk",
+        "matches_winner_id_teams_id_fk": {
+          "name": "matches_winner_id_teams_id_fk",
           "tableFrom": "matches",
-          "tableTo": "divisions",
+          "tableTo": "teams",
           "columnsFrom": [
-            "division_id"
+            "winner_id"
           ],
           "columnsTo": [
             "id"
@@ -349,6 +356,56 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "pending_players": {
+      "name": "pending_players",
+      "columns": {
+        "player_steam_id": {
+          "name": "player_steam_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pending_players_player_steam_id_users_steam_id_fk": {
+          "name": "pending_players_player_steam_id_users_steam_id_fk",
+          "tableFrom": "pending_players",
+          "tableTo": "users",
+          "columnsFrom": [
+            "player_steam_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pending_players_team_id_teams_id_fk": {
+          "name": "pending_players_team_id_teams_id_fk",
+          "tableFrom": "pending_players",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "players": {
       "name": "players",
       "columns": {
@@ -382,7 +439,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -391,6 +448,88 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "players_in_teams": {
+      "name": "players_in_teams",
+      "columns": {
+        "player_steam_id": {
+          "name": "player_steam_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 1
+        },
+        "permission_level": {
+          "name": "permission_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "left_at": {
+          "name": "left_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "players_in_teams_player_steam_id_users_steam_id_fk": {
+          "name": "players_in_teams_player_steam_id_users_steam_id_fk",
+          "tableFrom": "players_in_teams",
+          "tableTo": "users",
+          "columnsFrom": [
+            "player_steam_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "players_in_teams_team_id_teams_id_fk": {
+          "name": "players_in_teams_team_id_teams_id_fk",
+          "tableFrom": "players_in_teams",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -413,11 +552,11 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "current_timestamp"
         },
         "thread": {
           "name": "thread",
@@ -521,6 +660,51 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "teamname_history": {
+      "name": "teamname_history",
+      "columns": {
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "change_date": {
+          "name": "change_date",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teamname_history_team_id_teams_id_fk": {
+          "name": "teamname_history_team_id_teams_id_fk",
+          "tableFrom": "teamname_history",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "teams": {
       "name": "teams",
       "columns": {
@@ -538,8 +722,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "team_avatar": {
-          "name": "team_avatar",
+        "acronym": {
+          "name": "acronym",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "avatar": {
+          "name": "avatar",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -547,15 +738,31 @@
         },
         "wins": {
           "name": "wins",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 0
         },
         "losses": {
           "name": "losses",
-          "type": "text",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored": {
+          "name": "points_scored",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored_against": {
+          "name": "points_scored_against",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -582,6 +789,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "is_1v1": {
+          "name": "is_1v1",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
         "status": {
           "name": "status",
           "type": "integer",
@@ -589,6 +804,13 @@
           "notNull": false,
           "autoincrement": false,
           "default": 0
+        },
+        "join_password": {
+          "name": "join_password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
@@ -670,19 +892,19 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "current_timestamp"
         },
         "bumped_at": {
           "name": "bumped_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "(current_timestamp)"
         },
         "owner": {
           "name": "owner",
@@ -747,7 +969,7 @@
           "name": "isSignedUp",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 0
         },

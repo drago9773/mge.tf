@@ -24,7 +24,7 @@
 
 //FUTURE
 //1. In admin panel, needs to be a 'commit team history' button to move all teams from current
-//season into the teams_history table to preserve name/record/division etc at the end of each season
+//season into the teams_history table to preserve name/record/division etc. at the end of each season
 /// 1a. Then the players can keep the same team and the record/division can change for next season
 /// 1b. Then player_page and team_page will need to be updated to display team history
 
@@ -34,16 +34,16 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
-import { db, eloDb } from './db.js';
+import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.js';
-import { users, moderators } from './schema.js';
+import { users, moderators } from './schema.ts';
 import { sql} from 'drizzle-orm';
 
 import forumPostRoutes from './routes/forumPosts.js';
 import steamRoutes from './routes/steamAuth.js';
 import signupRoutes from './routes/signup.js';
-import apiRoutes from './routes/api.js';
-import adminRoutes from './routes/admin.js';
+import apiRoutes from './routes/api.ts';
+import adminRoutes from './routes/admin.ts';
 import adminMatchesRoutes from './routes/adminMatches.js';
 import adminDashboardRoutes from './routes/adminDashboard.js';
 import moderatorRoutes from './routes/moderation.js';
@@ -84,10 +84,21 @@ app.use('/', signupRoutes);
 app.use('/api', apiRoutes);
 app.use('/moderation', moderatorRoutes);
 
+
+type Player = {
+    rating: number;
+    steamid: string;
+    name: string;
+    wins: number;
+    losses: number;
+    lastplayed: number;
+    hitblip: number;
+};
+
 // TODO: Cache the elo stuff and cron job it
 app.get('/', async (req, res) => {
     try {
-        const players = eloDb.all(sql`
+        const players: Player[] = eloDb.all(sql`
             SELECT * 
             FROM mgemod_stats
             ORDER BY rating DESC
@@ -98,7 +109,7 @@ app.get('/', async (req, res) => {
         }));
         res.render('layout', { body: 'index', title: 'home', session: req.session, elo: updatedPlayers });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -123,16 +134,16 @@ app.get('/users', async (req, res) => {
             session: req.session
         });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });
 
-app.get('/2v2cup', (req, res) => {
+app.get('/2v2cup', (_req, res) => {
     res.render('2v2cup');
 });
 
-app.get('/discord', (req, res) => {
+app.get('/discord', (_req, res) => {
     const discordInviteLink = 'https://discord.gg/j6kDYSpYbs';
     res.redirect(discordInviteLink);
 });

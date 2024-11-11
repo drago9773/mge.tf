@@ -1,7 +1,7 @@
 import SteamAuth from 'node-steam-openid';
 import express from 'express';
-import { db, permissionLevelFromSteamId } from '../db.js';
-import { users, UserRole } from '../schema.js';
+import { db, permissionLevelFromSteamId } from '../db.ts';
+import { users, UserRole } from '../schema.ts';
 import { eq } from 'drizzle-orm';
 
 const API_KEY = '2C7E4CDF46C4D4FB5875A8E6E040BFC0';

@@ -1,5 +1,5 @@
 <div class="mb-4 bg-gray-800 p-4 rounded-lg shadow">
-  <input type="text" id="searchInput" placeholder="Search teams..." class="w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="filterTeams()">
+  <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search teams..." class="w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="filterTeams()">
   <div class="mt-2 flex space-x-4">
     <label class="flex items-center px-4">
       <input type="checkbox" id="readyCheckbox" checked onchange="filterTeams()">
@@ -19,13 +19,13 @@
     </label>
   </div>
   <div class="mt-4 p-2 flex space-x-4">
-    <select id="divisionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
+    <label for="divisionSelect"></label><select id="divisionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
       <option value="">All Divisions</option>
       <% divisions.forEach(division => { %>
         <option value="<%= division.id %>"><%= division.name %></option>
       <% }) %>
     </select>
-    <select id="regionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
+    <label for="regionSelect"></label><select id="regionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
       <option value="">All Regions</option>
       <% regions.forEach(region => { %>
         <option value="<%= region.id %>"><%= region.name %></option>
@@ -84,14 +84,16 @@
               </span>
             </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-              <form action="/admin_update_team_status" method="POST" class="flex items-center">
-                <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
-                  <option value="" disabled selected>Select Status</option>
-                  <option value="-1">Dead</option>
-                  <option value="0">Unready</option>
-                  <option value="1">Pending</option>
-                  <option value="2">Ready</option>
-                </select>
+              <form action="/admin/update_team_status" method="POST" class="flex items-center">
+                <label>
+                  <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                    <option value="" disabled selected>Select Status</option>
+                    <option value="-1">Dead</option>
+                    <option value="0">Unready</option>
+                    <option value="1">Pending</option>
+                    <option value="2">Ready</option>
+                  </select>
+                </label>
                 <input type="hidden" name="teamId" value="<%= team.id %>">
                 <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
               </form>

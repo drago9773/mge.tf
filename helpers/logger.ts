@@ -1,6 +1,7 @@
 import fs from 'node:fs';
+import {Request} from 'express';
 
-export function logRequestToFile(req, filename) {
+export function logRequestToFile(req: Request, filename: string) {
     const reqData = {
       method: req.method,
       url: req.url,
@@ -26,7 +27,7 @@ export function logRequestToFile(req, filename) {
   });
 }
 
-export function appendRequestToFile(req, filename) {
+export function appendRequestToFile(req: Request, filename: string) {
     const reqData = {
       method: req.method,
       url: req.url,

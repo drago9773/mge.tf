@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ccf8dbc8-8660-4e98-af71-2e4c169a3cfd",
-  "prevId": "822fc117-bbe6-47e5-b564-9ab4553046ee",
+  "id": "de9a7c0f-02e8-4723-8acd-9e1af420dfc3",
+  "prevId": "31ac09bc-7ab4-447f-8e9f-69df677e419c",
   "tables": {
     "activity": {
       "name": "activity",
@@ -78,6 +78,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -129,21 +136,21 @@
           "name": "home_team_score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "away_team_score": {
           "name": "away_team_score",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "arena_id": {
           "name": "arena_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -203,13 +210,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "division_id": {
-          "name": "division_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "winner_id": {
           "name": "winner_id",
           "type": "integer",
@@ -254,7 +254,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -289,19 +289,6 @@
           "tableTo": "teams",
           "columnsFrom": [
             "away_team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "matches_division_id_divisions_id_fk": {
-          "name": "matches_division_id_divisions_id_fk",
-          "tableFrom": "matches",
-          "tableTo": "divisions",
-          "columnsFrom": [
-            "division_id"
           ],
           "columnsTo": [
             "id"
@@ -452,7 +439,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -499,7 +486,7 @@
         },
         "started_at": {
           "name": "started_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -511,7 +498,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'null'"
+          "default": 0
         }
       },
       "indexes": {},
@@ -565,7 +552,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -692,7 +679,7 @@
         },
         "change_date": {
           "name": "change_date",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -735,8 +722,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "team_avatar": {
-          "name": "team_avatar",
+        "acronym": {
+          "name": "acronym",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "avatar": {
+          "name": "avatar",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -744,7 +738,7 @@
         },
         "wins": {
           "name": "wins",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -752,7 +746,23 @@
         },
         "losses": {
           "name": "losses",
-          "type": "text",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored": {
+          "name": "points_scored",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored_against": {
+          "name": "points_scored_against",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -804,7 +814,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -882,7 +892,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -890,7 +900,7 @@
         },
         "bumped_at": {
           "name": "bumped_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,

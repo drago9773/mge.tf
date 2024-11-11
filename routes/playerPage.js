@@ -1,6 +1,6 @@
 import express from 'express';
-import { db } from '../db.js';
-import { users, teams, divisions, players_in_teams, seasons } from '../schema.js';
+import { db } from '../db.ts';
+import { users, teams, divisions, players_in_teams, seasons } from '../schema.ts';
 import { eq } from 'drizzle-orm';
 
 const router = express.Router();

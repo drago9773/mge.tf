@@ -1,8 +1,8 @@
 import express from 'express';
-import { db } from '../db.js';
+import { db } from '../db.ts';
 import moment from 'moment';
 import { eq, desc, and } from 'drizzle-orm';
-import { threads, users, posts, activity, moderators } from '../schema.js';
+import { threads, users, posts, activity, moderators } from '../schema.ts';
 
 const router = express.Router()
 
@@ -50,7 +50,7 @@ router.get('/forums', async (req, res) => {
             moderators: moderatorIds
         });
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -113,7 +113,7 @@ router.post('/create_thread', async (req, res) => {
 
         return res.redirect('/forums');
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).json({ error: 'Failed to post content.' });
     }
 });
@@ -173,7 +173,7 @@ router.post('/thread', async (req, res) => {
 
         return res.status(200).redirect('/thread/' + thread_id);
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).json({ error: 'Failed to post content.' });
     }
 });
@@ -189,20 +189,26 @@ router.post('/remove_reply', async (req, res) => {
     const userSteamId = user.steamid;
 
     try {
-        const reply = await db.select({
-            ...posts,
-            threadOwner: threads.owner
+        const reply = db.select({
+            id: posts.id,
+            content: posts.content,
+            createdAt: posts.createdAt,
+            thread: posts.thread,
+            owner: posts.owner,
+            hidden: posts.hidden,
+            threadOwner: threads.owner,
         })
             .from(posts)
             .innerJoin(threads, eq(posts.thread, threads.id))
             .where(eq(posts.id, replyId))
             .get();
 
+
         if (!reply) {
             return res.status(404).json({ error: 'Reply not found.' });
         }
 
-        const moderator = await db.select().from(moderators).where(eq(moderators.steamId, userSteamId)).get();
+        const moderator = db.select().from(moderators).where(eq(moderators.steamId, userSteamId)).get();
 
         if (reply.owner !== userSteamId && reply.threadOwner !== userSteamId && !moderator) {
             return res.status(403).json({ error: 'You do not have permission to delete this reply.' });
@@ -212,7 +218,7 @@ router.post('/remove_reply', async (req, res) => {
 
         return res.redirect(`/thread/${reply.thread}`);
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).json({ error: 'Failed to delete reply.' });
     }
 });
@@ -221,27 +227,39 @@ router.get('/thread/:threadId', async (req, res) => {
     const session = req.session;
     const threadId = req.params.threadId;
     try {
-        const thread = await db.select({
-            ...threads,
-            steamUsername: users.steamUsername,
+        const thread = db.select({
+            id: threads.id,
+            title: threads.title,
+            content: threads.content,
+            createdAt: threads.createdAt,
+            owner: threads.owner,
+            hidden: threads.hidden, // List other columns as necessary
+            steamUsername: users.steamUsername, // Add `steamUsername` from `users`
         })
             .from(threads)
             .leftJoin(users, eq(threads.owner, users.steamId))
-            .where(eq(threads.id, threadId))
+            .where(eq(threads.id, Number(threadId)))
             .get();
+
 
         if (!thread) {
             return res.status(404).send('Thread not found');
         }
 
         const replies = await db.select({
-            ...posts,
+            id: posts.id,
+            content: posts.content,
+            createdAt: posts.createdAt,
+            thread: posts.thread,
+            owner: posts.owner,
+            hidden: posts.hidden, // Include other columns as necessary
             steamUsername: users.steamUsername,
         })
             .from(posts)
             .leftJoin(users, eq(posts.owner, users.steamId))
-            .where(eq(posts.thread, threadId))
+            .where(eq(posts.thread, Number(threadId)))
             .orderBy(posts.createdAt);
+
 
         const moderatorRows = await db.select().from(moderators);
         const moderatorIds = moderatorRows.map(mod => mod.steamId);
@@ -255,7 +273,7 @@ router.get('/thread/:threadId', async (req, res) => {
             thread: thread,
         });
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).send('Internal Server Error');
     }
 });
@@ -300,15 +318,15 @@ router.post('/thread/:threadId/reply', async (req, res) => {
 
         const now = new Date().toISOString();
         await db.insert(posts).values({
-            content,
-            thread: threadId,
-            owner: user.steamid,
-            createdAt: now
+            content: String(content), // Ensure content is a string
+            thread: Number(threadId), // Ensure thread is a number
+            owner: String(user.steamid), // Ensure owner is a string
+            createdAt: String(now), // Ensure createdAt is a string or appropriate SQL date
         });
 
         await db.update(threads)
             .set({ bumpedAt: now })
-            .where(eq(threads.id, threadId));
+            .where(eq(threads.id, Number(threadId)));
 
         if (activityRow) {
             await db.update(activity)
@@ -325,7 +343,7 @@ router.post('/thread/:threadId/reply', async (req, res) => {
 
         return res.redirect(`/thread/${threadId}`);
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).json({ error: 'Failed to post reply.' });
     }
 });
@@ -361,7 +379,7 @@ router.post('/remove_thread', async (req, res) => {
 
         return res.redirect('/forums');
     } catch (err) {
-        console.error('Error:', err.message);
+        console.error('Error:', (err as Error).message);
         return res.status(500).json({ error: 'Failed to delete thread.' });
     }
 

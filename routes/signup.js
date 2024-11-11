@@ -2,8 +2,8 @@
 const SEASON_ID = 1;
 
 import express from 'express';
-import { db } from '../db.js';
-import { teams, players_in_teams, teamname_history, divisions, regions, seasons } from '../schema.js';
+import { db } from '../db.ts';
+import { teams, players_in_teams, teamname_history, divisions, regions, seasons } from '../schema.ts';
 import multer from 'multer';
 import path from 'path';
 import { eq, and} from 'drizzle-orm';

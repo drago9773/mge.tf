@@ -22,8 +22,8 @@ export const threads = sqliteTable('threads', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),
   content: text('content').notNull(),
-  createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
-  bumpedAt: integer('bumped_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  bumpedAt: text('bumped_at').default(sql`CURRENT_TIMESTAMP`),
   owner: text('owner').references(() => users.steamId),
   hidden: integer('hidden').default(0)
 });
@@ -31,7 +31,7 @@ export const threads = sqliteTable('threads', {
 export const posts = sqliteTable('posts', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   content: text('content').notNull(),
-  createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   thread: integer('thread').notNull().references(() => threads.id),
   owner: text('owner').references(() => users.steamId),
   hidden: integer('hidden').default(0)
@@ -75,17 +75,17 @@ export const teams = sqliteTable('teams', {
   name: text('name').notNull(),
   acronym: text('acronym'),
   avatar: text('avatar'),
-  wins: text('wins').default(0),
-  losses: text('losses').default(0),
-  pointsScored: text('points_scored').default(0),
-  pointsScoredAgainst: text('points_scored_against').default(0),
+  wins: integer('wins').notNull().default(0),
+  losses: integer('losses').notNull().default(0),
+  pointsScored: integer('points_scored').notNull().default(0),
+  pointsScoredAgainst: integer('points_scored_against').notNull().default(0),
   divisionId: integer('division_id').references(() => divisions.id),
   regionId: integer('region_id').references(() => regions.id),
   seasonNo: integer('season_no').references(() => seasons.id),
   is1v1: integer('is_1v1').default(0),
   status: integer('status').default(0),
   joinPassword: text('join_password'),
-  createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`)
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
 
 export const matches = sqliteTable('matches', {
@@ -98,7 +98,7 @@ export const matches = sqliteTable('matches', {
   seasonNo: integer('season_no').notNull().references(() => seasons.id),
   weekNo: integer('week_no').notNull(),
   boSeries: integer('bo_series'),
-  createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   playedAt: integer('played_at')
 });
 
@@ -115,7 +115,7 @@ export const players = sqliteTable('players', {
   steamId: text('steam_id'),
   steamUsername: text('steam_username'),
   steamAvatar: text('steam_avatar'),
-  createdAt: integer('created_at').default(sql`CURRENT_TIMESTAMP`)
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
 
 export const pending_players = sqliteTable('pending_players', {
@@ -126,7 +126,7 @@ export const pending_players = sqliteTable('pending_players', {
 export const teamname_history = sqliteTable('teamname_history', {
   teamId: integer('team_id').references(() => teams.id),
   name: text('name'),
-  changeDate: integer('change_date').default(sql`CURRENT_TIMESTAMP`)
+  changeDate: text('change_date').default(sql`CURRENT_TIMESTAMP`)
 });
 
 
@@ -134,7 +134,7 @@ export const players_in_teams = sqliteTable('players_in_teams', {
   playerSteamId: text('player_steam_id').references(() => users.steamId),
   teamId: integer('team_id').references(() => teams.id),
   active: integer('active').default(1),
-  permissionLevel: integer('permission_level').default(0),
-  startedAt: integer('started_at').default(sql`CURRENT_TIMESTAMP`),
-  leftAt: integer('left_at').default(null)
+  permissionLevel: integer('permission_level').notNull().default(0),
+  startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
+  leftAt: text('left_at').default(sql`0`)
 });
