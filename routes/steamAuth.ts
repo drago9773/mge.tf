@@ -24,8 +24,10 @@ router.get('/init-openid', async (req, res) => {
 router.get('/verify', async (req, res) => {
     try {
         const user = await steam.authenticate(req);
-        req.session.user = user;
-        req.session.user.permissionLevel = permissionLevelFromSteamId(req.session.user.steamid);
+        req.session.user = {
+            ...user,
+        };
+        req.session.user.permissionLevel = permissionLevelFromSteamId(req.session?.user?.steamid);
 
         const existingUser = db.select().from(users).where(eq(users.steamId, user.steamid)).get();
 
@@ -40,19 +42,19 @@ router.get('/verify', async (req, res) => {
                 .set({ steamUsername: user.username })
                 .where(eq(users.steamId, user.steamid));
         }
-        if (existingUser?.permissionLevel < UserRole.ADMIN && existingUser?.isBanned === 1) {
-            req.session.destroy();
+        if (existingUser && existingUser.permissionLevel < UserRole.ADMIN && existingUser?.isBanned === 1) {
+            req.session.destroy(() => {});
             res.status(403);
             return res.redirect('/');
         }
         if (existingUser) {
-            req.session.user.isSignedUp = existingUser.isSignedUp;
+            req.session.user.isSignedUp = Number(existingUser.isSignedUp);
         }
         const returnTo = req.session.returnTo || '/';
         delete req.session.returnTo;
         return res.redirect(returnTo);
     } catch (err) {
-        console.error('Authentication error: ' + err.message);
+        console.error('Authentication error: ' + (err as Error).message);
         return res.redirect('/');
     }
 });

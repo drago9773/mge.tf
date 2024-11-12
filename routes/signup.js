@@ -3,7 +3,7 @@ const SEASON_ID = 1;
 
 import express from 'express';
 import { db } from '../db.ts';
-import { teams, players_in_teams, teamname_history, divisions, regions, seasons } from '../schema.ts';
+import { teams, players_in_teams, teamname_history, divisions, regions, seasons, users } from '../schema.ts';
 import multer from 'multer';
 import path from 'path';
 import { eq, and} from 'drizzle-orm';
@@ -39,16 +39,16 @@ router.get('/2v2signup', async (req, res) => {
 
 router.post('/team_signup', upload.single('avatar'), async (req, res) => {
     const { name, acronym, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
-    const player_steam_id = req.session.user.steamid;
+    const player_steam_id = req.session?.user?.steamid;
     
     try {
         // check if they are in a 1v1/2v2 team and if active
-        const existingTeam = await db
+        const existingTeam = db
             .select()
             .from(players_in_teams)
             .innerJoin(teams, eq(players_in_teams.teamId, teams.id))
             .where(and(
-                eq(players_in_teams.playerSteamId, player_steam_id),
+                eq(players_in_teams.playerSteamId, String(player_steam_id)),
                 eq(teams.is1v1, is_1v1),
                 eq(players_in_teams.active, 1)
             ))
@@ -67,11 +67,11 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
             joinPassword: join_password
         });
         
-        const team_id = result.lastInsertRowid;
+        const team_id = Number(result.lastInsertRowid);
         const timestamp = Date.now();
         if (req.file) {
             const ext = path.extname(req.file.originalname);
-            const newFilename = `team${team_id.name}_avatarCreatedAt${timestamp}${ext}`; 
+            const newFilename = `team${name}_avatarCreatedAt${timestamp}${ext}`;
             const oldPath = `./views/images/team_avatars/${req.file.filename}`;
             const newPath = `./views/images/team_avatars/${newFilename}`;
 

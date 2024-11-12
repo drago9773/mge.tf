@@ -6,16 +6,16 @@ import { eq, sql, and} from 'drizzle-orm';
 const router = express.Router();
 
 router.get('/match_page/:matchid', async (req, res) => {
-    const matchid = req.params.matchid;
+    const matchid = Number(req.params.matchid);
 
     try {
-        const match = await db.select().from(matches).where(eq(matches.id, matchid)).get();
+        const match = db.select().from(matches).where(eq(matches.id, matchid)).get();
         
         if (!match) {
             res.status(404).send('Match not found');
             return;
         }
-        const allTeams = await db.select().from(teams);
+        const allTeams = db.select().from(teams);
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allSeasons = await db.select().from(seasons);
@@ -35,7 +35,7 @@ router.get('/match_page/:matchid', async (req, res) => {
             session: req.session
         });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });

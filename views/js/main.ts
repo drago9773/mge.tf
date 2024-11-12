@@ -1,13 +1,7 @@
 function filterUsers() {
-    let input = /** @type {HTMLInputElement | null } */ document.getElementById('eloSearch');
-    if (input === null) {
-        return;
-    }
+    let input: HTMLInputElement = document.getElementById('eloSearch') as HTMLInputElement;
     let filter = input.value.toLowerCase();
-    let table = document.getElementById('eloTableBody');
-    if (table == null) {
-        return;
-    }
+    let table = document.getElementById('eloTableBody') as HTMLTableElement;
     let rows = table.getElementsByTagName('tr');
 
     for (let i = 0; i < rows.length; i++) {

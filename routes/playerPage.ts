@@ -41,7 +41,7 @@ router.get('/player_page/:steamid', async (req, res) => {
             });
         }
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });

@@ -11,8 +11,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "typeRoots": ["./node_modules/@types", "./path-to-your-types-folder"]
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["./**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "tailwind.config.js", "./views/js/*.js"]
 }
