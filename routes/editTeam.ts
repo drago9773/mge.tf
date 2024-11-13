@@ -37,7 +37,7 @@ router.get('/edit_team/:teamid', async (req, res) => {
     const playerSteamId = req.session.user.steamid;
 
     try {
-        const team = await db.select().from(teams).where(eq(teams.id, teamid));
+        const team = db.select().from(teams).where(eq(teams.id, teamid)).get();
         if (!team) {
             return res.status(404).send('Team not found');
         }
@@ -50,6 +50,8 @@ router.get('/edit_team/:teamid', async (req, res) => {
         .from(pending_players)
         .innerJoin(users, eq(pending_players.playerSteamId, users.steamId))
         .innerJoin(teams, eq(pending_players.teamId, teams.id));
+
+        console.log(team);
     
 
 
@@ -127,6 +129,7 @@ router.post('/edit_team/:teamid', async (req, res) => {
 
 
 router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, res) => {
+    console.log("Route hit");
     const teamid = Number(req.params.teamid);
     const timestamp = Date.now();
     if (isNaN(teamid)) {

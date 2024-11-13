@@ -5,4 +5,3 @@ logs/*
 images
 users.db
 sourcemod-local.db
-drizzle/meta/
