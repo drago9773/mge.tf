@@ -1,6 +1,6 @@
 import express from 'express';
-import { db } from '../db.js';
-import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history } from '../schema.js';
+import { db } from '../db.ts';
+import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history } from '../schema.ts';
 import { eq, and} from 'drizzle-orm';
 
 const router = express.Router();
@@ -16,16 +16,16 @@ router.get('/teams', async (req, res) => {
             session: req.session
         });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });
 
 router.get('/team_page/:teamid', async (req, res) => {
-    const teamid = req.params.teamid;
+    const teamid = Number(req.params.teamid);
 
     try {
-        const team = await db.select().from(teams).where(eq(teams.id, teamid)).get();
+        const team = db.select().from(teams).where(eq(teams.id, teamid)).get();
         
         if (!team) {
             res.status(404).send('Team not found');
@@ -96,7 +96,7 @@ router.get('/team_page/:teamid', async (req, res) => {
             session: req.session
         });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -104,10 +104,10 @@ router.get('/team_page/:teamid', async (req, res) => {
 
 router.get('/join_team/:teamid', async (req, res) => {
     if (req.session?.user) {
-        const teamid = req.params.teamid;
+        const teamid = Number(req.params.teamid);
         const userSteamId = req.session.user.steamid;
         try {
-            const team = await db.select().from(teams).where(eq(teams.id, teamid)).get();
+            const team = db.select().from(teams).where(eq(teams.id, teamid)).get();
             if (!team) {
                 res.status(404).send('Team not found');
                 return;
@@ -139,7 +139,7 @@ router.get('/join_team/:teamid', async (req, res) => {
                 session: req.session
             });
         } catch (err) {
-            console.error('Error querying database: ' + err.message);
+            console.error('Error querying database: ' + (err as Error).message);
             res.status(500).send('Internal Server Error');
         }
     } else {
@@ -181,7 +181,7 @@ router.post('/join_team', async (req, res) => {
                 return res.status(403).send('Incorrect password');
             }
         } catch (err) {
-            console.error('Error querying database: ' + err.message);
+            console.error('Error querying database: ' + (err as Error).message);
             return res.status(500).send('Internal Server Error');
         }
     } else {
@@ -191,7 +191,7 @@ router.post('/join_team', async (req, res) => {
 
 router.post('/leave_team/:teamid', async (req, res) => {
     if (req.session?.user) {
-        const teamId = req.params.teamid;
+        const teamId = Number(req.params.teamid);
         const userSteamId = req.session.user.steamid;
 
         try {
@@ -238,15 +238,15 @@ router.post('/leave_team/:teamid', async (req, res) => {
 
 router.post('/remove_request/:teamid', async (req, res) => {
     if (req.session?.user) {
-        const teamId = req.params.teamid;
+        const teamId = Number(req.params.teamid);
         const userSteamId = req.session.user.steamid;
         try {
-            const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();
+            const team = db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
                 return res.status(404).send('Team not found');
             }
 
-            const deleteResult = await db.delete(pending_players)
+            await db.delete(pending_players)
                 .where(
                     and(
                         eq(pending_players.playerSteamId, userSteamId),
@@ -254,13 +254,9 @@ router.post('/remove_request/:teamid', async (req, res) => {
                     )
                 );
 
-            if (deleteResult === 0) {
-                return res.status(404).send('Pending request not found');
-            }
-
             return res.redirect(`/team_page/${teamId}`);
         } catch (err) {
-            console.error('Error querying database: ' + err.message);
+            console.error('Error querying database: ' + (err as Error).message);
             return res.status(500).send('Internal Server Error');
         }
     } else {
@@ -270,7 +266,7 @@ router.post('/remove_request/:teamid', async (req, res) => {
 
 router.post('/toggle_team/:teamid', async (req, res) => {
     if (req.session?.user) {
-        const teamId = req.params.teamid;
+        const teamId = Number(req.params.teamid);
         try {
             const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
@@ -282,13 +278,13 @@ router.post('/toggle_team/:teamid', async (req, res) => {
                 .set({ status: newStatus })
                 .where(eq(teams.id, teamId));
 
-            if (result === 0) {
+            if (result.changes === 0) {
                 return res.status(404).send('Failed to update team status');
             }
 
             return res.redirect(`/team_page/${teamId}`);
         } catch (err) {
-            console.error('Error querying database: ' + err.message);
+            console.error('Error querying database: ' + (err as Error).message);
             return res.status(500).send('Internal Server Error');
         }
     } else {

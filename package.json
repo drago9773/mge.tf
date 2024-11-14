@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Website for mge.tf",
   "type": "module",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
-    "start": "node app.js",
+    "start": "node app.ts",
+    "dev": "node --experimental-strip-types --experimental-transform-types app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tw": "npx tailwindcss -i ./views/css/tw.css -o ./views/css/tw-out.css --watch",
     "generate": "drizzle-kit generate",
@@ -14,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "^11.1.2",
+    "better-sqlite3": "^11.5.0",
     "drizzle-orm": "^0.33.0",
     "ejs": "^3.1.10",
     "esm": "^3.2.25",
@@ -33,9 +34,18 @@
   "devDependencies": {
     "@eslint/js": "^9.5.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/body-parser": "^1.19.5",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/multer": "^1.4.12",
+    "@types/node-steam-openid": "^1.0.3",
+    "@types/tailwindcss": "^3.1.0",
     "drizzle-kit": "^0.23.2",
     "eslint": "9.x",
     "globals": "^15.5.0",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.4",
+    "tsx": "^4.19.2"
   }
 }

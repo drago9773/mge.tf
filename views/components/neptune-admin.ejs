@@ -21,7 +21,7 @@
                   <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.id %></td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.numWeeks %></td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm">
-                    <form action="/admin_update_num_weeks" method="POST" class="flex items-center">
+                    <form action="/update_num_weeks" method="POST" class="flex items-center">
                       <input type="number" name="numWeeks" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required >
                       <input type="hidden" name="seasonId" value="<%= season.id %>">
                       <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>

@@ -1,4 +1,4 @@
-export function steamId64FromSteamId32(steamId) {
+export function steamId64FromSteamId32(steamId: string) {
   const parts = steamId.split(':');
   const y = parseInt(parts[1]);
   const z = parseInt(parts[2]);

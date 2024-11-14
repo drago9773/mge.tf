@@ -9,4 +9,4 @@
 Both of those can be setup to run on save, so ESLint will fix whatever issues it can, and EJS Beautify will format the code in the `.ejs` files to be consistent.
 
 ## Routing
-- When a "type" of route grows, we can probably move it to its own file in the `routes` directory. This will help keep the `app.js` file clean and easy to read.
+- When a "type" of route grows, we can probably move it to its own file in the `routes` directory. This will help keep the `app.ts` file clean and easy to read.

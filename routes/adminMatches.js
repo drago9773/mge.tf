@@ -1,6 +1,6 @@
 import express from 'express';
-import { db, isAdmin } from '../db.js';
-import { users, teams, matches, divisions, regions, seasons, arenas, games, players_in_teams } from '../schema.js';
+import { db, isAdmin } from '../db.ts';
+import { users, teams, matches, divisions, regions, seasons, arenas, games, players_in_teams } from '../schema.ts';
 import { eq, sql, and } from 'drizzle-orm';
 
 const router = express.Router();
@@ -46,7 +46,6 @@ router.post('/submit_match_result', async (req, res) => {
 
         if (!match) {
             console.log('Match not found for match_id:', Number(match_id));
-            throw new Error('Match not found');
         }
 
         const { homeTeamId, awayTeamId } = match;
@@ -54,7 +53,7 @@ router.post('/submit_match_result', async (req, res) => {
         let homeWins = 0;
         let awayWins = 0;
         const requiredWins = Math.floor(bo_series / 2) + 1;
-        console.log("Request body for match submission:", req.body); 
+        console.log('Request body for match submission:', req.body); 
         for (let i = 1; i <= bo_series; i++) {
             const homeScore = Number(req.body[`game_${i}_home_score`]);
             const awayScore = Number(req.body[`game_${i}_away_score`]);
@@ -70,7 +69,7 @@ router.post('/submit_match_result', async (req, res) => {
             }
             else if (!homeScore || !awayScore || !arenaId) {
                 console.log(`Incomplete data for game ${i}: homeScore, awayScore, or arenaId is missing.`);
-                return res.status(400).send(`Error: Incomplete data for game ${i}. Please fill out all fields.`);
+                res.status(400).send(`Error: Incomplete data for game ${i}. Please fill out all fields.`);
             }
             else{
                 if (homeScore > awayScore) {
@@ -110,8 +109,6 @@ router.post('/submit_match_result', async (req, res) => {
                 .where(eq(matches.id, match_id));
             await db.update(teams).set({ wins: sql`${teams.wins} + 1` }).where(eq(teams.id, awayTeamId));
             await db.update(teams).set({ losses: sql`${teams.losses} + 1` }).where(eq(teams.id, homeTeamId));
-        } else {
-            throw new Error('Neither team has more wins, tie?');
         }
 
         res.redirect('/admin');
