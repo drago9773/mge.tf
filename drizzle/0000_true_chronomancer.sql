@@ -1,5 +1,6 @@
 select * from teams;
 select * from matches;
+select * from games;
 select * from arenas;
 
 CREATE TABLE IF NOT EXISTS `activity` (
@@ -94,8 +95,8 @@ CREATE TABLE IF NOT EXISTS `matches` (
 );
 
 CREATE TABLE IF NOT EXISTS `games` (
-    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
     `match_id` integer NOT NULL,
+    `game_num` integer NOT NULL,
     `home_team_score` integer,
     `away_team_score` integer,
     `arena_id` integer,  -- Reference to arenas table

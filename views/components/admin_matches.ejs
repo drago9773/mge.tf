@@ -42,6 +42,16 @@
                 </div>
 
                 <div>
+                  <label for="arena_id" class="block text-sm font-medium text-gray-700">Arena:</label>
+                  <select id="arenaSelect" name="arena_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                    <option value="">All Arenas</option>
+                    <% arenas.forEach(arena => { %>
+                        <option value="<%= arena.id %>"><%= arena.name %></option>
+                    <% }) %>                  
+                  </select>
+                </div>  
+
+                <div>
                     <label for="bo_series" class="block text-sm font-medium text-gray-700">Best of Series</label>
                     <select id="bo_series" name="bo_series" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
                         <option value="1">1</option>

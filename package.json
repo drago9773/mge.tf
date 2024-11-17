@@ -29,7 +29,8 @@
     "node-steam-openid": "^1.2.3",
     "postgres": "^3.4.4",
     "sqlite3": "^5.1.7",
-    "steamid": "^2.0.0"
+    "steamid": "^2.0.0",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",
@@ -45,7 +46,9 @@
     "drizzle-kit": "^0.23.2",
     "eslint": "9.x",
     "globals": "^15.5.0",
+    "nodemon": "^3.1.7",
     "tailwindcss": "^3.4.4",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2"
   }
 }

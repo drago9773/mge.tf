@@ -1,23 +1,23 @@
-//THIS SESSION
+    //THIS SESSION
 ////dropped division_id from matches (in case of multi divisional match)
 ////preview matches
 
-//TODO
-    //signup
+//TODO: signup
     ////TOS popup on signup
     ////have div/region actually be the table value
 
-    //admin
+//TODO: admin
     ////assign/approve team division requests from signup
     ////pending players need to be confirmed by staff?
 
-    //match stuff
+//TODO: match stuff
     ////'match' (team vs team) page, agreeing on date
 
-    //arena map pictures
-
     //payment on signup
+
     //link discord
+
+    //a lot of front end touching up
 
 //questions
 ////do we want a list of viable MGE maps and then arenas associated with each map?

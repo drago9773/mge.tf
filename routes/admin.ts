@@ -102,8 +102,8 @@ router.post('/admin/preview_match', async (req, res) => {
     if (!isAdmin(req.session?.user?.steamid)) {
         return res.status(403).redirect('/');
     }
-    const { region_id, division_id, season_no, week_no, bo_series } = req.body;
-    console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series}`);
+    const { region_id, division_id, season_no, week_no, bo_series, arena_id } = req.body;
+    console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series},  BO Series: ${arena_id}`);
 
     try {
         const sortedTeams = await seed_teams(region_id, division_id);
@@ -116,7 +116,8 @@ router.post('/admin/preview_match', async (req, res) => {
             regionId: region_id,
             boSeries: bo_series,
             weekNo: week_no,
-            seasonNo: season_no
+            seasonNo: season_no,
+            arenaId: arena_id
         });
     } catch (error) {
         console.error('Error fetching teams:', error);

@@ -1,20 +1,19 @@
 import express from 'express';
-import { db, isAdmin } from '../db.ts';
-import { users, teams, matches, divisions, regions, seasons, arenas, games, players_in_teams } from '../schema.ts';
+import { db } from '../db.ts';
+import { teams, matches, games } from '../schema.ts';
 import { eq, sql, and } from 'drizzle-orm';
 
 const router = express.Router();
 
 router.post('/admin/create_match_set', async (req, res) => {
-    const { teams, boSeries, weekNo, seasonNo } = req.body;
-    console.log(req.body);
-
+    const { teams, boSeries, weekNo, seasonNo, arenaId } = req.body;
+    console.log(arenaId);
     try {
         const allTeams = JSON.parse(teams);
+        const bestOfSeries = parseInt(boSeries, 10);
 
-        for (let i = 0; i < allTeams.length-1; i += 2) {
+        for (let i = 0; i < allTeams.length - 1; i += 2) {
             if (i + 1 < allTeams.length) {
-                console.log("team at i: ", allTeams[i]);
                 const home_team_id = allTeams[i].id;
                 const away_team_id = allTeams[i + 1].id;
 
@@ -23,8 +22,18 @@ router.post('/admin/create_match_set', async (req, res) => {
                     awayTeamId: away_team_id,
                     seasonNo: seasonNo,
                     weekNo: weekNo,
-                    boSeries: boSeries,
+                    boSeries: bestOfSeries,
                 });
+
+                const matchId = Number(match.lastInsertRowid);
+
+                for (let j = 1; j < bestOfSeries + 1; j += 1) {
+                    await db.insert(games).values({
+                        matchId: matchId,
+                        gameNum: j,
+                        arenaId: arenaId
+                    });
+                }
             }
         }
 
