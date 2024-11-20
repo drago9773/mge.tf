@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
 <div class="bg-gray-700 px-4 py-2">
     <section class="space-y-4">
         <h2 class="text-2xl font-bold">Create Match Set</h2>
@@ -61,7 +64,13 @@
                         <option value="9">9</option>
                     </select>
                 </div>
-            </div>
+
+                <div class="mt-4">
+                  <label for="match_date_time" class="block text-sm font-medium text-gray-700">Select Match Date and Time:</label>
+                  <input type="text" id="match_date_time" name="match_date_time" required 
+                    class="mt-1 block w-full pl-3 pr-3 py-2 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black"
+                  />
+                </div>                
 
             <div class="mx-auto flex items-center mt-4">
                 <button type="submit" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">Preview Match Set</button>
@@ -70,7 +79,7 @@
     </section>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 function updateWeeksDropdown() {
     const seasonSelect = document.getElementById('match_season_no');
@@ -87,8 +96,32 @@ function updateWeeksDropdown() {
         weekSelect.appendChild(option);
     }
 }
-</script>
 
+document.addEventListener('DOMContentLoaded', function () {
+    function getNextSaturday() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+        const nextSaturday = new Date(today);
+        nextSaturday.setDate(today.getDate() + daysUntilSaturday);
+        return nextSaturday;
+    }
+
+    flatpickr("#match_date_time", {
+        enableTime: true,
+        dateFormat: "m/d/y H:i",
+        altInput: true,
+        altFormat: "F j, Y H:i", 
+        time_24hr: true,
+        minuteIncrement: 30,
+        defaultDate: (() => {
+            const saturday = getNextSaturday();
+            saturday.setHours(18, 30);
+            return saturday;
+        })(),
+    });
+});
+</script>
 
 <div id="teamsContainer">
     <% divisions.forEach(division => { %>

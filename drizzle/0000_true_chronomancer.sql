@@ -1,7 +1,7 @@
 select * from teams;
+select * from players_in_teams;
 select * from matches;
 select * from games;
-select * from arenas;
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -88,8 +88,8 @@ CREATE TABLE IF NOT EXISTS `matches` (
     `season_no` integer NOT NULL,
     `week_no` integer NOT NULL,
 	`bo_series` integer,
-    `created_at` integer DEFAULT CURRENT_TIMESTAMP,
-	`played_at` integer,
+	`match_date_time` datetime,
+    `status` integer NOT NULL, -- 0 for unplayed, 1 for played, 2 for dispute
     FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
 	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
@@ -139,6 +139,16 @@ CREATE TABLE IF NOT EXISTS `players_in_teams` (
     `left_at` datetime DEFAULT NULL,
     FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
     FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS `match_comms` (
+    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `content` text NOT NULL,
+    `created_at` integer DEFAULT CURRENT_TIMESTAMP,
+    `match_id` integer NOT NULL,
+    `owner` text,
+    FOREIGN KEY (`match_id`) REFERENCES `matches`(`id`) ON UPDATE no action ON DELETE no action,
+    FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 
 CREATE TABLE IF NOT EXISTS `posts` (

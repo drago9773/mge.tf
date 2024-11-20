@@ -188,12 +188,14 @@
                   : teams.find(t => t.id === match.homeTeamId);
                 %>
                 <tr onclick="window.location.href='/match_page/<%= match.id %>'" style="cursor: pointer;">
-                  <td class="px-4 py-2"><%= new Date(match.matchDate).toLocaleDateString() %></td>
+                  <td class="px-4 py-2">Week <%= match.weekNo %></td>
                   <td class="px-4 py-2">
                     <%= opponent ? opponent.name : 'Unknown Opponent' %>
                   </td>
                   <td class="px-4 py-2">
-                    <%= match.winnerId === team.id ? 'W' : 'L' %> (<%= match.winnerScore %> - <%= match.loserScore %>)
+                    <% if (match.winnerId) { %>
+                      <%= match.winnerId === team.id ? 'W' : 'L' %> (<%= match.winnerScore %> - <%= match.loserScore %>)
+                    <% } %>
                   </td>
                 </tr>
               <% }); %>

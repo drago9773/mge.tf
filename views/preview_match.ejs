@@ -1,3 +1,8 @@
+<h1><%= seasonNo %></h1>
+<h1><%= weekNo %></h1>
+<h1><%= boSeries %></h1>
+<h1><%= matchDateTime %></h1>
+
 <div id="teamsContainer">
     <form action="/admin/create_match_set" method="POST">
         <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
@@ -38,6 +43,7 @@
         <input type="hidden" name="boSeries" id="boSeries" value="<%= boSeries %>">
         <input type="hidden" name="weekNo" id="weekNo" value="<%= weekNo %>">
         <input type="hidden" name="seasonNo" id="seasonNo" value="<%= seasonNo %>">
+        <input type="hidden" name="matchDateTime" id="matchDateTime" value="<%= matchDateTime %>">
 
         <div class="mx-auto flex items-center mt-4">
             <button type="submit" class="mx-auto bg-red-500 text-white font-bold py-2 px-4 rounded">Create Match Set</button>

@@ -223,10 +223,28 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
                 winnerId,
                 winnerScore,
                 loserScore,
+                status: 1
             })
             .where(eq(matches.id, matchId));
 
-        res.status(200).send("Game scores and match winner updated successfully");
+            res.redirect(`/match_page/${matchId}`);
+        } catch (err) {
+        console.error("Error updating game scores:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post('/match_page/:matchid/dispute', async (req, res) => {
+    const matchId = Number(req.params.matchid);
+
+    try {
+        await db.update(matches)
+        .set({
+            status: 2
+        })
+        .where(eq(matches.id, matchId));
+        res.redirect(`/match_page/${matchId}`);
+
     } catch (err) {
         console.error("Error updating game scores:", err);
         res.status(500).send("Internal Server Error");

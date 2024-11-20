@@ -6,7 +6,7 @@ import { eq, sql, and } from 'drizzle-orm';
 const router = express.Router();
 
 router.post('/admin/create_match_set', async (req, res) => {
-    const { teams, boSeries, weekNo, seasonNo, arenaId } = req.body;
+    const { teams, boSeries, weekNo, seasonNo, arenaId, matchDateTime } = req.body;
     console.log(arenaId);
     try {
         const allTeams = JSON.parse(teams);
@@ -23,6 +23,8 @@ router.post('/admin/create_match_set', async (req, res) => {
                     seasonNo: seasonNo,
                     weekNo: weekNo,
                     boSeries: bestOfSeries,
+                    matchDateTime: matchDateTime,
+                    status: 0
                 });
 
                 const matchId = Number(match.lastInsertRowid);

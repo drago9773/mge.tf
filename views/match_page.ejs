@@ -1,7 +1,7 @@
 <% const currentPlayerSteamId = session?.user; %>
-<% if ((currentPlayerSteamId && isTeamOwner && (match.winnerId == null)) || isAdmin) { %>
-    <h1 class="mx-auto text-black font-bold py-2 px-4 rounded bg-yellow-500">
-        You can submit match score
+<% if (match.status == 2) { %>
+    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500">
+        Match results have been disputed. Awaiting admin response.
     </h1>
 <% } %>
 <div class="w-full bg-black bg-opacity-50 backdrop-blur-lg h-full flex flex-col justify-center align-middle">
@@ -60,6 +60,14 @@
             <% if (isTeamOwner || isAdmin) { %>
                 <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
                 <button type="submit" class="bg-yellow-500 text-black font-bold py-2 px-4 rounded">Submit Scores</button>
+            <% } %>
+        </form>
+
+        <form action="/match_page/<%= match.id %>/dispute" method="POST" class="space-y-4">
+            <% if (isTeamOwner || isAdmin) { %>
+                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
             <% } %>
         </form>
     </div>

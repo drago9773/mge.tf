@@ -1,7 +1,3 @@
-    //THIS SESSION
-////dropped division_id from matches (in case of multi divisional match)
-////preview matches
-
 //TODO: signup
     ////TOS popup on signup
     ////have div/region actually be the table value
@@ -11,7 +7,8 @@
     ////pending players need to be confirmed by staff?
 
 //TODO: match stuff
-    ////'match' (team vs team) page, agreeing on date
+    ////match comms
+    ////request new match date
 
     //payment on signup
 

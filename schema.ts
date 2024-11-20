@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { datetime } from 'drizzle-orm/mysql-core';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const UserRole = {
@@ -100,8 +101,16 @@ export const matches = sqliteTable('matches', {
   seasonNo: integer('season_no').notNull().references(() => seasons.id),
   weekNo: integer('week_no').notNull(),
   boSeries: integer('bo_series'),
+  matchDateTime: text('match_date_time'),
+  status: integer('status')
+});
+
+export const match_comms = sqliteTable('match_comms', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  content: text('content').notNull(),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
-  playedAt: integer('played_at')
+  match: integer('match').notNull().references(() => matches.id),
+  owner: text('owner').references(() => users.steamId),
 });
 
 export const games = sqliteTable('games', {
@@ -130,7 +139,6 @@ export const teamname_history = sqliteTable('teamname_history', {
   name: text('name'),
   changeDate: text('change_date').default(sql`CURRENT_TIMESTAMP`)
 });
-
 
 export const players_in_teams = sqliteTable('players_in_teams', {
   playerSteamId: text('player_steam_id').references(() => users.steamId),
