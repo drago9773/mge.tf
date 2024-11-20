@@ -5,7 +5,7 @@ import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
 
-async function seed_teams(region_id: number, division_id: number) {
+async function create_match_set(region_id: number, division_id: number) {
     try {
         const allTeamsInMatches = db
             .select()
@@ -106,7 +106,7 @@ router.post('/admin/preview_match', async (req, res) => {
     console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series},  BO Series: ${arena_id}`);
 
     try {
-        const sortedTeams = await seed_teams(region_id, division_id);
+        const sortedTeams = await create_match_set(region_id, division_id);
 
         res.render('layout', {
             body: 'preview_match',

@@ -77,6 +77,8 @@ export const teams = sqliteTable('teams', {
   avatar: text('avatar'),
   wins: integer('wins').notNull().default(0),
   losses: integer('losses').notNull().default(0),
+  gamesWon: integer('games_won').notNull().default(0),
+  gamesLost: integer('games_lost').notNull().default(0),
   pointsScored: integer('points_scored').notNull().default(0),
   pointsScoredAgainst: integer('points_scored_against').notNull().default(0),
   divisionId: integer('division_id').references(() => divisions.id),

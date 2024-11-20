@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS `teams` (
     `avatar` text,
     `wins` integer DEFAULT 0,
     `losses` integer DEFAULT 0,
+    `games_won` integer DEFAULT 0,
+    `games_lost` integer DEFAULT 0,
     `points_scored` integer DEFAULT 0,
     `points_scored_against` integer DEFAULT 0,
     `division_id` integer,

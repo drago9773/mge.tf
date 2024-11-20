@@ -1,28 +1,37 @@
 <div id="teamsContainer">
     <form action="/admin/create_match_set" method="POST">
-        <table class="bg-gray-700 divide-y divide-gray-700 w-1/2 mx-auto table-fixed mb-6">
+        <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
             <thead>
                 <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Team</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Region</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Record</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Home Team</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Away Team</th>
                 </tr>
             </thead>
             <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
-                <% teams.forEach(team => { %>
-                    <tr class="bg-gray-800 cursor-pointer" onclick="window.location.href='/team_page/<%= team.id %>'">
-                        <td class="overflow-x-hidden h-10 px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
-                            <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-10 w-10 rounded-md">
-                            <span><%= team.name %></span>
+                <% for (let i = 0; i < teams.length / 2; i++) { %>
+                    <tr>
+                        <% const homeTeam = teams[i * 2]; %>
+                        <% const awayTeam = teams[i * 2 + 1]; %>
+                        <td class="border px-4 py-2">
+                            <% if (homeTeam) { %>
+                                <div class="cursor-pointer" onclick="window.location.href='/team_page/<%= homeTeam.id %>'">
+                                    <img src="/images/team_avatars/<%= homeTeam.avatar %>" alt="Home Team Avatar" class="h-10 w-10 rounded-md inline-block">
+                                    <span class="text-gray-300"><%= homeTeam.name %></span>
+                                    <div class="text-sm text-gray-300"><%= homeTeam.wins %> - <%= homeTeam.losses %></div>
+                                </div>
+                            <% } %>
                         </td>
-                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                            <%= team.regionId %>
-                        </td>
-                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                            <%= team.wins %> - <%= team.losses %>
+                        <td class="border px-4 py-2">
+                            <% if (awayTeam) { %>
+                                <div class="cursor-pointer" onclick="window.location.href='/team_page/<%= awayTeam.id %>'">
+                                    <img src="/images/team_avatars/<%= awayTeam.avatar %>" alt="Away Team Avatar" class="h-10 w-10 rounded-md inline-block">
+                                    <span class="text-gray-300"><%= awayTeam.name %></span>
+                                    <div class="text-sm text-gray-300"><%= awayTeam.wins %> - <%= awayTeam.losses %></div>
+                                </div>
+                            <% } %>
                         </td>
                     </tr>
-                <% }) %>
+                <% } %>
             </tbody>
         </table>   
         <input type="hidden" name="teams" id="teams" value='<%= JSON.stringify(teams) %>'>
@@ -41,5 +50,13 @@
         background-color: rgba(0, 0, 0, 0.5);
         transition-duration: 0.3s;
         color: white;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    td img {
+        margin-right: 8px;
     }
 </style>

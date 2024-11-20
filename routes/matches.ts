@@ -59,7 +59,18 @@ router.get('/match_page/:matchid', async (req, res) => {
 router.post('/match_page/:matchid/update-scores', async (req, res) => {
     const matchId = Number(req.params.matchid);
     const match = await db.select().from(matches).where(eq(matches.id, matchId));
+    const homeTeam = await db.select().from(teams).where(eq(teams.id, match[0].homeTeamId));
+    const awayTeam = await db.select().from(teams).where(eq(teams.id, match[0].awayTeamId));
     const gameScores = req.body;
+
+    const previousScores = await db.select({homeScoreSum: sql`SUM(${games.homeTeamScore})`, awayScoreSum: sql`SUM(${games.awayTeamScore})`,
+        }).from(games).where(eq(games.matchId, matchId)
+    );
+
+    const previousHomeScores = previousScores[0].homeScoreSum || 0;
+    const previousAwayScores = previousScores[0].awayScoreSum || 0;
+
+    console.log(`Total Home Score: ${previousHomeScores}, Total Away Score: ${previousAwayScores}`);
 
     if (typeof gameScores !== 'object' || Array.isArray(gameScores)) {
         return res.status(400).send('Invalid request format');
@@ -92,7 +103,9 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
 
         let homeWins = 0;
         let awayWins = 0;
-
+        let homePointsScored = 0;
+        let awayPointsScored = 0;
+        
         for (const game of parsedScores) {
             const { gameId, homeTeamScore, awayTeamScore } = game;
             if (homeTeamScore !== undefined && awayTeamScore !== undefined) {
@@ -101,6 +114,9 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
                 } else if (awayTeamScore > homeTeamScore) {
                     awayWins++;
                 }
+
+                homePointsScored += homeTeamScore;
+                awayPointsScored += awayTeamScore;
 
                 await db.update(games)
                     .set({
@@ -118,43 +134,75 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
         }
 
         const adminUpdate = match.length > 0 && match[0].winnerId !== null;
-        console.log("admin update: ", adminUpdate);
-
         let winnerId = null;
         let winnerScore = null;
         let loserScore = null;
-
-        if (homeWins > awayWins) {
-            winnerId = match[0].homeTeamId;
-            winnerScore = homeWins;
-            loserScore = awayWins;
-        } else if (awayWins > homeWins) {
-            winnerId = match[0].awayTeamId;
-            winnerScore = awayWins;
-            loserScore = homeWins;
+        let winnerPointsScored = null;
+        let loserPointsScored = null;
+        let previousWinnerScore = null;
+        let previousLoserScore = null;
+        if (previousHomeScores > previousAwayScores) {
+            previousWinnerScore = previousHomeScores;
+            previousLoserScore = previousAwayScores;
+        } else {
+            previousWinnerScore = previousAwayScores;
+            previousLoserScore = previousHomeScores;
         }
 
-        console.log("winner id: ", winnerId);
-
+        //admin update logic to revert changes
         if (adminUpdate) {
             const previousWinnerId = Number(match[0].winnerId);
-
             if (previousWinnerId !== winnerId) {
+                //revert previous teams stats
                 await db.update(teams)
                     .set({
                         wins: sql`${teams.wins} - 1`,
-                        losses: sql`${teams.losses} - 1`,
+                        pointsScored: sql`${teams.pointsScored} - ${previousWinnerScore}`,
+                        pointsScoredAgainst: sql`${teams.pointsScoredAgainst} - ${previousLoserScore}`,
                     })
                     .where(eq(teams.id, previousWinnerId));
 
                 await db.update(teams)
                     .set({
-                        wins: sql`${teams.wins} - 1`,
                         losses: sql`${teams.losses} - 1`,
+                        pointsScored: sql`${teams.pointsScored} - ${previousLoserScore}`,
+                        pointsScoredAgainst: sql`${teams.pointsScoredAgainst} - ${previousWinnerScore}`,
                     })
                     .where(eq(teams.id, match[0].homeTeamId === previousWinnerId ? match[0].awayTeamId : match[0].homeTeamId));
             }
         }
+
+        if (homeWins > awayWins) {
+            winnerId = match[0].homeTeamId;
+            winnerScore = homeWins;
+            loserScore = awayWins;
+            winnerPointsScored = homePointsScored;
+            loserPointsScored = awayPointsScored;
+        } else if (awayWins > homeWins) {
+            winnerId = match[0].awayTeamId;
+            winnerScore = awayWins;
+            loserScore = homeWins;
+            winnerPointsScored = awayPointsScored;
+            loserPointsScored = homePointsScored;
+        }
+
+        await db.update(teams)
+            .set({
+                pointsScored: sql`${teams.pointsScored} + ${homePointsScored}`,
+                pointsScoredAgainst: sql`${teams.pointsScoredAgainst} + ${awayPointsScored}`,
+                gamesWon: sql`${teams.gamesWon} + ${homeWins}`,
+                gamesLost: sql`${teams.gamesLost} + ${awayWins}`,
+            })
+            .where(eq(teams.id, match[0].homeTeamId));
+
+        await db.update(teams)
+            .set({
+                pointsScored: sql`${teams.pointsScored} + ${awayPointsScored}`,
+                pointsScoredAgainst: sql`${teams.pointsScoredAgainst} + ${homePointsScored}`,
+                gamesWon: sql`${teams.gamesWon} + ${awayWins}`,
+                gamesLost: sql`${teams.gamesLost} + ${homeWins}`,
+            })
+            .where(eq(teams.id, match[0].awayTeamId));
 
         if (winnerId !== null) {
             await db.update(teams)
