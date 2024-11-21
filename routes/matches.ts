@@ -1,34 +1,57 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { teams, regions, divisions, seasons, matches, arenas, games, players_in_teams, pending_players, teamname_history } from '../schema.ts';
+import { teams, regions, divisions, seasons, matches, arenas, games, players_in_teams, match_comms } from '../schema.ts';
 import { eq, and, or, sql } from 'drizzle-orm';
 
 const router = express.Router();
 
 router.get('/match_page/:matchid', async (req, res) => {
-    const matchid = Number(req.params.matchid);
-    const adminStatus = isAdmin(req.session?.user?.steamid);
+    const matchId = Number(req.params.matchid);
+    const steamId = req.session?.user?.steamid || null;
+    const admin = steamId ? isAdmin(steamId) : false;
+
     try {
-        const match = db.select().from(matches).where(eq(matches.id, matchid)).get();
-        
+        const match = db.select().from(matches).where(eq(matches.id, matchId)).get();
+
         if (!match) {
             res.status(404).send('Match not found');
             return;
         }
+
         const owners = await db.select().from(players_in_teams).where(
             and(
                 eq(players_in_teams.permissionLevel, 2),
                 or(
-                    eq(players_in_teams.teamId, match.homeTeamId), 
+                    eq(players_in_teams.teamId, match.homeTeamId),
                     eq(players_in_teams.teamId, match.awayTeamId)
                 )
             )
         );
-        let playerSteamId = null;
-        if (req.session && req.session.user) {
-            playerSteamId = req.session.user.steamid;
+
+        const homeTeamOwners = owners
+            .filter(owner => owner.teamId === match.homeTeamId)
+            .map(owner => owner.playerSteamId);
+
+        const awayTeamOwners = owners
+            .filter(owner => owner.teamId === match.awayTeamId)
+            .map(owner => owner.playerSteamId);
+
+        let isHomeTeamOwner = false;
+        let isAwayTeamOwner = false;
+        let hasPendingReschedule = null;
+        const matchComms = await db.select().from(match_comms).where(eq(match_comms.matchId, matchId));
+
+        if (steamId) {
+            isHomeTeamOwner = homeTeamOwners.includes(steamId);
+            isAwayTeamOwner = awayTeamOwners.includes(steamId);
+
+            hasPendingReschedule = matchComms.some(comm =>
+                comm.rescheduleStatus === 0 && (
+                    (isHomeTeamOwner && awayTeamOwners.includes(comm.owner)) ||
+                    (isAwayTeamOwner && homeTeamOwners.includes(comm.owner)) 
+                )
+            );
         }
-        const isTeamOwner = owners.some(owner => owner.playerSteamId === playerSteamId) ? 1 : 0;
         const allTeams = await db.select().from(teams);
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
@@ -40,52 +63,77 @@ router.get('/match_page/:matchid', async (req, res) => {
             body: 'match_page',
             title: match.id,
             match,
-            isAdmin: adminStatus,
-            isTeamOwner,
+            isAdmin: admin,
+            isTeamOwner: isHomeTeamOwner || isAwayTeamOwner,
+            hasPendingReschedule,
             teams: allTeams,
             arenas: allArenas,
             divisions: allDivisions,
             seasons: allSeasons,
             regions: allRegions,
-            games: allGames,            
+            games: allGames,
+            matchComms,
             session: req.session
         });
     } catch (err) {
-        console.error('Error querying database: ' + err.message);
+        console.error('Error querying database:', err.message);
         res.status(500).send('Internal Server Error');
     }
 });
 
 router.post('/match_page/:matchid/update-scores', async (req, res) => {
     const matchId = Number(req.params.matchid);
-    const match = await db.select().from(matches).where(eq(matches.id, matchId));
-    const homeTeam = await db.select().from(teams).where(eq(teams.id, match[0].homeTeamId));
-    const awayTeam = await db.select().from(teams).where(eq(teams.id, match[0].awayTeamId));
+    const steamId = req.session?.user?.steamid;
     const gameScores = req.body;
-
-    const previousScores = await db.select({homeScoreSum: sql`SUM(${games.homeTeamScore})`, awayScoreSum: sql`SUM(${games.awayTeamScore})`,
-        }).from(games).where(eq(games.matchId, matchId)
-    );
-
-    const previousHomeScores = previousScores[0].homeScoreSum || 0;
-    const previousAwayScores = previousScores[0].awayScoreSum || 0;
-
-    console.log(`Total Home Score: ${previousHomeScores}, Total Away Score: ${previousAwayScores}`);
-
-    if (typeof gameScores !== 'object' || Array.isArray(gameScores)) {
-        return res.status(400).send('Invalid request format');
-    }
-    if (req.body.isTeamOwner == null) {
-        return res.status(400).send('Not team owner');
-    }
+    const admin = isAdmin(req.session?.user?.steamid);
+    console.log(req.body);
 
     try {
+        const match = await db.select().from(matches).where(eq(matches.id, matchId));
+        const homeTeam = await db.select().from(teams).where(eq(teams.id, match[0].homeTeamId));
+        const awayTeam = await db.select().from(teams).where(eq(teams.id, match[0].awayTeamId));
+        const previousScores = await db.select({homeScoreSum: sql`SUM(${games.homeTeamScore})`, awayScoreSum: sql`SUM(${games.awayTeamScore})`,
+            }).from(games).where(eq(games.matchId, matchId)
+        );
+
+        if (!admin && match[0].status == 1){
+            return res.status(403).send('Match has already been played.');
+        }
+        const previousHomeScores = previousScores[0].homeScoreSum || 0;
+        const previousAwayScores = previousScores[0].awayScoreSum || 0;
+
+
+        if (typeof gameScores !== 'object' || Array.isArray(gameScores)) {
+            return res.status(400).send('Invalid request format');
+        }
+        
+        if (!match) {
+            res.status(404).send('Match not found');
+            return;
+        }
+        const owners = await db.select().from(players_in_teams).where(
+            and(
+                eq(players_in_teams.permissionLevel, 2),
+                or(
+                    eq(players_in_teams.teamId, match[0].homeTeamId), 
+                    eq(players_in_teams.teamId, match[0].awayTeamId)
+                )
+            )
+        );
+        const isTeamOwner = owners.some(owner => owner.playerSteamId === steamId) ? 1 : 0;
+        if (!isTeamOwner && !admin) {
+            return res.status(403).send('Unauthorized');
+        }
+
         const parsedScores = [];
 
         for (const key in gameScores) {
+            console.log("key: ", key);
             const [scoreType, gameIndex] = key.split('-');
             const scoreValue = Number(gameScores[key]);
-
+            console.log("score val: ", scoreValue);
+            console.log("score type: ", scoreType);
+            console.log("game index: ", gameIndex);
             if (isNaN(scoreValue)) {
                 return res.status(400).send('Invalid score value');
             }
@@ -137,8 +185,6 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
         let winnerId = null;
         let winnerScore = null;
         let loserScore = null;
-        let winnerPointsScored = null;
-        let loserPointsScored = null;
         let previousWinnerScore = null;
         let previousLoserScore = null;
         if (previousHomeScores > previousAwayScores) {
@@ -172,6 +218,8 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
             }
         }
 
+        let winnerPointsScored = null;
+        let loserPointsScored = null;
         if (homeWins > awayWins) {
             winnerId = match[0].homeTeamId;
             winnerScore = homeWins;
@@ -227,6 +275,28 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
             })
             .where(eq(matches.id, matchId));
 
+            // remove any outstanding reschedule requests
+            const pendingRescheduleRequest = db.select().from(match_comms).where(
+                and(
+                    eq(match_comms.matchId, matchId),
+                    eq(match_comms.rescheduleStatus, 0)
+                )
+            ).get();
+            
+            if (pendingRescheduleRequest) {
+                await db.update(match_comms)
+                    .set({
+                        rescheduleStatus: 3
+                    })
+                    .where(eq(match_comms.id, pendingRescheduleRequest.id));
+            
+                await db.insert(match_comms)
+                    .values({
+                        content: 'Scores submitted. Reschedule request canceled.',
+                        matchId: matchId,
+                        owner: '76561198082657536'
+                    });
+            }
             res.redirect(`/match_page/${matchId}`);
         } catch (err) {
         console.error("Error updating game scores:", err);
@@ -236,8 +306,31 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
 
 router.post('/match_page/:matchid/dispute', async (req, res) => {
     const matchId = Number(req.params.matchid);
+    const steamId = req.session?.user?.steamid;
+    const admin = isAdmin(req.session?.user?.steamid);
 
     try {
+        const match = db.select().from(matches).where(eq(matches.id, matchId)).get();
+        if (!match) { return res.status(404).send('Match not found'); }
+        if (match.status !== 1) { 
+            return res.status(404).send('Match has not been played yet or has already been disputed'); 
+        }
+
+        const owners = await db.select().from(players_in_teams).where(
+            and(
+                eq(players_in_teams.permissionLevel, 2),
+                or(
+                    eq(players_in_teams.teamId, match.homeTeamId), 
+                    eq(players_in_teams.teamId, match.awayTeamId)
+                )
+            )
+        );
+        const isTeamOwner = owners.some(owner => owner.playerSteamId === steamId) ? 1 : 0;
+
+        if (!isTeamOwner && !admin) {
+            return res.status(403).send('Unauthorized');
+        }
+
         await db.update(matches)
         .set({
             status: 2
@@ -248,6 +341,153 @@ router.post('/match_page/:matchid/dispute', async (req, res) => {
     } catch (err) {
         console.error("Error updating game scores:", err);
         res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post('/match_page/:matchid/post-message', async (req, res) => {
+    const matchId = Number(req.params.matchid);
+    const { content } = req.body;
+    const steamId = req.session?.user?.steamid;
+    const admin = isAdmin(req.session?.user?.steamid);
+
+
+    try {
+        const match = db.select().from(matches).where(eq(matches.id, matchId)).get();
+        if (!match) { return res.status(404).send('Match not found'); }
+
+        const owners = await db.select().from(players_in_teams).where(
+            and(
+                eq(players_in_teams.permissionLevel, 2),
+                or(
+                    eq(players_in_teams.teamId, match.homeTeamId), 
+                    eq(players_in_teams.teamId, match.awayTeamId)
+                )
+            )
+        );
+        const isTeamOwner = owners.some(owner => owner.playerSteamId === steamId) ? 1 : 0;
+
+        if (!isTeamOwner && !admin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await db.insert(match_comms).values({
+            content,
+            owner: steamId,
+            matchId,
+            reschedule: null,
+            rescheduleStatus: null,
+            createdAt: new Date().toISOString()
+        });
+
+        res.redirect(`/match_page/${matchId}`);
+    } catch (err) {
+        console.error('Error posting message:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/match_page/:matchid/reschedule', async (req, res) => {
+    const matchId = Number(req.params.matchid);
+    const { proposedDate } = req.body;
+    const steamId = req.session?.user?.steamid;
+    const admin = isAdmin(req.session?.user?.steamid);
+
+    try {
+        const match = db.select().from(matches).where(eq(matches.id, matchId)).get();
+        if (!match) { return res.status(404).send('Match not found'); }
+        if (!admin && match.status !== 0) { 
+            return res.status(403).send('Match has already been played'); 
+        }
+
+        const owners = await db.select().from(players_in_teams).where(
+            and(
+                eq(players_in_teams.permissionLevel, 2),
+                or(
+                    eq(players_in_teams.teamId, match.homeTeamId), 
+                    eq(players_in_teams.teamId, match.awayTeamId)
+                )
+            )
+        );
+        const isTeamOwner = owners.some(owner => owner.playerSteamId === steamId) ? 1 : 0;
+
+        if (!isTeamOwner && !admin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await db.insert(match_comms).values({
+            content: `RESCHEDULE REQUESTED: ${proposedDate}`,
+            owner: steamId,
+            matchId,
+            reschedule: proposedDate,
+            rescheduleStatus: 0,
+            createdAt: new Date().toISOString()
+        });
+
+        res.redirect(`/match_page/${matchId}`);
+    } catch (err) {
+        console.error('Error submitting reschedule:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/match_page/:matchid/respond-reschedule', async (req, res) => {
+    const matchId = Number(req.params.matchid);
+    const { rescheduleId, response } = req.body;
+    console.log("req body: ", req.body);
+    const steamId = req.session?.user?.steamid;
+    const admin = isAdmin(req.session?.user?.steamid);
+
+    try {
+        const match = await db.select().from(matches).where(eq(matches.id, matchId)).get();
+        if (!match) { return res.status(404).send('Match not found'); }
+
+        const owners = await db.select().from(players_in_teams).where(
+            and(
+                eq(players_in_teams.permissionLevel, 2),
+                or(
+                    eq(players_in_teams.teamId, match.homeTeamId),
+                    eq(players_in_teams.teamId, match.awayTeamId)
+                )
+            )
+        );
+        const isTeamOwner = owners.some(owner => owner.playerSteamId === steamId) ? 1 : 0;
+
+        if (!isTeamOwner && !admin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        const rescheduleRequest = await db.select().from(match_comms).where(eq(match_comms.id, rescheduleId)).get();
+
+        if (!rescheduleRequest || rescheduleRequest.matchId !== matchId || rescheduleRequest.rescheduleStatus !== 0) {
+            return res.status(400).send('Invalid reschedule request');
+        }
+
+        let rescheduleStatusMessage = '';
+        if (response === 'accept') {
+            await db.update(matches).set({ matchDateTime: rescheduleRequest.reschedule }).where(eq(matches.id, matchId));
+            await db.update(match_comms).set({ rescheduleStatus: 1 }).where(eq(match_comms.id, rescheduleId));
+            rescheduleStatusMessage = 'MATCH RESPONSE: Reschedule request accepted.';
+        } else if (response === 'deny') {
+            await db.update(match_comms).set({ rescheduleStatus: 2 }).where(eq(match_comms.id, rescheduleId));
+            rescheduleStatusMessage = 'MATCH RESPONSE: Reschedule request denied.';
+        } else if (response === 'cancel') {
+            await db.update(match_comms).set({ rescheduleStatus: 3 }).where(eq(match_comms.id, rescheduleId));
+            rescheduleStatusMessage = 'MATCH RESPONSE: Reschedule request canceled.';
+        } else {
+            return res.status(400).send('Invalid response action');
+        }
+
+        await db.insert(match_comms).values({
+            matchId: matchId,
+            content: rescheduleStatusMessage,
+            owner: steamId,
+            createdAt: new Date().toISOString()
+        });
+
+        res.redirect(`/match_page/${matchId}`);
+    } catch (err) {
+        console.error('Error responding to reschedule:', err);
+        res.status(500).send('Internal Server Error');
     }
 });
 

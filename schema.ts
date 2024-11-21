@@ -107,9 +107,11 @@ export const matches = sqliteTable('matches', {
 
 export const match_comms = sqliteTable('match_comms', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  content: text('content').notNull(),
+  content: text('content'),
+  reschedule: text('reschedule'),
+  rescheduleStatus: integer('reschedule_status'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
-  match: integer('match').notNull().references(() => matches.id),
+  matchId: integer('match_id').notNull().references(() => matches.id),
   owner: text('owner').references(() => users.steamId),
 });
 

@@ -2,6 +2,13 @@ select * from teams;
 select * from players_in_teams;
 select * from matches;
 select * from games;
+select * from match_comms;
+
+-- drop table if exists teams;
+-- drop table if exists players_in_teams;
+-- drop table if exists matches;
+-- drop table if exists games;
+-- drop table if exists match_comms;
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -143,7 +150,9 @@ CREATE TABLE IF NOT EXISTS `players_in_teams` (
 
 CREATE TABLE IF NOT EXISTS `match_comms` (
     `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `content` text NOT NULL,
+    `content` text,
+    `reschedule` datetime,
+    `reschedule_status` integer, --0 for proposed, 1 for accepted, 2 for denied, 3 for canceled
     `created_at` integer DEFAULT CURRENT_TIMESTAMP,
     `match_id` integer NOT NULL,
     `owner` text,

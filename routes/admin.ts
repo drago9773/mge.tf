@@ -103,7 +103,7 @@ router.post('/admin/preview_match', async (req, res) => {
         return res.status(403).redirect('/');
     }
     const { region_id, division_id, season_no, week_no, bo_series, arena_id, match_date_time } = req.body;
-    console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series},  BO Series: ${arena_id}, Time/Date: ${match_date_time}`);
+    console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series},  arena id: ${arena_id}, Time/Date: ${match_date_time}`);
 
     try {
         const sortedTeams = await create_match_set(region_id, division_id);

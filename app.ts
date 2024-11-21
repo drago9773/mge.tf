@@ -7,8 +7,10 @@
     ////pending players need to be confirmed by staff?
 
 //TODO: match stuff
-    ////match comms
-    ////request new match date
+    ////after no response for 24 hr, proposed date automatically becomes new date
+    ////submit files
+    ////only 24 hours to dispute match results? dispute option only shows after match complete
+    ////formatting
 
     //payment on signup
 

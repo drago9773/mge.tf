@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<% const pendingReschedule = matchComms.find(comm => comm.rescheduleStatus === 0); %>
 <% const currentPlayerSteamId = session?.user; %>
 <% if (match.status == 2) { %>
     <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500">
@@ -28,21 +30,11 @@
                             <% if (isAdmin || (isTeamOwner && match.winnerId == null)) { %>
                                 <td class="border px-4 py-2">
                                     <input 
-                                        required 
-                                        id="homeTeamScore-<%= i %>" 
-                                        type="number" 
-                                        name="homeTeamScore-<%= i %>" 
-                                        value="<%= game ? game.homeTeamScore : '' %>" 
-                                        class="dark-input">
+                                        required id="homeTeamScore-<%= i %>" type="number" name="homeTeamScore-<%= i %>" value="<%= game ? game.homeTeamScore : '' %>" class="bg-gray-900">
                                 </td>
                                 <td class="border px-4 py-2">
                                     <input 
-                                        required 
-                                        id="awayTeamScore-<%= i %>" 
-                                        type="number" 
-                                        name="awayTeamScore-<%= i %>" 
-                                        value="<%= game ? game.awayTeamScore : '' %>" 
-                                        class="dark-input">
+                                        required id="awayTeamScore-<%= i %>" type="number" name="awayTeamScore-<%= i %>" value="<%= game ? game.awayTeamScore : '' %>" class="bg-gray-900">
                                 </td>
                             <% } else { %>
                                 <td class="border px-4 py-2"><%= game ? game.homeTeamScore : '-' %></td>
@@ -50,44 +42,104 @@
                             <% } %>
                             <td class="border px-4 py-2">
                                 <% const arena = game ? arenas.find(arena => arena.id === game.arenaId) : null; %>
-                                <%= arena ? arena.name : 'Unknown Arena' %>
+                                    <%= arena.name %>
                             </td>
                         </tr>
                     <% } %>
                 </tbody>
             </table>
 
-            <% if (isTeamOwner || isAdmin) { %>
-                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
-                <button type="submit" class="bg-yellow-500 text-black font-bold py-2 px-4 rounded">Submit Scores</button>
+            <% if ((currentPlayerSteamId && isTeamOwner && (match.status == 0)) || isAdmin) { %>
+                <button type="submit" class="bg-yellow-500 text-black mx-auto font-bold py-2 px-4 rounded">Submit Scores</button>
             <% } %>
         </form>
 
-        <form action="/match_page/<%= match.id %>/dispute" method="POST" class="space-y-4">
-            <% if (isTeamOwner || isAdmin) { %>
-                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
-                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
-                <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
+        <% if (match.status === 1 && (isTeamOwner || isAdmin)) { %>
+            <form action="/match_page/<%= match.id %>/dispute" method="POST" class="space-y-4">
+                    <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                    <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                    <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
+            </form>
+        <% } %>
+    </div>
+
+    <div class="bg-gray-900 text-white p-4 rounded-lg">
+        <h2 class="text-xl font-bold mb-2">Match Communications</h2>
+        <% if (isTeamOwner || isAdmin) { %>
+            <form action="/match_page/<%= match.id %>/post-message" method="POST" class="mb-4">
+                <textarea required id="content" name="content" rows="3" class="w-full bg-gray-800 p-2 text-white rounded" placeholder="Post a message..."></textarea>
+                <button type="submit" class="mt-2 bg-blue-500 px-4 py-2 rounded">Post Message</button>
+            </form>
+        
+            <% if (!pendingReschedule && ((match.status === 0) || isAdmin)) { %>
+                <form action="/match_page/<%= match.id %>/reschedule" method="POST" class="mb-4">
+                    <label for="proposedDate" class="block text-sm font-medium">Proposed Reschedule Date:</label>
+                    <input type="hidden" id="pendingReschedule" name="pendingReschedule" value="<%= pendingReschedule %>">
+                    <input type="text" required id="proposedDate" name="proposedDate" class="bg-gray-800 p-2 text-white rounded w-full">
+                    <button type="submit" class="mt-2 bg-green-500 px-4 py-2 rounded">Request Reschedule</button>
+                </form>
+            <% } else { %>
+                <button class="mt-2 bg-gray-500 px-4 py-2 rounded">Request Reschedule</button>
             <% } %>
-        </form>
+        <% } %>
+    
+        <div class="mt-4">
+            <h3 class="text-lg font-bold">Previous Messages</h3>
+            <ul>
+                <% matchComms.forEach(comm => { %>
+                    <li class="border-b border-gray-700 py-2">
+                        <strong><%= comm.owner %>:</strong> <%= comm.content %>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+
+    
+        <% if (pendingReschedule && (isTeamOwner || isAdmin)) { %>
+            <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4">
+                <p><strong>Proposed Reschedule Date:</strong> <%= pendingReschedule.reschedule %></p>
+                <% if (hasPendingReschedule || isAdmin) { %>
+                    <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                        <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                        <button name="response" value="accept" class="bg-green-500 text-white px-4 py-2 rounded">Accept</button>
+                        <button name="response" value="deny" class="bg-red-500 text-white px-4 py-2 rounded">Deny</button>
+                    </form>
+                <% } else { %>
+                    <h1">Waiting for the opposing team to respond...</h1>
+                    <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                        <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                        <button name="response" value="cancel" class="bg-red-500 text-white px-4 py-2 rounded">Cancel Request</button>
+                    </form>
+                <% } %>
+            </div>
+        <% } %>
     </div>
 </div>
 
-<style>
-    .score-high {
-        background-color: rgba(43, 132, 43, 0.7); 
-        color: black;
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function reschedule() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+        const nextSaturday = new Date(today);
+        nextSaturday.setDate(today.getDate() + daysUntilSaturday);
+        return nextSaturday;
     }
 
-    .score-low {
-        color: black;
-    }
-
-    .dark-input {
-        background-color: #333; 
-        color: white; 
-        border: 1px solid #555;
-        padding: 4px;
-        border-radius: 4px;
-    }
-</style>
+    flatpickr("#proposedDate", {
+        enableTime: true,
+        dateFormat: "Y/m/d H:i",
+        altInput: true,
+        altFormat: "F j, Y H:i",
+        time_24hr: false,
+        minuteIncrement: 30,
+        defaultDate: (() => {
+            const saturday = reschedule();
+            saturday.setHours(18, 30);
+            return saturday;
+        })(),
+    });
+});
+</script>
