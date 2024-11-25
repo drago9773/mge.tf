@@ -150,3 +150,12 @@ export const players_in_teams = sqliteTable('players_in_teams', {
   startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
   leftAt: text('left_at').default(sql`0`)
 });
+
+export const tournaments = sqliteTable('tournaments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
+  description: text('description'),
+  avatar: text('avatar'),
+  bracket_link: text('bracket_link')
+});

@@ -35,7 +35,7 @@ import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.ts';
-import { users, moderators } from './schema.ts';
+import { users, moderators, tournaments} from './schema.ts';
 import { sql} from 'drizzle-orm';
 
 import forumPostRoutes from './routes/forumPosts.ts';
@@ -137,6 +137,79 @@ app.get('/users', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+app.get('/tournaments', async (req, res) => {
+    try {
+        const allTournaments = await db.select().from(tournaments);
+        const moderatorIds = await db.select().from(moderators);
+
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        const userIsMod = moderatorSet.has(req.session.user?.steamid || '');
+
+        res.render('layout', {
+            title: 'Tournaments',
+            body: 'tournaments',
+            user: req.session.user,
+            userIsMod: userIsMod,
+            tournaments: allTournaments,
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/tournaments', async (req, res) => {
+    try {
+        const moderatorIds = await db.select().from(moderators);
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        if (!req.session.user || !moderatorSet.has(req.session.user.steamid)) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        const { name, description, date, format } = req.body;
+
+        await db.insert(tournaments).values({
+            name,
+            description, 
+            date: new Date(date),
+            format
+        });
+
+        res.redirect('/tournaments');
+    } catch (err) {
+        console.error('Error creating tournament: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/tournaments/:id', async (req, res) => {
+    try {
+        // Check if user is moderator
+        const moderatorIds = await db.select().from(moderators);
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        if (!req.session.user || !moderatorSet.has(req.session.user.steamid)) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        // Delete tournament if method is DELETE
+        if (req.body._method === 'DELETE') {
+            await db.delete(tournaments)
+                .where(sql`${tournaments.id} = ${parseInt(req.params.id)}`);
+        }
+
+        res.redirect('/tournaments');
+    } catch (err) {
+        console.error('Error deleting tournament: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 
 app.get('/2v2cup', (_req, res) => {
     res.render('2v2cup');
