@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `isSignedUp` integer DEFAULT 0;
