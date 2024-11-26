@@ -172,3 +172,12 @@ export const demo_report = sqliteTable('demo_report', {
   adminId: text('admin_id').references(() => users.steamId),
   adminComments: text('admin_comments')
 });
+
+export const tournaments = sqliteTable('tournaments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
+  description: text('description'),
+  avatar: text('avatar'),
+  bracketLink: text('bracket_link')
+});

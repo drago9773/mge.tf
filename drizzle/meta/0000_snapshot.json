@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "31ac09bc-7ab4-447f-8e9f-69df677e419c",
+  "id": "e67bc83e-88de-4f06-8af6-f78afdfab0b2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "activity": {
@@ -118,15 +118,15 @@
     "games": {
       "name": "games",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
         "match_id": {
           "name": "match_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "game_num": {
+          "name": "game_num",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -178,6 +178,92 @@
           ],
           "columnsTo": [
             "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "match_comms": {
+      "name": "match_comms",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reschedule": {
+          "name": "reschedule",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reschedule_status": {
+          "name": "reschedule_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "match_id": {
+          "name": "match_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner": {
+          "name": "owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "match_comms_match_id_matches_id_fk": {
+          "name": "match_comms_match_id_matches_id_fk",
+          "tableFrom": "match_comms",
+          "tableTo": "matches",
+          "columnsFrom": [
+            "match_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "match_comms_owner_users_steam_id_fk": {
+          "name": "match_comms_owner_users_steam_id_fk",
+          "tableFrom": "match_comms",
+          "tableTo": "users",
+          "columnsFrom": [
+            "owner"
+          ],
+          "columnsTo": [
+            "steam_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -252,16 +338,15 @@
           "notNull": false,
           "autoincrement": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
+        "match_date_time": {
+          "name": "match_date_time",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "autoincrement": false
         },
-        "played_at": {
-          "name": "played_at",
+        "status": {
+          "name": "status",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -480,13 +565,13 @@
           "name": "permission_level",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 0
         },
         "started_at": {
           "name": "started_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -494,11 +579,11 @@
         },
         "left_at": {
           "name": "left_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": 0
+          "default": "0"
         }
       },
       "indexes": {},
@@ -556,7 +641,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "current_timestamp"
+          "default": "CURRENT_TIMESTAMP"
         },
         "thread": {
           "name": "thread",
@@ -679,7 +764,7 @@
         },
         "change_date": {
           "name": "change_date",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -752,6 +837,22 @@
           "autoincrement": false,
           "default": 0
         },
+        "games_won": {
+          "name": "games_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "games_lost": {
+          "name": "games_lost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
         "points_scored": {
           "name": "points_scored",
           "type": "integer",
@@ -764,7 +865,7 @@
           "name": "points_scored_against",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 0
         },
@@ -814,7 +915,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
@@ -894,9 +995,9 @@
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false,
-          "default": "current_timestamp"
+          "default": "CURRENT_TIMESTAMP"
         },
         "bumped_at": {
           "name": "bumped_at",
@@ -904,7 +1005,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(current_timestamp)"
+          "default": "CURRENT_TIMESTAMP"
         },
         "owner": {
           "name": "owner",
@@ -969,7 +1070,7 @@
           "name": "isSignedUp",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false,
           "default": 0
         },

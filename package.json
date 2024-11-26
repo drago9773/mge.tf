@@ -6,7 +6,7 @@
   "main": "app.ts",
   "scripts": {
     "start": "node app.ts",
-    "dev": "node --experimental-strip-types --experimental-transform-types app.ts",
+    "dev": "node --experimental-strip-types app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tw": "npx tailwindcss -i ./views/css/tw.css -o ./views/css/tw-out.css --watch",
     "generate": "drizzle-kit generate",

@@ -220,3 +220,12 @@ CREATE TABLE IF NOT EXISTS `demo_report` (
 	FOREIGN KEY (`reported_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (`admin_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
+
+CREATE TABLE IF NOT EXISTS `tournaments` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`started_at` text DEFAULT CURRENT_TIMESTAMP,
+	`description` text,
+	`avatar` text,
+	`bracket_link` text
+);

@@ -1,1 +1,0 @@
-ALTER TABLE `threads` ADD `hidden` integer DEFAULT 0;

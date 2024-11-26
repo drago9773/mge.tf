@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `permission_level` integer DEFAULT 0 NOT NULL;

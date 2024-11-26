@@ -19,13 +19,25 @@ CREATE TABLE `divisions` (
 );
 --> statement-breakpoint
 CREATE TABLE `games` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`match_id` integer NOT NULL,
+	`game_num` integer NOT NULL,
 	`home_team_score` integer,
 	`away_team_score` integer,
 	`arena_id` integer,
 	FOREIGN KEY (`match_id`) REFERENCES `matches`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`arena_id`) REFERENCES `arenas`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `match_comms` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`content` text,
+	`reschedule` text,
+	`reschedule_status` integer,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP,
+	`match_id` integer NOT NULL,
+	`owner` text,
+	FOREIGN KEY (`match_id`) REFERENCES `matches`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `matches` (
@@ -38,8 +50,8 @@ CREATE TABLE `matches` (
 	`season_no` integer NOT NULL,
 	`week_no` integer NOT NULL,
 	`bo_series` integer,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP,
-	`played_at` integer,
+	`match_date_time` text,
+	`status` integer,
 	FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action,
@@ -70,9 +82,9 @@ CREATE TABLE `players_in_teams` (
 	`player_steam_id` text,
 	`team_id` integer,
 	`active` integer DEFAULT 1,
-	`permission_level` integer DEFAULT 0,
-	`started_at` integer DEFAULT CURRENT_TIMESTAMP,
-	`left_at` integer DEFAULT 0,
+	`permission_level` integer DEFAULT 0 NOT NULL,
+	`started_at` text DEFAULT CURRENT_TIMESTAMP,
+	`left_at` text DEFAULT 0,
 	FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -80,7 +92,7 @@ CREATE TABLE `players_in_teams` (
 CREATE TABLE `posts` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`content` text NOT NULL,
-	`created_at` text DEFAULT current_timestamp,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP,
 	`thread` integer NOT NULL,
 	`owner` text,
 	`hidden` integer DEFAULT 0,
@@ -101,7 +113,7 @@ CREATE TABLE `seasons` (
 CREATE TABLE `teamname_history` (
 	`team_id` integer,
 	`name` text,
-	`change_date` integer DEFAULT CURRENT_TIMESTAMP,
+	`change_date` text DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -112,15 +124,17 @@ CREATE TABLE `teams` (
 	`avatar` text,
 	`wins` integer DEFAULT 0 NOT NULL,
 	`losses` integer DEFAULT 0 NOT NULL,
+	`games_won` integer DEFAULT 0 NOT NULL,
+	`games_lost` integer DEFAULT 0 NOT NULL,
 	`points_scored` integer DEFAULT 0 NOT NULL,
-	`points_scored_against` integer DEFAULT 0,
+	`points_scored_against` integer DEFAULT 0 NOT NULL,
 	`division_id` integer,
 	`region_id` integer,
 	`season_no` integer,
 	`is_1v1` integer DEFAULT 0,
 	`status` integer DEFAULT 0,
 	`join_password` text,
-	`created_at` integer DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`region_id`) REFERENCES `regions`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE no action
@@ -130,8 +144,8 @@ CREATE TABLE `threads` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`content` text NOT NULL,
-	`created_at` text DEFAULT current_timestamp NOT NULL,
-	`bumped_at` text DEFAULT (current_timestamp),
+	`created_at` text DEFAULT CURRENT_TIMESTAMP,
+	`bumped_at` text DEFAULT CURRENT_TIMESTAMP,
 	`owner` text,
 	`hidden` integer DEFAULT 0,
 	FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
@@ -141,7 +155,7 @@ CREATE TABLE `users` (
 	`steam_id` text PRIMARY KEY NOT NULL,
 	`steam_username` text NOT NULL,
 	`steam_avatar` text,
-	`isSignedUp` integer DEFAULT 0 NOT NULL,
+	`isSignedUp` integer DEFAULT 0,
 	`permission_level` integer DEFAULT 0 NOT NULL,
 	`is_banned` integer DEFAULT 0 NOT NULL,
 	`name_override` integer DEFAULT 0 NOT NULL
