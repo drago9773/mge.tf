@@ -40,6 +40,16 @@
         >
       </div>
       <div>
+        <label for="startedAt" class="block text-sm font-medium text-zinc-100">Tournament Date</label>
+        <input
+          type="date"
+          name="startedAt"
+          id="startedAt"
+          required
+          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+        >
+      </div>
+      <div>
         <button 
           type="submit"
           class="inline-flex justify-center rounded-md border border-transparent bg-cyan-600 py-2 px-4 text-sm font-medium text-black shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
@@ -84,6 +94,12 @@
                 <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
               </svg>
               View Bracket
+            </div>
+          <% } %>
+
+          <% if (tournament.startedAt) { %>
+            <div class="text-sm text-zinc-400">
+              <%= new Date(tournament.startedAt).toLocaleDateString() %>
             </div>
           <% } %>
         </div>

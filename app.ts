@@ -171,13 +171,17 @@ app.post('/tournaments', async (req, res) => {
             return res.status(403).send('Unauthorized');
         }
 
-        const { name, description, date, format } = req.body;
+        const { name, description, bracket_link, avatar, startedAt } = req.body;
+
+        // Convert the date to timestamp format
+        const timestamp = new Date(startedAt).toISOString();
 
         await db.insert(tournaments).values({
             name,
-            description, 
-            date: new Date(date),
-            format
+            description,
+            bracket_link,
+            avatar,
+            startedAt: timestamp
         });
 
         res.redirect('/tournaments');
