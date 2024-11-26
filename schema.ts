@@ -150,3 +150,25 @@ export const players_in_teams = sqliteTable('players_in_teams', {
   startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
   leftAt: text('left_at').default(sql`0`)
 });
+
+export const demos = sqliteTable('demos', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  file: text('file').notNull(),
+  playerSteamId: text('player_steam_id').references(() => users.steamId),
+  submittedBy: text('submitted_by').references(() => users.steamId),
+  submittedAt: text('submitted_at').default(sql`CURRENT_TIMESTAMP`),
+  matchId: integer('match_id').references(() => matches.id),
+  title: text('title'),
+  description: text('description')
+});
+
+export const demo_report = sqliteTable('demo_report', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  demoId: integer('demo_id').notNull().references(() => demos.id),
+  reportedBy: text('reported_by').references(() => users.steamId),
+  reportedAt: text('reported_at').default(sql`CURRENT_TIMESTAMP`),
+  status: integer('status').default(1),
+  description: text('description'),
+  adminId: text('admin_id').references(() => users.steamId),
+  adminComments: text('admin_comments')
+});

@@ -1,25 +1,20 @@
+//TODO: general
+    //payment on signup
+    //link discord
+
 //TODO: signup
     ////TOS popup on signup
     ////have div/region actually be the table value
 
 //TODO: admin
+    ////automatic match generation equation
     ////assign/approve team division requests from signup
     ////pending players need to be confirmed by staff?
+    ////demos page to review demos
 
 //TODO: match stuff
-    ////after no response for 24 hr, proposed date automatically becomes new date
-    ////submit files
     ////only 24 hours to dispute match results? dispute option only shows after match complete
-    ////formatting
-
-    //payment on signup
-
-    //link discord
-
-    //a lot of front end touching up
-
-//questions
-////do we want a list of viable MGE maps and then arenas associated with each map?
+    ////demo submitting UI (drop down of players, option for ringer)
 
 //FUTURE
 //1. In admin panel, needs to be a 'commit team history' button to move all teams from current
@@ -38,6 +33,8 @@ import { steamId64FromSteamId32 } from './helpers/steamid.ts';
 import { users, moderators } from './schema.ts';
 import { sql} from 'drizzle-orm';
 
+import { scheduleTasks } from './views/js/scheduler.ts';
+
 import forumPostRoutes from './routes/forumPosts.ts';
 import steamRoutes from './routes/steamAuth.ts';
 import signupRoutes from './routes/signup.js';
@@ -50,6 +47,7 @@ import editTeamRoutes from './routes/editTeam.ts';
 import teamPageRoutes from './routes/teamPage.ts';
 import playerPageRoutes from './routes/playerPage.ts';
 import matchesRoutes from './routes/matches.ts';
+import demosRoutes from './routes/demos.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +68,8 @@ app.use(session({
     saveUninitialized: true
 }));
 
+scheduleTasks();
+
 app.use('/', forumPostRoutes);
 app.use('/', steamRoutes);
 app.use('/', adminRoutes);
@@ -80,6 +80,7 @@ app.use('/', teamPageRoutes);
 app.use('/', matchesRoutes);
 app.use('/', playerPageRoutes);
 app.use('/', signupRoutes);
+app.use('/', demosRoutes);
 app.use('/api', apiRoutes);
 app.use('/moderation', moderatorRoutes);
 

@@ -67,9 +67,6 @@ router.post('/admin_update_arena_name', async (req, res) => {
 });
 router.post('/admin_update_arena_avatar/:arenaid', upload.single('avatar'), async (req, res, ) => {
     const { arena_id, name } = req.body; 
-    console.log(req.body);
-    console.log(arena_id);
-    console.log(name);
     try {
         if (req.file) {
             const ext = path.extname(req.file.originalname);
@@ -90,7 +87,6 @@ router.post('/admin_update_arena_avatar/:arenaid', upload.single('avatar'), asyn
 
 router.post('/create_season', async (req, res) => {
     const { numWeeks } = req.body;
-    console.log(req.body);
     try {
         await db.insert(seasons).values({ numWeeks });
         res.redirect('/admin');

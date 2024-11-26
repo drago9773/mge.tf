@@ -1,9 +1,35 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { teams, regions, divisions, seasons, matches, arenas, games, players_in_teams, match_comms } from '../schema.ts';
+import { users, demos, teams, regions, divisions, seasons, matches, arenas, games, players_in_teams, match_comms } from '../schema.ts';
+import multer from 'multer';
+import path from 'path';
 import { eq, and, or, sql } from 'drizzle-orm';
+import fs from 'fs';
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './demos');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 200 * 1024 * 1024 }, // 200 MB
+    fileFilter: (req, file, cb) => {
+        const allowedFileTypes = /dem/; // only .dem files
+        const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+        if (extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Only .dem files are allowed!'));
+    }
+});
 
 router.get('/match_page/:matchid', async (req, res) => {
     const matchId = Number(req.params.matchid);
@@ -52,12 +78,33 @@ router.get('/match_page/:matchid', async (req, res) => {
                 )
             );
         }
+
+        const allUsers = await db.select().from(users);
         const allTeams = await db.select().from(teams);
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allSeasons = await db.select().from(seasons);
         const allRegions = await db.select().from(regions);
         const allGames = await db.select().from(games);
+        const gameDemos = await db.select().from(demos).where(eq(demos.matchId, matchId));
+
+        const demosWithPlayerNames = gameDemos.map(demo => {
+            const player = allUsers.find(user => user.steamId === demo.playerSteamId);
+            console.log(player);
+            return {
+                ...demo,
+                playerName: player ? player.steamUsername : 'Unknown Player',
+                avatarUrl: player ? player.steamAvatar : '/default-avatar.jpg'
+            };
+        });
+        const commsWithUserInfo = matchComms.map(comm => {
+            const user = allUsers.find(user => user.steamId === comm.owner);
+            return {
+                ...comm,
+                playerName: user ? user.steamUsername : 'Unknown Player',
+                avatarUrl: user ? user.steamAvatar : '/default-avatar.jpg'
+            };
+        });
 
         res.render('layout', {
             body: 'match_page',
@@ -67,12 +114,14 @@ router.get('/match_page/:matchid', async (req, res) => {
             isTeamOwner: isHomeTeamOwner || isAwayTeamOwner,
             hasPendingReschedule,
             teams: allTeams,
+            users: allUsers,
             arenas: allArenas,
             divisions: allDivisions,
             seasons: allSeasons,
             regions: allRegions,
             games: allGames,
-            matchComms,
+            demos: demosWithPlayerNames, 
+            matchComms: commsWithUserInfo,
             session: req.session
         });
     } catch (err) {
@@ -86,7 +135,6 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
     const steamId = req.session?.user?.steamid;
     const gameScores = req.body;
     const admin = isAdmin(req.session?.user?.steamid);
-    console.log(req.body);
 
     try {
         const match = await db.select().from(matches).where(eq(matches.id, matchId));
@@ -128,12 +176,8 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
         const parsedScores = [];
 
         for (const key in gameScores) {
-            console.log("key: ", key);
             const [scoreType, gameIndex] = key.split('-');
             const scoreValue = Number(gameScores[key]);
-            console.log("score val: ", scoreValue);
-            console.log("score type: ", scoreType);
-            console.log("game index: ", gameIndex);
             if (isNaN(scoreValue)) {
                 return res.status(400).send('Invalid score value');
             }
@@ -433,7 +477,6 @@ router.post('/match_page/:matchid/reschedule', async (req, res) => {
 router.post('/match_page/:matchid/respond-reschedule', async (req, res) => {
     const matchId = Number(req.params.matchid);
     const { rescheduleId, response } = req.body;
-    console.log("req body: ", req.body);
     const steamId = req.session?.user?.steamid;
     const admin = isAdmin(req.session?.user?.steamid);
 
@@ -487,6 +530,59 @@ router.post('/match_page/:matchid/respond-reschedule', async (req, res) => {
         res.redirect(`/match_page/${matchId}`);
     } catch (err) {
         console.error('Error responding to reschedule:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/match_page/:matchid/submit_demo', upload.single('file'), async (req, res) => {
+    const matchId = Number(req.params.matchid);
+    const { playerSteamId, description } = req.body;
+    const steamId = req.session?.user?.steamid;
+
+    try {
+        if (!req.file) {
+            return res.status(400).send({ error: 'File upload is required.' });
+        }
+
+        const playerExists = await db
+            .select()
+            .from(users)
+            .where(eq(users.steamId, playerSteamId))
+            .limit(1);
+
+        if (!playerExists.length) {
+            return res.status(400).json({ error: `Player with Steam ID ${playerSteamId} does not exist.` });
+        }
+
+        const result = await db.insert(demos).values({
+            file: req.file.filename,
+            playerSteamId,
+            submittedBy: steamId,
+            submittedAt: new Date().toISOString(),
+            matchId,
+            description: description || null
+        });
+
+        const demo_id = Number(result.lastInsertRowid);
+        const timestamp = Date.now();
+
+        const ext = path.extname(req.file.originalname);
+        const newFilename = `demo_${demo_id}_ofPlayerSteamID_${playerSteamId}${ext}`;
+        const oldPath = `./demos/${req.file.filename}`;
+        const newPath = `./demos/${newFilename}`;
+
+        fs.renameSync(oldPath, newPath);
+
+        await db.update(demos).set({ file: newFilename }).where(eq(demos.id, demo_id));
+
+        res.redirect(`/match_page/${matchId}`);
+    } catch (err) {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).send('File too large. Maximum size is 200MB.');
+            }
+        }
+        console.error('Error:', err);
         res.status(500).send('Internal Server Error');
     }
 });

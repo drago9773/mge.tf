@@ -13,6 +13,6 @@
     "allowImportingTsExtensions": true,
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "include": ["./**/*"],
+  "include": ["./**/*", ".types/**/*"],
   "exclude": ["node_modules", "tailwind.config.js", "./views/js/*.js"]
 }

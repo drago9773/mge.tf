@@ -1,18 +1,19 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <% const pendingReschedule = matchComms.find(comm => comm.rescheduleStatus === 0); %>
 <% const currentPlayerSteamId = session?.user; %>
 <% if (match.status == 2) { %>
-    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500">
+    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500 mt-10">
         Match results have been disputed. Awaiting admin response.
     </h1>
 <% } %>
-<div class="w-full bg-black bg-opacity-50 backdrop-blur-lg h-full flex flex-col justify-center align-middle">
+
+<div class="w-full bg-black bg-opacity-50 backdrop-blur-lg h-full flex-col justify-center align-middle mt-10">
     <div class="container mx-auto p-4 flex flex-col align-middle justify-center w-full items-center">
         <h1 class="text-3xl font-bold mb-4 text-white">Match Details for Match ID: <%= match.id %></h1>
 
-        <h2 class="text-2xl mb-2 text-white">Games:</h2>
+        <h2 class="text-2xl mb-2 text-white">Games</h2>
         <form action="/match_page/<%= match.id %>/update-scores" method="POST" class="space-y-4">
-
             <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
                 <thead>
                     <tr>
@@ -63,7 +64,66 @@
         <% } %>
     </div>
 
-    <div class="bg-gray-900 text-white p-4 rounded-lg">
+    <% if (match.status !== 0 && (isTeamOwner || isAdmin)) { %>
+        <div class="mt-4 bg-gray-900 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-2">Submit Demo</h2>
+            <form action="/match_page/<%= match.id %>/submit_demo" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center space-x-4">
+                <div class="flex items-center space-x-4">
+                    <label for="userSearch" class="text-sm font-medium text-gray-300">
+                        Player Name:
+                    </label>
+                    <input
+                        type="text" required id="userSearch" name="userSearch"
+                        class="p-2 border border-gray-300 text-black"
+                        placeholder="Enter username or SteamID..."
+                        autocomplete="off">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label for="demo_file" class="text-sm font-medium text-white">Upload Player Demo:</label>
+                    <input required id="file" name="file" type="file" accept="image/*" class="border border-gray-300 p-2">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label for="description" class="text-sm font-medium text-white">Explanation (Optional):</label>
+                    <input id="description" name="description" type="text" placeholder="e.g., 'First 2 games'" 
+                        class="block rounded-md border border-gray-300 text-black placeholder-gray-500 px-4 py-2 text-lg w-48">
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">Submit</button>
+            </form>
+        </div>
+    <% } %>
+
+    <div class="mt-4 bg-gray-900 p-4 rounded-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Submitted Demos</h2>
+        <% if (demos && demos.length > 0) { %>
+            <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Player</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
+                    <% demos.forEach(demo => { %>
+                        <tr>
+                            <td class="border px-4 py-2 flex items-center">
+                                <a href="/player_page/<%= demo.playerSteamId %>" class="flex items-center">
+                                    <img src="<%= demo.avatarUrl %>" alt="<%= demo.playerName %>'s Avatar" class="w-10 h-10 rounded-full mr-3">
+                                    <span class="hover:underline">
+                                        <%= demo.playerName %>
+                                    </span>
+                                </a>
+                            </td>
+                            <td class="border px-4 py-2">
+                                <a href="/demos/<%= demo.id %>" class="text-blue-500 hover:underline">View/Report Demo</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>    
+
+    <div class="bg-gray-900 text-white p-4 rounded-lg mt-10">
         <h2 class="text-xl font-bold mb-2">Match Communications</h2>
         <% if (isTeamOwner || isAdmin) { %>
             <form action="/match_page/<%= match.id %>/post-message" method="POST" class="mb-4">
@@ -87,14 +147,25 @@
             <h3 class="text-lg font-bold">Previous Messages</h3>
             <ul>
                 <% matchComms.forEach(comm => { %>
-                    <li class="border-b border-gray-700 py-2">
-                        <strong><%= comm.owner %>:</strong> <%= comm.content %>
+                    <li class="border-b border-gray-700 py-2 flex items-start">
+                        <a href="/player_page/<%= comm.owner %>" class="flex items-center space-x-3">
+                            <img src="<%= comm.avatarUrl %>" alt="<%= comm.playerName %>'s Avatar" class="w-10 h-10 rounded-full">
+                            <strong class="hover:underline"><%= comm.playerName %></strong>
+                        </a>
+                        <div class="ml-3">
+                            <%= comm.content %>
+                            <div class="text-sm text-gray-400 mt-1">
+                                <%= new Date(comm.createdAt).toLocaleString('en-US', { 
+                                    hour: '2-digit', minute: '2-digit', hour12: true, 
+                                    month: '2-digit', day: '2-digit', year: 'numeric' 
+                                }) %>
+                            </div>
+                        </div>
                     </li>
                 <% }) %>
             </ul>
         </div>
-
-    
+           
         <% if (pendingReschedule && (isTeamOwner || isAdmin)) { %>
             <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4">
                 <p><strong>Proposed Reschedule Date:</strong> <%= pendingReschedule.reschedule %></p>
@@ -115,6 +186,7 @@
         <% } %>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
@@ -143,3 +215,43 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+    function filterUsers() {
+        const input = document.getElementById('userSearch');
+        let filter = input.value.toLowerCase();
+        let users = document.getElementById('users_container').children;
+
+        for (let i = 0; i < users.length; i++) {
+            const username = users[i].getAttribute('data-username').toLowerCase();
+            const steamId = users[i].getAttribute('data-steamid').toLowerCase();
+
+            if (username.includes(filter) || steamId.includes(filter)) {
+                users[i].style.display = '';
+            } else {
+                users[i].style.display = 'none';
+            }
+        }
+    }
+
+    document.getElementById('userSearch').addEventListener('input', filterUsers);
+    document.getElementById('users_container').addEventListener('click', (e) => {
+        if (e.target.closest('div[data-username]')) {
+            const selectedUser = e.target.closest('div[data-username]');
+            const steamId = selectedUser.getAttribute('data-steamid');
+            const username = selectedUser.getAttribute('data-username');
+
+            document.getElementById('userSearch').value = `${username} (${steamId})`;
+            document.getElementById('playerSteamId').value = steamId;
+
+            const usersContainer = document.getElementById('users_container');
+            usersContainer.style.display = 'none';
+        }
+    });
+
+    document.getElementById('userSearch').addEventListener('focus', () => {
+        const usersContainer = document.getElementById('users_container');
+        usersContainer.style.display = 'block';
+    });
+</script>
+
