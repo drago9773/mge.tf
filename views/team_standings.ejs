@@ -1,0 +1,47 @@
+<div class="bg-black bg-opacity-80 backdrop-blur-lg py-16 sm:py-24">
+  <h1 class="text-center text-3xl font-bold text-gray-100 mb-4">Team Standings</h1>
+
+  <% Object.keys(standingsByDivision).forEach((divisionName) => { %>
+      <h2 class="text-center text-2xl font-bold text-gray-300 mb-2"><%= divisionName %></h2>
+      <div class="overflow-x-auto rounded-lg mb-4">
+          <table class="mx-auto w-1/2 bg-gray-900 rounded-lg">
+              <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
+                  <tr>
+                      <th class="px-4 py-2">Team</th>
+                      <th class="px-4 py-2">Record</th>
+                      <th class="px-4 py-2">Points</th>
+                  </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-600">
+                  <% standingsByDivision[divisionName].forEach((team) => { %>
+                      <tr class="cursor-pointer" onclick="window.location.href='/team_page/<%= team.id %>'">
+                          <td class="overflow-x-hidden flex items-center px-2 py-2 text-gray-100">
+                            <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="px-4 py-2 h-10 rounded-md">
+                            <%= team.name %>
+                          </td>
+                          <td class="px-4 py-2 text-gray-300"><%= team.wins %> - <%= team.losses %></td>
+                          <td class= px-4 py-2 text-gray-300">
+                              <%= team.pointsScored %> - <%= team.pointsScoredAgainst %>
+                          </td>
+                      </tr>
+                  <% }); %>
+              </tbody>
+          </table>
+      </div>
+  <% }); %>
+</div>
+
+<style>
+  tbody tr {
+      transition: background-color 0.5s ease; 
+  }
+
+  tbody tr:hover {
+    background-color: rgb(0, 0, 0);
+    transition-duration: 0s;
+  }
+
+  tbody tr.linger {
+      background-color: rgba(255, 255, 255, 0.05);
+  }
+</style>

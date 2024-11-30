@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { arenas, divisions, players_in_teams, regions, seasons, teams, users } from '../schema.ts';
+import { arenas, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report } from '../schema.ts';
 import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
@@ -50,9 +50,8 @@ router.get('/admin', async (req, res) => {
         const allRegions = await db.select().from(regions);
         const allSeasons = await db.select().from(seasons);
         const allUsers = await db.select().from(users);
-
-        const allPlayersInTeams = await db
-            .select({
+        const disputedMatches = await db.select().from(matches).where(eq(matches.status, 2));
+        const allPlayersInTeams = await db.select({
                 playerInTeamSteamId: players_in_teams.playerSteamId,
                 playerAvatar: users.steamAvatar,
                 playerName: users.steamUsername,
@@ -68,8 +67,13 @@ router.get('/admin', async (req, res) => {
         const playersByTeam = allTeams.map(team => ({
             ...team,
             players: allPlayersInTeams.filter(player => player.teamId === team.id)
-        }));
-
+        }));        
+        const allDemos = await db.select().from(demos);
+        const allDemoReports = await db
+            .select()
+            .from(demo_report)
+            .leftJoin(users, eq(demo_report.reportedBy, users.steamId));
+        
         res.render('layout', {
             body: 'admin',
             title: 'Admin',
@@ -79,9 +83,12 @@ router.get('/admin', async (req, res) => {
             divisions: allDivisions,
             seasons: allSeasons,
             regions: allRegions,
+            disputedMatches,
             players_in_teams: allPlayersInTeams,
             teamsWithPlayers: playersByTeam,
             users: allUsers,
+            demos: allDemos,
+            demoReports: allDemoReports
         });
     } catch (err) {
         console.error('Error fetching data in /admin:', (err as Error).message);
@@ -91,11 +98,36 @@ router.get('/admin', async (req, res) => {
 
 router.post('/admin/update_team_status', async (req, res) => {
     if (!isAdmin(req.session?.user?.steamid)) {
-        return res.status(403).redirect('/');
+        return res.status(403).json({ success: false, message: 'Forbidden' });
     }
+
     const { teamId, status } = req.body;
-    await db.update(teams).set({status: status}).where(eq(teams.id, teamId));
-    return res.redirect('/admin');
+
+    try {
+        await db.update(teams).set({ status }).where(eq(teams.id, teamId));
+
+        return res.json({ success: true, message: 'Team status updated', teamId, status });
+    } catch (error) {
+        console.error('Error updating team status:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+router.post('/admin/update_division', async (req, res) => {
+    if (!isAdmin(req.session?.user?.steamid)) {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    const { teamId, divisionId } = req.body;
+
+    try {
+        await db.update(teams).set({ divisionId: divisionId }).where(eq(teams.id, teamId));
+
+        return res.json({ success: true, message: 'Team division updated', teamId, divisionId });
+    } catch (error) {
+        console.error('Error updating team division:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
 router.post('/admin/preview_match', async (req, res) => {

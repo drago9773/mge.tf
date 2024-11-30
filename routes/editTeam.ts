@@ -51,10 +51,6 @@ router.get('/edit_team/:teamid', async (req, res) => {
         .innerJoin(users, eq(pending_players.playerSteamId, users.steamId))
         .innerJoin(teams, eq(pending_players.teamId, teams.id));
 
-        console.log(team);
-    
-
-
         const allPlayersInTeams = await db.select({
             playerSteamId: players_in_teams.playerSteamId,
             teamId: players_in_teams.teamId,

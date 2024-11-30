@@ -45,6 +45,7 @@
           <tr>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Set Division</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -60,6 +61,22 @@
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
               <%= division.name %>
             </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <form action="/admin/update_division" method="POST" class="flex items-center" onsubmit="return updateDivision(event, '<%= team.id %>')">
+                <label>
+                  <select name="divisionId" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                    <option value="" disabled selected>Select Division</option>
+                    <% divisions.forEach(division => { %>
+                      <option value="<%= division.id %>" <%= division.id === team.divisionId ? 'selected' : '' %>>
+                        <%= division.name %>
+                      </option>
+                    <% }) %>
+                  </select>
+                </label>
+                <input type="hidden" name="teamId" value="<%= team.id %>">
+                <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+              </form>
+            </td>            
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
               <%= region.name %>
             </td>
@@ -84,19 +101,19 @@
               </span>
             </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-              <form action="/admin/update_team_status" method="POST" class="flex items-center">
+              <form action="/admin/update_team_status" method="POST" class="flex items-center" onsubmit="return updateTeamStatus(event, '<%= team.id %>')">
                 <label>
-                  <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
-                    <option value="" disabled selected>Select Status</option>
-                    <option value="-1">Dead</option>
-                    <option value="0">Unready</option>
-                    <option value="1">Pending</option>
-                    <option value="2">Ready</option>
-                  </select>
+                    <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="-1">Dead</option>
+                        <option value="0">Unready</option>
+                        <option value="1">Pending Admin Approval</option>
+                        <option value="2">Ready</option>
+                    </select>
                 </label>
                 <input type="hidden" name="teamId" value="<%= team.id %>">
                 <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
-              </form>
+            </form>            
             </td>
           </tr>
         </tbody>
@@ -188,4 +205,82 @@
       team.style.display = isVisible ? 'block' : 'none';
     });
   }
+  async function updateTeamStatus(event, teamId) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const status = formData.get('status');
+
+    try {
+        const response = await fetch('/admin/update_team_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId, status  }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          const statusValue = form.querySelector('select').value;          
+          const statusText = form.querySelector(`select option[value="${statusValue}"]`).textContent;          
+          const statusCell = form.closest('tr').querySelector('td:nth-child(6)');
+          statusCell.textContent = statusText;
+          
+          const statusBadge = form.closest('tr').querySelector('td:nth-child(6)');
+          statusBadge.textContent = statusText;
+          
+          let newClass = 'items-center px-2 inline-flex text-xs leading-5 font-semibold rounded-full ';
+          if (statusValue === '-1') {
+              newClass += ' bg-gray-800 text-white';
+          } else if (statusValue === '0') {
+              newClass += ' bg-red-500';
+          } else if (statusValue === '1') {
+              newClass += ' bg-yellow-500 text-gray-900';
+          } else if (statusValue === '2') {
+              newClass += ' bg-green-500 text-white';
+          }
+          statusBadge.className = newClass;
+    
+          alert('status updated successfully!');
+        } else {
+            alert('Failed to update status: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the team status.');
+    }
+    return false; 
+}
+  async function updateDivision(event, teamId) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const divisionId = formData.get('divisionId');
+
+    try {
+        const response = await fetch('/admin/update_division', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId, divisionId }),
+        });
+
+        const result = await response.json();
+        console.log("result: ", result);
+        if (result.success) {
+            const divisionName = form.querySelector(`select option[value="${divisionId}"]`).textContent;
+            const divisionCell = form.closest('tr').querySelector('td:nth-child(2)');
+            divisionCell.textContent = divisionName;
+
+            alert('Division updated successfully!');
+        } else {
+            alert('Failed to update division: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the division.');
+    }
+
+    return false; 
+}
 </script>

@@ -94,6 +94,7 @@ router.post('/demos/:demoid/submit_report', async (req, res) => {
         const existingReport = await db.select().from(demo_report).where(
                 and(
                     eq(demo_report.reportedBy, steamId),
+                    eq(demo_report.status, 1),
                     eq(demo_report.demoId, demoId)
                 )
             )

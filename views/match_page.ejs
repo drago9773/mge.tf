@@ -8,6 +8,69 @@
     </h1>
 <% } %>
 
+<% if (pendingReschedule) { %>
+    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500 mt-10">
+        Rescheduling Pending. After 24 hours of no response, the request will automatically be accepted.
+    </h1>
+<% } %>
+
+<% if (pendingReschedule && (isTeamOwner || isAdmin)) { %>
+    <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4">
+        <p><strong>Proposed Reschedule Date:</strong> <%= pendingReschedule.reschedule %></p>
+        
+        <% if (hasPendingReschedule || isAdmin) { %>
+            <p id="reschedule-countdown" class="text-green-500 font-bold">
+                Time Left to Reschedule: <span id="time-left-to-reschedule"><%= timeLeftToReschedule %></span>
+            </p>
+
+            <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                <button name="response" value="accept" class="bg-green-500 text-white px-4 py-2 rounded">Accept</button>
+                <button name="response" value="deny" class="bg-red-500 text-white px-4 py-2 rounded">Deny</button>
+            </form>
+
+            <script>
+                const rescheduleTimeLeft = "<%= timeLeftToReschedule %>".split(":");
+                let hoursLeft = parseInt(rescheduleTimeLeft[0], 10);
+                let minutesLeft = parseInt(rescheduleTimeLeft[1], 10);
+                let secondsLeft = parseInt(rescheduleTimeLeft[2], 10);
+
+                function updateRescheduleCountdown() {
+                    if (hoursLeft === 0 && minutesLeft === 0 && secondsLeft === 0) {
+                        document.getElementById("reschedule-countdown").textContent = "Reschedule period has expired.";
+                        document.getElementById("reschedule-countdown").className = "text-red-500 font-bold";
+                        document.querySelector("form").remove(); 
+                        return;
+                    }
+
+                    secondsLeft--;
+                    if (secondsLeft < 0) {
+                        secondsLeft = 59;
+                        minutesLeft--;
+                    }
+                    if (minutesLeft < 0) {
+                        minutesLeft = 59;
+                        hoursLeft--;
+                    }
+
+                    document.getElementById("time-left-to-reschedule").textContent = 
+                        `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+                }
+
+                setInterval(updateRescheduleCountdown, 1000);
+            </script>
+
+        <% } else { %>
+            <h1>Waiting for the opposing team to respond...</h1>
+            <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                <button name="response" value="cancel" class="bg-red-500 text-white px-4 py-2 rounded">Cancel Request</button>
+            </form>
+        <% } %>
+    </div>
+<% } %>
+
+
 <div class="w-full bg-black bg-opacity-50 backdrop-blur-lg h-full flex-col justify-center align-middle mt-10">
     <div class="container mx-auto p-4 flex flex-col align-middle justify-center w-full items-center">
         <h1 class="text-3xl font-bold mb-4 text-white">Match Details for Match ID: <%= match.id %></h1>
@@ -54,13 +117,59 @@
                 <button type="submit" class="bg-yellow-500 text-black mx-auto font-bold py-2 px-4 rounded">Submit Scores</button>
             <% } %>
         </form>
-
         <% if (match.status === 1 && (isTeamOwner || isAdmin)) { %>
+            <% if (timeLeftToDispute === "00:00:00") { %>
+                <p class="text-red-500 font-bold">Dispute period has expired.</p>
+            <% } else { %>
+            <p id="countdown" class="text-green-500 font-bold">
+                Time Left to Dispute: <span id="time-left"><%= timeLeftToDispute %></span>
+            </p>
             <form action="/match_page/<%= match.id %>/dispute" method="POST" class="space-y-4">
-                    <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
-                    <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
-                    <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
+                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
+                <div class="mb-4">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Dispute</label>
+                    <textarea 
+                        id="reason" 
+                        name="reason" 
+                        rows="2" 
+                        class="text-black mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Provide a reason for the dispute"
+                        required></textarea>
+                </div>
             </form>
+        
+            <script>
+                const initialTimeLeft = "<%= timeLeftToDispute %>".split(":");
+                let hours = parseInt(initialTimeLeft[0], 10);
+                let minutes = parseInt(initialTimeLeft[1], 10);
+                let seconds = parseInt(initialTimeLeft[2], 10);
+
+                function updateCountdown() {
+                    if (hours === 0 && minutes === 0 && seconds === 0) {
+                        document.getElementById("countdown").textContent = "Dispute period has expired.";
+                        document.getElementById("countdown").className = "text-red-500 font-bold";
+                        document.querySelector("form").remove(); 
+                        return;
+                    }
+
+                    seconds--;
+                    if (seconds < 0) {
+                        seconds = 59;
+                        minutes--;
+                    }
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+
+                    document.getElementById("time-left").textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+
+                setInterval(updateCountdown, 1000);
+            </script>
+            <% } %>
         <% } %>
     </div>
 

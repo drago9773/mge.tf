@@ -2,18 +2,14 @@
     //payment on signup
     //link discord
 
-//TODO: signup
-    ////TOS popup on signup
-    ////have div/region actually be the table value
+//TODO:
+    ////team standings for divisions by season
 
 //TODO: admin
     ////automatic match generation equation
-    ////assign/approve team division requests from signup
     ////pending players need to be confirmed by staff?
-    ////demos page to review demos
 
 //TODO: match stuff
-    ////only 24 hours to dispute match results? dispute option only shows after match complete
     ////demo submitting UI (drop down of players, option for ringer)
 
 //FUTURE
@@ -30,8 +26,8 @@ import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.ts';
-import { users, moderators, tournaments} from './schema.ts';
-import { sql} from 'drizzle-orm';
+import { users, moderators, tournaments, teams, divisions, regions} from './schema.ts';
+import { sql, eq, and } from 'drizzle-orm';
 
 import { scheduleTasks } from './views/js/scheduler.ts';
 
@@ -41,6 +37,7 @@ import signupRoutes from './routes/signup.js';
 import apiRoutes from './routes/api.ts';
 import adminRoutes from './routes/admin.ts';
 import adminMatchesRoutes from './routes/adminMatches.js';
+import adminDemosRoutes from './routes/adminDemos.js';
 import adminDashboardRoutes from './routes/adminDashboard.js';
 import moderatorRoutes from './routes/moderation.js';
 import editTeamRoutes from './routes/editTeam.ts';
@@ -81,6 +78,7 @@ app.use('/', matchesRoutes);
 app.use('/', playerPageRoutes);
 app.use('/', signupRoutes);
 app.use('/', demosRoutes);
+app.use('/', adminDemosRoutes);
 app.use('/api', apiRoutes);
 app.use('/moderation', moderatorRoutes);
 
@@ -139,6 +137,62 @@ app.get('/users', async (req, res) => {
     }
 });
 
+async function seed_teams_by_division(region_id: number, division_id: number) {
+    try {
+        const allTeamsInMatches = db
+            .select()
+            .from(teams)
+            .where(
+                and(
+                    eq(teams.regionId, region_id),
+                    eq(teams.divisionId, division_id),
+                    eq(teams.status, 2) // Active teams
+                )
+            )
+            .all();
+
+        // Sort by win-loss ratio, then points ratio
+        return allTeamsInMatches.sort((a, b) => {
+            const winLossRatioA = a.losses === 0 ? a.wins : a.wins / (a.wins + a.losses);
+            const winLossRatioB = b.losses === 0 ? b.wins : b.wins / (b.wins + b.losses);
+
+            if (winLossRatioA !== winLossRatioB) {
+                return winLossRatioB - winLossRatioA;
+            }
+
+            const pointsRatioA = a.pointsScored / (a.pointsScoredAgainst || 1);
+            const pointsRatioB = b.pointsScored / (b.pointsScoredAgainst || 1);
+
+            return pointsRatioB - pointsRatioA;
+        });
+    } catch (error) {
+        console.error('Error seeding teams:', error);
+        throw error;
+    }
+}
+
+app.get('/team_standings', async (req, res) => {
+    try {
+        const allDivisions = await db.select().from(divisions);
+        const standingsByDivision = {};
+
+        for (const division of allDivisions) {
+            const teamsInDivision = await seed_teams_by_division(1, division.id);
+            standingsByDivision[division.name] = teamsInDivision; 
+        }
+
+        res.render('layout', {
+            title: 'Team Standings by Division',
+            body: 'team_standings',
+            standingsByDivision,
+            session: req.session,
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.get('/tournaments', async (req, res) => {
     try {
         const allTournaments = await db.select().from(tournaments);
@@ -189,7 +243,6 @@ app.post('/tournaments', async (req, res) => {
 
 app.post('/tournaments/:id', async (req, res) => {
     try {
-        // Check if user is moderator
         const moderatorIds = await db.select().from(moderators);
         const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
 
@@ -197,7 +250,6 @@ app.post('/tournaments/:id', async (req, res) => {
             return res.status(403).send('Unauthorized');
         }
 
-        // Delete tournament if method is DELETE
         if (req.body._method === 'DELETE') {
             await db.delete(tournaments)
                 .where(sql`${tournaments.id} = ${parseInt(req.params.id)}`);
@@ -209,8 +261,6 @@ app.post('/tournaments/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 app.get('/2v2cup', (_req, res) => {
     res.render('2v2cup');

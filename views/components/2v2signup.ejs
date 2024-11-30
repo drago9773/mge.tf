@@ -111,7 +111,16 @@
                 <button id="closeTOSPopup" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
               </div>
             </div>
-            <script src="/js/tos.js"></script>
+            <script>
+              document.getElementById('openTOSPopup').addEventListener('click', function(e) {
+                e.preventDefault(); 
+                document.getElementById('TOSpopup').classList.remove('hidden');
+              });
+
+              document.getElementById('closeTOSPopup').addEventListener('click', function() {
+                document.getElementById('TOSpopup').classList.add('hidden');
+              });
+            </script>
             
           <% } else { %>
             <div class="mt-10 text-center text-white font-bold">

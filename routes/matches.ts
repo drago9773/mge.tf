@@ -65,6 +65,7 @@ router.get('/match_page/:matchid', async (req, res) => {
         let isHomeTeamOwner = false;
         let isAwayTeamOwner = false;
         let hasPendingReschedule = null;
+        let timeLeftToReschedule = "N/A"; 
         const matchComms = await db.select().from(match_comms).where(eq(match_comms.matchId, matchId));
 
         if (steamId) {
@@ -77,7 +78,44 @@ router.get('/match_page/:matchid', async (req, res) => {
                     (isAwayTeamOwner && homeTeamOwners.includes(comm.owner)) 
                 )
             );
+            const reschedule = matchComms.find(comm => comm.rescheduleStatus === 0);
+            
+            if (reschedule) {
+                const submittedAtTimestamp = reschedule.createdAt;
+                const currentDateTime = Math.floor(Date.now() / 1000);
+        
+                const timeDifference = 24 * 60 * 60 - (currentDateTime - submittedAtTimestamp);
+                if (timeDifference > 0) {
+                    const hoursLeft = Math.floor(timeDifference / (60 * 60));
+                    const minutesLeft = Math.floor((timeDifference % (60 * 60)) / 60);
+                    const secondsLeft = timeDifference % 60;
+            
+                    timeLeftToReschedule = `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+                } else {
+                    timeLeftToReschedule = "00:00:00";
+                }
+            }
         }
+
+        let timeLeftToDispute = "N/A"; 
+        const submittedAtTimestamp = match.submittedAt;
+        
+        if (submittedAtTimestamp) {
+            const currentDateTime = Math.floor(Date.now() / 1000);
+        
+            const timeDifference = 24 * 60 * 60 - (currentDateTime - submittedAtTimestamp);
+        
+            if (timeDifference > 0) {
+                const hoursLeft = Math.floor(timeDifference / (60 * 60));
+                const minutesLeft = Math.floor((timeDifference % (60 * 60)) / 60);
+                const secondsLeft = timeDifference % 60;
+        
+                timeLeftToDispute = `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+            } else {
+                timeLeftToDispute = "00:00:00";
+            }
+        }
+        
 
         const allUsers = await db.select().from(users);
         const allTeams = await db.select().from(teams);
@@ -90,13 +128,13 @@ router.get('/match_page/:matchid', async (req, res) => {
 
         const demosWithPlayerNames = gameDemos.map(demo => {
             const player = allUsers.find(user => user.steamId === demo.playerSteamId);
-            console.log(player);
             return {
                 ...demo,
                 playerName: player ? player.steamUsername : 'Unknown Player',
                 avatarUrl: player ? player.steamAvatar : '/default-avatar.jpg'
             };
         });
+
         const commsWithUserInfo = matchComms.map(comm => {
             const user = allUsers.find(user => user.steamId === comm.owner);
             return {
@@ -120,8 +158,10 @@ router.get('/match_page/:matchid', async (req, res) => {
             seasons: allSeasons,
             regions: allRegions,
             games: allGames,
-            demos: demosWithPlayerNames, 
+            demos: demosWithPlayerNames,
             matchComms: commsWithUserInfo,
+            timeLeftToReschedule,
+            timeLeftToDispute, 
             session: req.session
         });
     } catch (err) {
@@ -309,13 +349,15 @@ router.post('/match_page/:matchid/update-scores', async (req, res) => {
                 })
                 .where(eq(teams.id, match[0].homeTeamId === winnerId ? match[0].awayTeamId : match[0].homeTeamId));
         }
-
+        let submissionTime = Math.floor(Date.now() / 1000);
         await db.update(matches)
             .set({
                 winnerId,
                 winnerScore,
                 loserScore,
-                status: 1
+                status: 1,
+                submittedBy: steamId,
+                submittedAt: submissionTime
             })
             .where(eq(matches.id, matchId));
 
@@ -352,12 +394,26 @@ router.post('/match_page/:matchid/dispute', async (req, res) => {
     const matchId = Number(req.params.matchid);
     const steamId = req.session?.user?.steamid;
     const admin = isAdmin(req.session?.user?.steamid);
+    const { reason } = req.body;
 
     try {
         const match = db.select().from(matches).where(eq(matches.id, matchId)).get();
         if (!match) { return res.status(404).send('Match not found'); }
         if (match.status !== 1) { 
             return res.status(404).send('Match has not been played yet or has already been disputed'); 
+        }
+
+        const submittedAtTimestamp = match.submittedAt;
+        if (!submittedAtTimestamp) {
+            return res.status(400).send('SubmittedAt timestamp is missing.');
+        }
+
+        const currentDateTime = Math.floor(Date.now() / 1000);
+        const timeDifference = currentDateTime - submittedAtTimestamp; 
+        const hoursDifference = timeDifference / (60 * 60);
+
+        if (hoursDifference > 24) {
+            return res.status(400).send('Dispute period has passed. You can only dispute within 24 hours of submission.');
         }
 
         const owners = await db.select().from(players_in_teams).where(
@@ -376,10 +432,16 @@ router.post('/match_page/:matchid/dispute', async (req, res) => {
         }
 
         await db.update(matches)
-        .set({
-            status: 2
-        })
-        .where(eq(matches.id, matchId));
+            .set({ status: 2 })
+            .where(eq(matches.id, matchId));
+
+        await db.insert(match_comms).values({
+            content: `MATCH DISPUTED: ${reason}`,
+            owner: steamId,
+            matchId,
+            createdAt: new Date().toISOString()
+        });
+
         res.redirect(`/match_page/${matchId}`);
 
     } catch (err) {
@@ -413,14 +475,15 @@ router.post('/match_page/:matchid/post-message', async (req, res) => {
         if (!isTeamOwner && !admin) {
             return res.status(403).send('Unauthorized');
         }
-
+        let submissionTime = Math.floor(Date.now() / 1000);
+        console.log(submissionTime);
         await db.insert(match_comms).values({
             content,
             owner: steamId,
             matchId,
             reschedule: null,
             rescheduleStatus: null,
-            createdAt: new Date().toISOString()
+            createdAt: submissionTime
         });
 
         res.redirect(`/match_page/${matchId}`);
@@ -457,14 +520,14 @@ router.post('/match_page/:matchid/reschedule', async (req, res) => {
         if (!isTeamOwner && !admin) {
             return res.status(403).send('Unauthorized');
         }
-
+        let submissionTime = Math.floor(Date.now() / 1000);
         await db.insert(match_comms).values({
             content: `RESCHEDULE REQUESTED: ${proposedDate}`,
             owner: steamId,
             matchId,
             reschedule: proposedDate,
             rescheduleStatus: 0,
-            createdAt: new Date().toISOString()
+            createdAt: submissionTime
         });
 
         res.redirect(`/match_page/${matchId}`);
@@ -519,12 +582,12 @@ router.post('/match_page/:matchid/respond-reschedule', async (req, res) => {
         } else {
             return res.status(400).send('Invalid response action');
         }
-
+        let submissionTime = Math.floor(Date.now() / 1000);
         await db.insert(match_comms).values({
             matchId: matchId,
             content: rescheduleStatusMessage,
             owner: steamId,
-            createdAt: new Date().toISOString()
+            createdAt: submissionTime
         });
 
         res.redirect(`/match_page/${matchId}`);

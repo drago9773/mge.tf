@@ -99,10 +99,13 @@ CREATE TABLE IF NOT EXISTS `matches` (
 	`bo_series` integer,
 	`match_date_time` datetime,
     `status` integer NOT NULL, -- 0 for unplayed, 1 for played, 2 for dispute
+    `submitted_by` text,
+    `submitted_at` datetime,
     FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
 	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
-    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE
+    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE,
+    FOREIGN KEY (`submitted_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 
 CREATE TABLE IF NOT EXISTS `games` (
@@ -155,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `match_comms` (
     `content` text,
     `reschedule` datetime,
     `reschedule_status` integer, --0 for proposed, 1 for accepted, 2 for denied, 3 for canceled
-    `created_at` integer DEFAULT CURRENT_TIMESTAMP,
+    `created_at` datetime,
     `match_id` integer NOT NULL,
     `owner` text,
     FOREIGN KEY (`match_id`) REFERENCES `matches`(`id`) ON UPDATE no action ON DELETE no action,

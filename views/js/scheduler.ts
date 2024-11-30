@@ -14,23 +14,19 @@ export const scheduleTasks = () => {
                 return;
             }
 
-            const now = new Date();
+            const now = Date.now();
 
             for (const reschedule of pendingReschedules) {
                 if (!reschedule.reschedule || !reschedule.createdAt) {
                     console.warn(`Skipping invalid reschedule data:`, reschedule);
                     continue;
                 }
+                const createdAt = reschedule.createdAt * 1000;
+                const diffInHours = (now - createdAt) / (1000 * 60 * 60);
 
-                const createdAt = new Date(reschedule.createdAt);
-                const diffInHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
-                console.log(diffInHours);
                 if (diffInHours < 24) {
-                    console.log(`Skipping reschedule (not yet 24 hours old):`, reschedule);
                     continue;
                 }
-
-                console.log("Processing reschedule: ", reschedule);
 
                 await db.update(matches)
                     .set({ matchDateTime: reschedule.reschedule })
@@ -39,7 +35,7 @@ export const scheduleTasks = () => {
                 await db.update(match_comms)
                     .set({
                         rescheduleStatus: 1,
-                        content: 'MATCH RESPONSE: Reschedule automatically accepted after 24 hours.',
+                        content: 'AUTOMATED MATCH RESPONSE: Reschedule automatically accepted after 24 hours.',
                     })
                     .where(eq(match_comms.id, reschedule.id));
             }

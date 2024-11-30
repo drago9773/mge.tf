@@ -1,0 +1,78 @@
+<div class="mb-4 bg-gray-800 p-4 rounded-lg shadow">
+    <div class="mt-2 flex space-x-4">
+      <label class="flex items-center px-4">
+        <input type="checkbox" id="reviewedCheckbox" checked onchange="filterDemoReports()">
+        <span class="ml-2 text-gray-300">Reviewed</span>
+      </label>
+      <label class="flex items-center px-4">
+        <input type="checkbox" id="rejectedCheckbox" checked onchange="filterDemoReports()">
+        <span class="ml-2 text-gray-300">Rejected</span>
+      </label>
+    </div>
+  </div>
+  
+  <div id="demoReportsContainer">
+    <h2 class="text-xl text-white font-bold mb-4">Demo Reports</h2>
+    
+    <% demoReports.forEach(report => { %>
+      <div class="demo-report" data-id="<%= report.demo_report.id %>" data-status="<%= report.demo_report.status %>">
+        <div class="bg-gray-900 p-4 rounded-lg shadow">
+          <h3 class="text-white font-bold">Reported by: 
+            <a href="/player_page/<%= report.users.steamId %>" class="text-blue-500 hover:underline">
+              <%= report.users.steamUsername %>
+            </a>
+          </h3>
+          <p class="text-gray-400">Description: <%= report.demo_report.description %></p>
+          <p class="text-gray-400">Admin Comments: <%= report.demo_report.adminComments || 'No comments yet.' %></p>
+          <span class="px-2 py-1 text-sm rounded 
+            <%= report.demo_report.status === 1 ? 'bg-yellow-500 text-black' : 
+                report.demo_report.status === 2 ? 'bg-green-500 text-white' : 
+                'bg-red-500 text-white' %>">
+            <%= report.demo_report.status === 1 ? 'Pending' : 
+                report.demo_report.status === 2 ? 'Reviewed' : 
+                'Rejected' %>
+          </span>
+  
+          <div class="mt-4">
+            <a href="/demos/<%= report.demo_report.demoId %>" class="text-blue-500 hover:underline">View Demo</a>
+          </div>
+  
+          <form action="/admin/review/<%= report.demo_report.id %>" method="POST" class="mt-4">
+            <div class="flex space-x-4">
+              <select name="status" class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="1" <%= report.demo_report.status === 1 ? 'selected' : '' %>>Pending</option>
+                <option value="2" <%= report.demo_report.status === 2 ? 'selected' : '' %>>Reviewed</option>
+                <option value="-1" <%= report.demo_report.status === -1 ? 'selected' : '' %>>Rejected</option>
+              </select>
+              <textarea name="adminComments" class="w-1/2 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Leave a comment..." rows="1"><%= report.demo_report.adminComments || '' %></textarea>
+            </div>
+            <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg">Update Status</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  
+  <script>
+    function filterDemoReports() {
+      const pendingChecked = document.getElementById('pendingCheckbox').checked;
+      const reviewedChecked = document.getElementById('reviewedCheckbox').checked;
+      const rejectedChecked = document.getElementById('rejectedCheckbox').checked;
+  
+      const demoReports = document.querySelectorAll('.demo-report');
+    
+      demoReports.forEach(report => {
+        const status = parseInt(report.getAttribute('data-status'));
+        
+        const matchesStatus = 
+          (status === 1 && pendingChecked) || 
+          (status === 2 && reviewedChecked) || 
+          (status === -1 && rejectedChecked);
+              
+        const isVisible = matchesStatus;
+            
+        report.style.display = isVisible ? 'block' : 'none';
+      });
+    }
+  </script>
+  

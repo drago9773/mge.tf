@@ -102,7 +102,9 @@ export const matches = sqliteTable('matches', {
   weekNo: integer('week_no').notNull(),
   boSeries: integer('bo_series'),
   matchDateTime: text('match_date_time'),
-  status: integer('status')
+  status: integer('status'),
+  submittedBy: text('submitted_by').references(() => users.steamId),
+  submittedAt: integer('submitted_at'),
 });
 
 export const match_comms = sqliteTable('match_comms', {
@@ -110,7 +112,7 @@ export const match_comms = sqliteTable('match_comms', {
   content: text('content'),
   reschedule: text('reschedule'),
   rescheduleStatus: integer('reschedule_status'),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  createdAt: integer('created_At'),
   matchId: integer('match_id').notNull().references(() => matches.id),
   owner: text('owner').references(() => users.steamId),
 });
