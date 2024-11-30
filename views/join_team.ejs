@@ -1,0 +1,17 @@
+<div class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto max-w-5xl p-6 bg-white rounded-lg shadow-md mt-8">
+        <div class="text-center mb-4">
+            <h1 class="text-3xl font-bold mb-2 text-black"><%= team.name %></h1>
+        </div>
+
+        <div class="text-center">
+            <p class="mb-4 text-black">Request to join team</p>
+
+            <form method="POST" action="/join_team" class="flex justify-center">
+                <input type="hidden" name="teamId" value="<%= team.id %>">
+                <input type="password" name="teamPassword" placeholder="Team Password" required class="border border-gray-300 rounded px-3 py-2 mr-2 text-black">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Request</button>
+            </form> 
+        </div>
+    </div>
+</div>

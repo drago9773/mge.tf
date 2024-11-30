@@ -1,0 +1,40 @@
+<div id="disputedMatchesContainer">
+    <h2 class="text-xl text-white font-bold mb-4">Disputed Matches</h2>
+    
+    <% disputedMatches.forEach(match => { %>
+        <div class="bg-gray-900 p-4 rounded-lg shadow mb-4">
+            <!-- Entire Row is Clickable -->
+            <a href="/match_page/<%= match.id %>" class="flex justify-between items-center text-white font-semibold text-lg hover:bg-gray-800 p-4 rounded-lg">
+                <div>
+                    <p>Match ID: <%= match.id %></p>
+                    <p>Home: <%= match.homeTeamName %> vs Away: <%= match.awayTeamName %></p>
+                </div>
+                <div class="text-sm text-gray-400">
+                    <p>Status: 
+                        <% if (match.status === 1) { %>
+                            Played
+                        <% } else if (match.status === 2) { %>
+                            Disputed
+                        <% } else { %>
+                            Not Played
+                        <% } %>
+                    </p>
+                </div>
+            </a>
+
+            <form action="/match_page/<%= match.id %>/update_status" method="POST" class="mt-4">
+                <label for="status" class="text-white">Update Status:</label>
+                <select name="status" id="status" class="bg-gray-800 text-white border border-gray-600 p-2 rounded">
+                    <option value="0" <%= match.status === 0 ? 'selected' : '' %>>Not played</option>
+                    <option value="1" <%= match.status === 1 ? 'selected' : '' %>>Played</option>
+                    <option value="2" <%= match.status === 2 ? 'selected' : '' %>>Disputed</option>
+                </select>
+                <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded mt-2">Update Status</button>
+            </form>
+        </div>
+    <% }); %>
+
+    <% if (disputedMatches.length === 0) { %>
+        <p class="text-gray-400 text-center mt-4">No disputed matches found.</p>
+    <% } %>
+</div>

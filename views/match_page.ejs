@@ -1,0 +1,366 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<% const pendingReschedule = matchComms.find(comm => comm.rescheduleStatus === 0); %>
+<% const currentPlayerSteamId = session?.user; %>
+<% if (match.status == 2) { %>
+    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500 mt-10">
+        Match results have been disputed. Awaiting admin response.
+    </h1>
+<% } %>
+
+<% if (pendingReschedule) { %>
+    <h1 class="mx-auto text-black font-bold py-2 px-4 text-center rounded bg-red-500 mt-10">
+        Rescheduling Pending. After 24 hours of no response, the request will automatically be accepted.
+    </h1>
+<% } %>
+
+<% if (pendingReschedule && (isTeamOwner || isAdmin)) { %>
+    <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4">
+        <p><strong>Proposed Reschedule Date:</strong> <%= pendingReschedule.reschedule %></p>
+        
+        <% if (hasPendingReschedule || isAdmin) { %>
+            <p id="reschedule-countdown" class="text-green-500 font-bold">
+                Time Left to Reschedule: <span id="time-left-to-reschedule"><%= timeLeftToReschedule %></span>
+            </p>
+
+            <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                <button name="response" value="accept" class="bg-green-500 text-white px-4 py-2 rounded">Accept</button>
+                <button name="response" value="deny" class="bg-red-500 text-white px-4 py-2 rounded">Deny</button>
+            </form>
+
+            <script>
+                const rescheduleTimeLeft = "<%= timeLeftToReschedule %>".split(":");
+                let hoursLeft = parseInt(rescheduleTimeLeft[0], 10);
+                let minutesLeft = parseInt(rescheduleTimeLeft[1], 10);
+                let secondsLeft = parseInt(rescheduleTimeLeft[2], 10);
+
+                function updateRescheduleCountdown() {
+                    if (hoursLeft === 0 && minutesLeft === 0 && secondsLeft === 0) {
+                        document.getElementById("reschedule-countdown").textContent = "Reschedule period has expired.";
+                        document.getElementById("reschedule-countdown").className = "text-red-500 font-bold";
+                        document.querySelector("form").remove(); 
+                        return;
+                    }
+
+                    secondsLeft--;
+                    if (secondsLeft < 0) {
+                        secondsLeft = 59;
+                        minutesLeft--;
+                    }
+                    if (minutesLeft < 0) {
+                        minutesLeft = 59;
+                        hoursLeft--;
+                    }
+
+                    document.getElementById("time-left-to-reschedule").textContent = 
+                        `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+                }
+
+                setInterval(updateRescheduleCountdown, 1000);
+            </script>
+
+        <% } else { %>
+            <h1>Waiting for the opposing team to respond...</h1>
+            <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                <button name="response" value="cancel" class="bg-red-500 text-white px-4 py-2 rounded">Cancel Request</button>
+            </form>
+        <% } %>
+    </div>
+<% } %>
+
+
+<div class="w-full bg-black bg-opacity-50 backdrop-blur-lg h-full flex-col justify-center align-middle mt-10">
+    <div class="container mx-auto p-4 flex flex-col align-middle justify-center w-full items-center">
+        <h1 class="text-3xl font-bold mb-4 text-white">Match Details for Match ID: <%= match.id %></h1>
+
+        <h2 class="text-2xl mb-2 text-white">Games</h2>
+        <form action="/match_page/<%= match.id %>/update-scores" method="POST" class="space-y-4">
+            <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider">Game No</th>
+                        <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.homeTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider"><%= teams.find(team => team.id === match.homeTeamId).name %></th>
+                        <th onclick="window.location.href='/team_page/<%= teams.find(team => team.id === match.awayTeamId).id %>'" style="cursor: pointer;" class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider"><%= teams.find(team => team.id === match.awayTeamId).name %></th>
+                        <th class="px-4 py-2 text-left text-xs font-large uppercase tracking-wider">Arena</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
+                    <% for (let i = 0; i < match.boSeries; i++) { %>
+                        <% const game = games.find(g => g.matchId === match.id && g.gameNum === i + 1); %>
+                        <tr>
+                            <td class="border px-4 py-2"><%= i + 1 %></td>
+                            <% if (isAdmin || (isTeamOwner && match.winnerId == null)) { %>
+                                <td class="border px-4 py-2">
+                                    <input 
+                                        required id="homeTeamScore-<%= i %>" type="number" name="homeTeamScore-<%= i %>" value="<%= game ? game.homeTeamScore : '' %>" class="bg-gray-900">
+                                </td>
+                                <td class="border px-4 py-2">
+                                    <input 
+                                        required id="awayTeamScore-<%= i %>" type="number" name="awayTeamScore-<%= i %>" value="<%= game ? game.awayTeamScore : '' %>" class="bg-gray-900">
+                                </td>
+                            <% } else { %>
+                                <td class="border px-4 py-2"><%= game ? game.homeTeamScore : '-' %></td>
+                                <td class="border px-4 py-2"><%= game ? game.awayTeamScore : '-' %></td>
+                            <% } %>
+                            <td class="border px-4 py-2">
+                                <% const arena = game ? arenas.find(arena => arena.id === game.arenaId) : null; %>
+                                    <%= arena.name %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+
+            <% if ((currentPlayerSteamId && isTeamOwner && (match.status == 0)) || isAdmin) { %>
+                <button type="submit" class="bg-yellow-500 text-black mx-auto font-bold py-2 px-4 rounded">Submit Scores</button>
+            <% } %>
+        </form>
+        <% if (match.status === 1 && (isTeamOwner || isAdmin)) { %>
+            <% if (timeLeftToDispute === "00:00:00") { %>
+                <p class="text-red-500 font-bold">Dispute period has expired.</p>
+            <% } else { %>
+            <p id="countdown" class="text-green-500 font-bold">
+                Time Left to Dispute: <span id="time-left"><%= timeLeftToDispute %></span>
+            </p>
+            <form action="/match_page/<%= match.id %>/dispute" method="POST" class="space-y-4">
+                <input type="hidden" name="isTeamOwner" value="<%= isTeamOwner %>">
+                <button type="submit" class="bg-red-500 text-black font-bold py-2 px-4 rounded">Dispute Match Results</button>
+                <div class="mb-4">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Dispute</label>
+                    <textarea 
+                        id="reason" 
+                        name="reason" 
+                        rows="2" 
+                        class="text-black mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Provide a reason for the dispute"
+                        required></textarea>
+                </div>
+            </form>
+        
+            <script>
+                const initialTimeLeft = "<%= timeLeftToDispute %>".split(":");
+                let hours = parseInt(initialTimeLeft[0], 10);
+                let minutes = parseInt(initialTimeLeft[1], 10);
+                let seconds = parseInt(initialTimeLeft[2], 10);
+
+                function updateCountdown() {
+                    if (hours === 0 && minutes === 0 && seconds === 0) {
+                        document.getElementById("countdown").textContent = "Dispute period has expired.";
+                        document.getElementById("countdown").className = "text-red-500 font-bold";
+                        document.querySelector("form").remove(); 
+                        return;
+                    }
+
+                    seconds--;
+                    if (seconds < 0) {
+                        seconds = 59;
+                        minutes--;
+                    }
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+
+                    document.getElementById("time-left").textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+
+                setInterval(updateCountdown, 1000);
+            </script>
+            <% } %>
+        <% } %>
+    </div>
+
+    <% if (match.status !== 0 && (isTeamOwner || isAdmin)) { %>
+        <div class="mt-4 bg-gray-900 p-4 rounded-lg">
+            <h2 class="text-xl font-bold mb-2">Submit Demo</h2>
+            <form action="/match_page/<%= match.id %>/submit_demo" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center space-x-4">
+                <div class="flex items-center space-x-4">
+                    <label for="userSearch" class="text-sm font-medium text-gray-300">
+                        Player Name:
+                    </label>
+                    <input
+                        type="text" required id="userSearch" name="userSearch"
+                        class="p-2 border border-gray-300 text-black"
+                        placeholder="Enter username or SteamID..."
+                        autocomplete="off">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label for="demo_file" class="text-sm font-medium text-white">Upload Player Demo:</label>
+                    <input required id="file" name="file" type="file" accept="image/*" class="border border-gray-300 p-2">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label for="description" class="text-sm font-medium text-white">Explanation (Optional):</label>
+                    <input id="description" name="description" type="text" placeholder="e.g., 'First 2 games'" 
+                        class="block rounded-md border border-gray-300 text-black placeholder-gray-500 px-4 py-2 text-lg w-48">
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">Submit</button>
+            </form>
+        </div>
+    <% } %>
+
+    <div class="mt-4 bg-gray-900 p-4 rounded-lg">
+        <h2 class="text-xl font-bold mb-2 text-white">Submitted Demos</h2>
+        <% if (demos && demos.length > 0) { %>
+            <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Player</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
+                    <% demos.forEach(demo => { %>
+                        <tr>
+                            <td class="border px-4 py-2 flex items-center">
+                                <a href="/player_page/<%= demo.playerSteamId %>" class="flex items-center">
+                                    <img src="<%= demo.avatarUrl %>" alt="<%= demo.playerName %>'s Avatar" class="w-10 h-10 rounded-full mr-3">
+                                    <span class="hover:underline">
+                                        <%= demo.playerName %>
+                                    </span>
+                                </a>
+                            </td>
+                            <td class="border px-4 py-2">
+                                <a href="/demos/<%= demo.id %>" class="text-blue-500 hover:underline">View/Report Demo</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>    
+
+    <div class="bg-gray-900 text-white p-4 rounded-lg mt-10">
+        <h2 class="text-xl font-bold mb-2">Match Communications</h2>
+        <% if (isTeamOwner || isAdmin) { %>
+            <form action="/match_page/<%= match.id %>/post-message" method="POST" class="mb-4">
+                <textarea required id="content" name="content" rows="3" class="w-full bg-gray-800 p-2 text-white rounded" placeholder="Post a message..."></textarea>
+                <button type="submit" class="mt-2 bg-blue-500 px-4 py-2 rounded">Post Message</button>
+            </form>
+        
+            <% if (!pendingReschedule && ((match.status === 0) || isAdmin)) { %>
+                <form action="/match_page/<%= match.id %>/reschedule" method="POST" class="mb-4">
+                    <label for="proposedDate" class="block text-sm font-medium">Proposed Reschedule Date:</label>
+                    <input type="hidden" id="pendingReschedule" name="pendingReschedule" value="<%= pendingReschedule %>">
+                    <input type="text" required id="proposedDate" name="proposedDate" class="bg-gray-800 p-2 text-white rounded w-full">
+                    <button type="submit" class="mt-2 bg-green-500 px-4 py-2 rounded">Request Reschedule</button>
+                </form>
+            <% } else { %>
+                <button class="mt-2 bg-gray-500 px-4 py-2 rounded">Request Reschedule</button>
+            <% } %>
+        <% } %>
+    
+        <div class="mt-4">
+            <h3 class="text-lg font-bold">Previous Messages</h3>
+            <ul>
+                <% matchComms.forEach(comm => { %>
+                    <li class="border-b border-gray-700 py-2 flex items-start">
+                        <a href="/player_page/<%= comm.owner %>" class="flex items-center space-x-3">
+                            <img src="<%= comm.avatarUrl %>" alt="<%= comm.playerName %>'s Avatar" class="w-10 h-10 rounded-full">
+                            <strong class="hover:underline"><%= comm.playerName %></strong>
+                        </a>
+                        <div class="ml-3">
+                            <%= comm.content %>
+                            <div class="text-sm text-gray-400 mt-1">
+                                <%= new Date(comm.createdAt).toLocaleString('en-US', { 
+                                    hour: '2-digit', minute: '2-digit', hour12: true, 
+                                    month: '2-digit', day: '2-digit', year: 'numeric' 
+                                }) %>
+                            </div>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+           
+        <% if (pendingReschedule && (isTeamOwner || isAdmin)) { %>
+            <div class="bg-yellow-500 text-black p-4 rounded-lg mb-4">
+                <p><strong>Proposed Reschedule Date:</strong> <%= pendingReschedule.reschedule %></p>
+                <% if (hasPendingReschedule || isAdmin) { %>
+                    <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                        <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                        <button name="response" value="accept" class="bg-green-500 text-white px-4 py-2 rounded">Accept</button>
+                        <button name="response" value="deny" class="bg-red-500 text-white px-4 py-2 rounded">Deny</button>
+                    </form>
+                <% } else { %>
+                    <h1">Waiting for the opposing team to respond...</h1>
+                    <form action="/match_page/<%= match.id %>/respond-reschedule" method="POST" class="flex space-x-4">
+                        <input type="hidden" name="rescheduleId" value="<%= pendingReschedule.id %>">
+                        <button name="response" value="cancel" class="bg-red-500 text-white px-4 py-2 rounded">Cancel Request</button>
+                    </form>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function reschedule() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+        const nextSaturday = new Date(today);
+        nextSaturday.setDate(today.getDate() + daysUntilSaturday);
+        return nextSaturday;
+    }
+
+    flatpickr("#proposedDate", {
+        enableTime: true,
+        dateFormat: "Y/m/d H:i",
+        altInput: true,
+        altFormat: "F j, Y H:i",
+        time_24hr: false,
+        minuteIncrement: 30,
+        defaultDate: (() => {
+            const saturday = reschedule();
+            saturday.setHours(18, 30);
+            return saturday;
+        })(),
+    });
+});
+</script>
+
+<script>
+    function filterUsers() {
+        const input = document.getElementById('userSearch');
+        let filter = input.value.toLowerCase();
+        let users = document.getElementById('users_container').children;
+
+        for (let i = 0; i < users.length; i++) {
+            const username = users[i].getAttribute('data-username').toLowerCase();
+            const steamId = users[i].getAttribute('data-steamid').toLowerCase();
+
+            if (username.includes(filter) || steamId.includes(filter)) {
+                users[i].style.display = '';
+            } else {
+                users[i].style.display = 'none';
+            }
+        }
+    }
+
+    document.getElementById('userSearch').addEventListener('input', filterUsers);
+    document.getElementById('users_container').addEventListener('click', (e) => {
+        if (e.target.closest('div[data-username]')) {
+            const selectedUser = e.target.closest('div[data-username]');
+            const steamId = selectedUser.getAttribute('data-steamid');
+            const username = selectedUser.getAttribute('data-username');
+
+            document.getElementById('userSearch').value = `${username} (${steamId})`;
+            document.getElementById('playerSteamId').value = steamId;
+
+            const usersContainer = document.getElementById('users_container');
+            usersContainer.style.display = 'none';
+        }
+    });
+
+    document.getElementById('userSearch').addEventListener('focus', () => {
+        const usersContainer = document.getElementById('users_container');
+        usersContainer.style.display = 'block';
+    });
+</script>
+

@@ -1,9 +1,75 @@
-<h1 class="description">CHOOSE ONE</h1>
-<div class="background-page"></div>
+<div class="bg-black bg-opacity-80 backdrop-blur-lg py-16 sm:py-24">
+  <!-- <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="relative isolate overflow-hidden bg-black px-6 py-24 shadow-2xl sm:rounded-3xl sm:px-24 xl:py-32">
+      <h2 class="mx-auto max-w-3xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">Interested in the upcoming 2v2 League?</h2>
+      <p class="mx-auto mt-2 max-w-xl text-center text-lg leading-8 text-gray-300">Let us know if you want to join our competitive gaming community and showcase your skills in our upcoming league.</p>
+      <% if (session?.user) { %>
+        <% if (!session.user.isSignedUp) { %>
+          <form method="POST" action="/signup" class="mx-auto mt-10 max-w-md">
+            <fieldset>
+              <div class="space-y-5">
+                <div class="relative flex items-start">
+                  <div claass="flex h-6 items-center">
+                    <input id="interested" name="interested" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="interested" class="font-medium text-white">I'm interested <span class="text-neutral-300">in signing up for the upcoming 2v2 League.</span></label>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-5 mt-5">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input required id="ToS_check" name="ToS_check" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="ToS_check" class="font-medium text-white">I understand <span class="text-neutral-300">that playing in the league will have a cost associated with it.</span></label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <div class="w-full flex justify-center mt-6">
+              <button type="submit" class="flex-none rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Confirm</button>
+            </div>
+          </form>
+        <% } else { %>
+          <div class="mt-10 text-center text-green-400 font-semibold">
+            Confirmed! Your interest in our league has been recorded. Stay tuned for more information!
+          </div>
+        <% } %>
+      <% } else { %>
+        <div class="mt-10 text-center text-white font-bold">
+          You must be signed in to view this page.
+        </div>
+      <% } %>
+      <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-3/4 h-20 bg-purple-500 opacity-20 blur-2xl"></div>
+    </div>
+  </div>
+</div> -->
 
-<link rel="stylesheet" href="css/signup.css" />
-
-<div hx-boost="true" class="signup-button-container">
-    <a class="custom-button button-blue" href="/load?page=1v1signup.ejs" hx-swap="innerHtml" hx-target="#main">1v1</a>
-    <a class="custom-button button-red" href="/load?page=2v2signup.ejs" hx-swap="innerHtml" hx-target="#main">2v2</a>
-</div>W
+<div class="bg-black bg-opacity-50 py-16 sm:py-24" x-data="{ panel: '' }">
+  <div class="flex justify-center mb-6">
+    <div class="flex w-full max-w">
+      <button class="w-1/2 h-48 text-4xl font-bold bg-gray-800 text-white hover:bg-gray-600" 
+              @click="panel = '1v1'">
+        1v1
+      </button>
+      <button class="w-1/2 h-48 text-4xl font-bold bg-gray-800 text-white hover:bg-gray-600" 
+              @click="panel = '2v2'">
+        2v2
+      </button>
+    </div>
+  </div>
+  
+  <template x-if="panel == '1v1'">
+    <div>
+      <%- include('components/1v1signup') %>
+    </div>
+  </template>
+  
+  <template x-if="panel == '2v2'">
+    <div>
+      <%- include('components/2v2signup') %>
+    </div>
+  </template>
+</div>

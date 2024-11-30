@@ -1,0 +1,184 @@
+<div class="bg-gray-800">
+  <h2 class="bg-red-500 rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS. CONFER WITH TEAM BEFORE MAKING CHANGES. </h2>
+  <div class="max-w-2xl mx-auto p-6 space-y-8">
+  <h1 class="text-4xl font-bold mb-10">Administrative Dashboard </h1>
+
+  <section class="space-y-4 max-w-md">
+      <h2 class="text-2xl font-bold">Seasons</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Season Number</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Number of Weeks</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Update Number of Weeks</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (seasons && seasons.length > 0) { %>
+              <% seasons.forEach((season, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.id %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.numWeeks %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/update_num_weeks" method="POST" class="flex items-center">
+                      <input type="number" name="numWeeks" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required >
+                      <input type="hidden" name="seasonId" value="<%= season.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="3" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>        
+      </div>
+      <h2 class="font-bold">Create Season</h2>
+      <form action="/create_season" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "numWeeks", label: "Number of Weeks:", type: "integer" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Season</button>
+      </form>
+    </section>
+
+    <section class="space-y-4 max-w-md">
+      <h3 class="text-xl font-semibold">Divisions</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-auto shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Division Name</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Update Division Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (divisions && divisions.length > 0) { %>
+              <% divisions.forEach((division, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= division.name %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_division_name" method="POST" class="flex items-center">
+                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="hidden" name="divisionId" value="<%= division.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No divisions created yet</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <h2 class="font-bold">Create Division</h2>
+      <form action="/create_division" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Division Name:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Division</button>
+      </form>
+    </section>
+
+    <section class="space-y-4 max-w-md">
+      <h3 class="text-xl font-semibold">Regions</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-auto shadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Region Name</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Update Region Name</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (regions && regions.length > 0) { %>
+              <% regions.forEach((region, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= region.name %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_region_name" method="POST" class="flex items-center">
+                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="hidden" name="regionId" value="<%= region.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <h2 class="font-bold">Create Region</h2>
+      <form action="/create_region" method="POST" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Region Name:", type: "text" }) %>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Region</button>
+      </form>
+    </section>
+    <section class="space-y-4 max-w-md">
+      <h3 class="text-xl font-semibold">Arenas</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Avatar</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Name</th>
+
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-gray-900">
+            <% if (arenas && arenas.length > 0) { %>
+              <% arenas.forEach((arena, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                  <td class="overflow-x-hidden h-10 px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
+                    <img src="/images/arena_avatars/<%= arena.avatar %>" alt="Arena Avatar" class="px-4 py-2 h-10 rounded-md">
+                    <span><%= arena.name %></span>
+                  </td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_arena_avatar/<%= arena.id %>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+                      <div class="space-y-5 mt-5">
+                              <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
+                              <input id="avatar" name="avatar" type="file" accept="image/*">
+                              <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Upload Image</button>
+                      </div>
+                    </form>
+                  </td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_arena_name" method="POST" class="flex items-center">
+                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="hidden" name="arenaId" value="<%= arena.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+              </tr>
+            <% } %>
+          </tbody>   
+        </table>
+      </div>
+      <h2 class="font-bold">Create Arena</h2>
+      <form action="/create_arena" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <%- include('input_admin', { id: "name", label: "Arena Name:", type: "text" }) %>
+        <div class="space-y-5 mt-5">
+          <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
+          <input id="avatar" name="avatar" type="file" accept="image/*">
+        </div>
+        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Arena</button>
+      </form>
+    </section>
+    
+    <a href="/" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">HOME</a>
+  </div>
+</div>
+
+<script src="/js/neptune-admin.js"></script>

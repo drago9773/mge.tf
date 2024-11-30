@@ -1,0 +1,286 @@
+<div class="mb-4 bg-gray-800 p-4 rounded-lg shadow">
+  <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search teams..." class="w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeyup="filterTeams()">
+  <div class="mt-2 flex space-x-4">
+    <label class="flex items-center px-4">
+      <input type="checkbox" id="readyCheckbox" checked onchange="filterTeams()">
+      <span class="ml-2 text-gray-300">Ready</span>
+    </label>
+    <label class="flex items-center px-4">
+      <input type="checkbox" id="pendingCheckbox" checked onchange="filterTeams()">
+      <span class="ml-2 text-gray-300">Pending</span>
+    </label>
+    <label class="flex items-center px-4">
+      <input type="checkbox" id="unreadyCheckbox" checked onchange="filterTeams()">
+      <span class="ml-2 text-gray-300">Unready</span>
+    </label>
+    <label class="flex items-center px-4">
+      <input type="checkbox" id="deadCheckbox" checked onchange="filterTeams()">
+      <span class="ml-2 text-gray-300">Dead</span>
+    </label>
+  </div>
+  <div class="mt-4 p-2 flex space-x-4">
+    <label for="divisionSelect"></label><select id="divisionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
+      <option value="">All Divisions</option>
+      <% divisions.forEach(division => { %>
+        <option value="<%= division.id %>"><%= division.name %></option>
+      <% }) %>
+    </select>
+    <label for="regionSelect"></label><select id="regionSelect" onchange="filterTeams()" class="bg-gray-700 text-gray-300 rounded-lg p-2">
+      <option value="">All Regions</option>
+      <% regions.forEach(region => { %>
+        <option value="<%= region.id %>"><%= region.name %></option>
+      <% }) %>
+    </select>
+  </div>
+</div>
+
+<div id="teamsContainer">
+  <% teamsWithPlayers.forEach(team => { %>
+    <% const region = regions.find(reg => reg.id === team.regionId); %>
+    <% const division = divisions.find(div => div.id === team.divisionId); %>
+
+    <div class="mb-8 mt-6 min-w-full team" data-status="<%= team.status %>" data-division="<%= team.divisionId %>" data-region="<%= team.regionId %>">
+      <table class="bg-black divide-y divide-gray-700 min-w-full table-fixed">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Set Division</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Set Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-gray-900 divide-y divide-gray-700 rounded-lg">
+          <tr class="bg-gray-900 cursor-pointer clickable" onclick="handleRowClick(event, '<%= team.id %>')">
+            <td class="overflow-x-hidden h-10 px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
+              <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="px-4 py-2 h-10 rounded-md">
+              <span><%= team.name %></span>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <%= division.name %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <form action="/admin/update_division" method="POST" class="flex items-center" onsubmit="return updateDivision(event, '<%= team.id %>')">
+                <label>
+                  <select name="divisionId" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                    <option value="" disabled selected>Select Division</option>
+                    <% divisions.forEach(division => { %>
+                      <option value="<%= division.id %>" <%= division.id === team.divisionId ? 'selected' : '' %>>
+                        <%= division.name %>
+                      </option>
+                    <% }) %>
+                  </select>
+                </label>
+                <input type="hidden" name="teamId" value="<%= team.id %>">
+                <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+              </form>
+            </td>            
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <%= region.name %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <%= team.wins %> - <%= team.losses %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                <% if (team.status === -1) { %> 
+                  bg-gray-800 text-white
+                <% } else if (team.status === 0) { %> 
+                  bg-red-500
+                <% } else if (team.status === 1) { %> 
+                  bg-yellow-500 text-gray-900
+                <% } else if (team.status === 2) { %> 
+                  bg-green-500 text-white
+                <% } %>">
+                <% if (team.status === -1) { %> Dead <% } %>
+                <% if (team.status === 0) { %> Unready <% } %>
+                <% if (team.status === 1) { %> Pending Admin Approval <% } %>
+                <% if (team.status === 2) { %> Ready <% } %>
+              </span>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <form action="/admin/update_team_status" method="POST" class="flex items-center" onsubmit="return updateTeamStatus(event, '<%= team.id %>')">
+                <label>
+                    <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="-1">Dead</option>
+                        <option value="0">Unready</option>
+                        <option value="1">Pending Admin Approval</option>
+                        <option value="2">Ready</option>
+                    </select>
+                </label>
+                <input type="hidden" name="teamId" value="<%= team.id %>">
+                <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+            </form>            
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bg-gray-800 rounded-lg shadow min-w-full">
+        <div class="overflow-x-auto bg-gray-900 rounded-lg shadow">
+          <table class="divide-y divide-gray-700 min-w-full table-fixed">
+            <tbody class="bg-gray-800 divide-y divide-gray-700">
+              <% if (team.players.length > 0) { %>
+                <% let hasActivePlayers = false; %>
+                <% team.players.forEach(player => { %>
+                  <% if (player.permissionLevel >= 0) { %>
+                    <% hasActivePlayers = true; %>
+                    <tr class="bg-gray-800 cursor-pointer clickable" onclick="window.location.href='/player_page/<%= player.playerSteamId %>'">
+                      <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
+                        <img src="<%= player.playerAvatar %>" alt="<%= player.playerName %> Avatar" class="w-6 h-6 rounded-full" />
+                        <span><%= player.playerName %></span>
+                      </td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+                        Joined <%= new Date(player.startedAt).toLocaleDateString() %>
+                      </td>
+                    </tr>
+                  <% } %>
+                <% }) %>
+                <% if (!hasActivePlayers) { %>
+                  <tr class="bg-gray-800">
+                    <td colspan="2" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                      No players in this team.
+                    </td>
+                  </tr>
+                <% } %>
+              <% } else { %>
+                <tr class="bg-gray-800">
+                  <td colspan="2" class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    No players in this team.
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<style>
+  tbody tr.clickable:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    transition-duration: 0s;
+    color: black;
+  }
+</style>
+
+<script>
+  function handleRowClick(event, teamId) {
+    if (!event.target.closest('select') && !event.target.closest('button')) {
+      window.location.href = '/team_page/' + teamId;
+    }
+  }
+</script>
+
+<script>
+  function filterTeams() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const readyChecked = document.getElementById('readyCheckbox').checked;
+    const pendingChecked = document.getElementById('pendingCheckbox').checked;
+    const unreadyChecked = document.getElementById('unreadyCheckbox').checked;
+    const deadChecked = document.getElementById('deadCheckbox').checked;
+    const divisionSelected = document.getElementById('divisionSelect').value;
+    const regionSelected = document.getElementById('regionSelect').value;
+    const teams = document.querySelectorAll('.team');
+
+    teams.forEach(team => {
+      const teamName = team.querySelector('span').innerText.toLowerCase();
+      const teamStatus = parseInt(team.getAttribute('data-status'));
+      const teamDivision = team.getAttribute('data-division');
+      const teamRegion = team.getAttribute('data-region');
+
+      const isVisible = 
+        teamName.includes(searchInput) &&
+        ((teamStatus === 2 && readyChecked) ||
+         (teamStatus === 1 && pendingChecked) ||
+         (teamStatus === 0 && unreadyChecked) ||
+         (teamStatus === -1 && deadChecked)) &&
+        (divisionSelected === "" || teamDivision === divisionSelected) &&
+        (regionSelected === "" || teamRegion === regionSelected);
+
+      team.style.display = isVisible ? 'block' : 'none';
+    });
+  }
+  async function updateTeamStatus(event, teamId) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const status = formData.get('status');
+
+    try {
+        const response = await fetch('/admin/update_team_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId, status  }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          const statusValue = form.querySelector('select').value;          
+          const statusText = form.querySelector(`select option[value="${statusValue}"]`).textContent;          
+          const statusCell = form.closest('tr').querySelector('td:nth-child(6)');
+          statusCell.textContent = statusText;
+          
+          const statusBadge = form.closest('tr').querySelector('td:nth-child(6)');
+          statusBadge.textContent = statusText;
+          
+          let newClass = 'items-center px-2 inline-flex text-xs leading-5 font-semibold rounded-full ';
+          if (statusValue === '-1') {
+              newClass += ' bg-gray-800 text-white';
+          } else if (statusValue === '0') {
+              newClass += ' bg-red-500';
+          } else if (statusValue === '1') {
+              newClass += ' bg-yellow-500 text-gray-900';
+          } else if (statusValue === '2') {
+              newClass += ' bg-green-500 text-white';
+          }
+          statusBadge.className = newClass;
+    
+          alert('status updated successfully!');
+        } else {
+            alert('Failed to update status: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the team status.');
+    }
+    return false; 
+}
+  async function updateDivision(event, teamId) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const divisionId = formData.get('divisionId');
+
+    try {
+        const response = await fetch('/admin/update_division', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId, divisionId }),
+        });
+
+        const result = await response.json();
+        console.log("result: ", result);
+        if (result.success) {
+            const divisionName = form.querySelector(`select option[value="${divisionId}"]`).textContent;
+            const divisionCell = form.closest('tr').querySelector('td:nth-child(2)');
+            divisionCell.textContent = divisionName;
+
+            alert('Division updated successfully!');
+        } else {
+            alert('Failed to update division: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the division.');
+    }
+
+    return false; 
+}
+</script>
