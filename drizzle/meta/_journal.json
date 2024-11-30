@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1732664250118,
+      "tag": "0000_gorgeous_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1732690321531,
+      "tag": "0002_warm_wrecking_crew",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1732942320953,
+      "tag": "0003_tidy_prism",
+      "breakpoints": true
+    }
+  ]
+}

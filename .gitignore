@@ -2,6 +2,6 @@ node_modules/
 pnpm-lock.yaml
 logs/*
 .idea
+images
 users.db
 sourcemod-local.db
-drizzle/meta/_journal.json

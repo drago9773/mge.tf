@@ -1,0 +1,89 @@
+<div class="bg-black bg-opacity-80 backdrop-blur-lg py-16 sm:py-24">
+    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="relative isolate overflow-hidden bg-black px-6 py-24 shadow-2xl sm:rounded-3xl sm:px-24 xl:py-32">
+        <h2 class="mx-auto max-w-3xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">1v1 Signups</h2>
+        <% if (session?.user) { %>
+            <form action="/team_signup" method="POST" class="space-y-4">
+                <fieldset>
+                  <div class="space-y-5">
+                    <div class="relative">
+                        <input required id="name" name="name" type="text" 
+                               value="<%= session.user.username %>" 
+                               placeholder="Enter Team Name" 
+                               class="block w-full rounded-md border border-gray-300 placeholder-gray-500 text-gray-500 px-4 py-2 text-lg" 
+                               readonly> <!-- Make the input read-only -->
+                    </div>
+                </div>
+  
+                <div class="space-y-5 mt-5">
+                  <div>
+                    <label for="division_id" class="block text-sm font-medium text-white whitespace-nowrap">Division ID:</label>
+                    <select id="division_id" name="division_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                      <option value="" disabled selected>-</option>
+                      <option value="1">OPEN</option>
+                      <option value="2">INVITE</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="space-y-5 mt-5">
+                  <div>
+                    <label for="region_id" class="block text-sm font-medium text-white whitespace-nowrap">Region ID:</label>
+                    <select id="region_id" name="region_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                      <option value="" disabled selected>-</option>
+                      <option value="1">NA</option>
+                      <option value="2">EU</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="space-y-5 mt-5">
+                  <div class="relative flex items-start">
+  
+                    <div class="flex h-6 items-center">
+                      <input required id="ToS" name="ToS" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="ToS" class="font-medium text-white">I agree to the <span class="text-neutral-300 cursor-pointer" id="openTOSPopup">Terms and Conditions</span></label>
+                    </div>
+                  </div>
+  
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input required id="rules" name="rules" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="rules" class="font-medium text-white">I agree to follow the <span class="text-neutral-300">Rules</span></label>
+                    </div>
+                  </div>
+                </div>
+  
+              </fieldset>
+              <input type="hidden" name="is_1v1" value="1">
+              <input type="hidden" name="permission_level" value="2">
+                <div class="w-full flex justify-center mt-6">
+                <button type="submit" class="flex-none rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Sign Up</button>
+              </div>
+            </form>
+  
+            <div id="TOSpopup" class="hidden fixed z-50 inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+              <div class="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+                <h2 class="text-xl font-bold mb-4 text-black">Terms and Service Agreement</h2>
+                <p class="text-gray-700 text-sm overflow-auto h-64 mb-4 text-black">
+                  Terms and Service Agreement Effective Date: 10/18/2024 1. Acceptance of Terms: By accessing or using our services, you ("User") agree to be bound by these Terms and Service ("Agreement"). If you do not agree with any part of these terms, you must not access or use the service. 2. No Refund Policy: All payments made to mge.tf are final. By agreeing to these terms, you acknowledge and understand that no refunds will be issued for any reason. We reserve the right to change pricing at any time, and any changes will not entitle users to refunds for previously purchased services. 3. Account Suspension and Termination: We reserve the right, at our sole discretion, to suspend, restrict, or terminate your access to our services without notice, for any reason. You acknowledge and agree that such suspensions or terminations may occur without any prior warning and that we will not be liable to you or any third party for any consequences resulting from such actions, including loss of data, account information, or service access. 4. User Conduct: By using our services, you agree not to: Violate any local, national, or international laws, Engage in harassing, abusive, or discriminatory behavior, Exploit the platform for any illegal activities. 5. Changes to the Terms: We reserve the right to modify these Terms at any time, and your continued use of the service constitutes acceptance of any changes. It is your responsibility to review these terms regularly. 6. Disclaimer of Warranties: Our service is provided "as is" without any warranties of any kind, either express or implied. We do not guarantee that the service will meet your requirements or be uninterrupted, timely, or error-free. 7. Limitation of Liability: To the maximum extent permitted by law, mge.tf shall not be liable for any damages arising from your use of the service.            </p>
+                </p>
+                <button id="closeTOSPopup" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+              </div>
+            </div>
+            
+          <% } else { %>
+            <div class="mt-10 text-center text-white font-bold">
+              You must be logged in to sign up.
+            </div>
+          <% } %>
+  
+          <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-3/4 h-20 bg-purple-500 opacity-20 blur-2xl"></div>
+        </div>
+      </div>
+    </div>
+  <script src="/js/tos.js"></script>

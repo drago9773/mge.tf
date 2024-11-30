@@ -1,8 +1,16 @@
-<div class="bg-black bg-opacity-50" x-data="{ panel: 'users' }">
+<div class="bg-black bg-opacity-50" x-data="{ panel: 'neptune' }">
   <div class="divide-x divide-slate-400 border border-slate-400 flex w-full gap-2">
+    <button class="p-2" @click="panel = 'neptune'">Admin</button>
     <button class="p-2" @click="panel = 'users'">Users</button>
-    <button class="p-2" @click="panel = 'neptune'">Teams</button>
+    <button class="p-2" @click="panel = 'teams'">Teams</button>
+    <button class="p-2" @click="panel = 'matches'">Create Matches</button>
+    <button class="p-2" @click="panel = 'demos'">Demo Reports</button>
+    <button class="p-2" @click="panel = 'disputed_matches'">Disputed Matches</button>
   </div>
   <div x-show="panel == 'neptune'"><%- include('components/neptune-admin') %></div>
-  <div x-show="panel == 'users'"><%- include('components/users_admin') %></div>
+  <div x-show="panel == 'users'"><%- include('components/admin_users') %></div>
+  <div x-show="panel == 'teams'"><%- include('components/admin_teams') %></div>
+  <div x-show="panel == 'matches'"><%- include('components/admin_matches') %></div>
+  <div x-show="panel == 'demos'"><%- include('components/admin_demos') %></div>
+  <div x-show="panel == 'disputed_matches'"><%- include('components/admin_disputed_matches') %></div>
 </div>

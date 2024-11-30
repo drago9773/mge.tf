@@ -1,0 +1,69 @@
+<h1><%= seasonNo %></h1>
+<h1><%= weekNo %></h1>
+<h1><%= boSeries %></h1>
+<h1><%= matchDateTime %></h1>
+
+<div id="teamsContainer">
+    <form action="/admin/create_match_set" method="POST">
+        <table class="bg-gray-700 divide-y divide-gray-700 w-full mx-auto table-fixed mb-6">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Home Team</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Away Team</th>
+                </tr>
+            </thead>
+            <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
+                <% for (let i = 0; i < teams.length / 2; i++) { %>
+                    <tr>
+                        <% const homeTeam = teams[i * 2]; %>
+                        <% const awayTeam = teams[i * 2 + 1]; %>
+                        <td class="border px-4 py-2">
+                            <% if (homeTeam) { %>
+                                <div class="cursor-pointer" onclick="window.location.href='/team_page/<%= homeTeam.id %>'">
+                                    <img src="/images/team_avatars/<%= homeTeam.avatar %>" alt="Home Team Avatar" class="h-10 w-10 rounded-md inline-block">
+                                    <span class="text-gray-300"><%= homeTeam.name %></span>
+                                    <div class="text-sm text-gray-300"><%= homeTeam.wins %> - <%= homeTeam.losses %></div>
+                                </div>
+                            <% } %>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <% if (awayTeam) { %>
+                                <div class="cursor-pointer" onclick="window.location.href='/team_page/<%= awayTeam.id %>'">
+                                    <img src="/images/team_avatars/<%= awayTeam.avatar %>" alt="Away Team Avatar" class="h-10 w-10 rounded-md inline-block">
+                                    <span class="text-gray-300"><%= awayTeam.name %></span>
+                                    <div class="text-sm text-gray-300"><%= awayTeam.wins %> - <%= awayTeam.losses %></div>
+                                </div>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>   
+        <input type="hidden" name="teams" id="teams" value='<%= JSON.stringify(teams) %>'>
+        <input type="hidden" name="boSeries" id="boSeries" value="<%= boSeries %>">
+        <input type="hidden" name="weekNo" id="weekNo" value="<%= weekNo %>">
+        <input type="hidden" name="arenaId" id="arenaId" value="<%= arenaId %>">
+        <input type="hidden" name="seasonNo" id="seasonNo" value="<%= seasonNo %>">
+        <input type="hidden" name="matchDateTime" id="matchDateTime" value="<%= matchDateTime %>">
+
+        <div class="mx-auto flex items-center mt-4">
+            <button type="submit" class="mx-auto bg-red-500 text-white font-bold py-2 px-4 rounded">Create Match Set</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+        transition-duration: 0.3s;
+        color: white;
+    }
+
+    td {
+        vertical-align: top;
+    }
+
+    td img {
+        margin-right: 8px;
+    }
+</style>

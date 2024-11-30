@@ -1,0 +1,295 @@
+//TODO: general
+    //payment on signup
+    //link discord
+
+//TODO:
+    ////team standings for divisions by season
+
+//TODO: admin
+    ////automatic match generation equation
+    ////pending players need to be confirmed by staff?
+
+//TODO: match stuff
+    ////demo submitting UI (drop down of players, option for ringer)
+
+//FUTURE
+//1. In admin panel, needs to be a 'commit team history' button to move all teams from current
+//season into the teams_history table to preserve name/record/division etc. at the end of each season
+/// 1a. Then the players can keep the same team and the record/division can change for next season
+/// 1b. Then player_page and team_page will need to be updated to display team history
+
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import { renderFile } from 'ejs';
+import { fileURLToPath } from 'url';
+import { db, eloDb } from './db.ts';
+import { steamId64FromSteamId32 } from './helpers/steamid.ts';
+import { users, moderators, tournaments, teams, divisions, regions} from './schema.ts';
+import { sql, eq, and } from 'drizzle-orm';
+
+import { scheduleTasks } from './views/js/scheduler.ts';
+
+import forumPostRoutes from './routes/forumPosts.ts';
+import steamRoutes from './routes/steamAuth.ts';
+import signupRoutes from './routes/signup.js';
+import apiRoutes from './routes/api.ts';
+import adminRoutes from './routes/admin.ts';
+import adminMatchesRoutes from './routes/adminMatches.js';
+import adminDemosRoutes from './routes/adminDemos.js';
+import adminDashboardRoutes from './routes/adminDashboard.js';
+import moderatorRoutes from './routes/moderation.js';
+import editTeamRoutes from './routes/editTeam.ts';
+import teamPageRoutes from './routes/teamPage.ts';
+import playerPageRoutes from './routes/playerPage.ts';
+import matchesRoutes from './routes/matches.ts';
+import demosRoutes from './routes/demos.ts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(express.json());
+
+app.engine('html', renderFile);
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'views')));
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+// FIXME: CHANGE THIS TO ENV!!!
+app.use(session({
+    secret: '4d20d22d-65b9-429e-9f4a-b8e6f8cf866bx',
+    resave: false,
+    saveUninitialized: true
+}));
+
+scheduleTasks();
+
+app.use('/', forumPostRoutes);
+app.use('/', steamRoutes);
+app.use('/', adminRoutes);
+app.use('/', adminMatchesRoutes);
+app.use('/', adminDashboardRoutes);
+app.use('/', editTeamRoutes);
+app.use('/', teamPageRoutes);
+app.use('/', matchesRoutes);
+app.use('/', playerPageRoutes);
+app.use('/', signupRoutes);
+app.use('/', demosRoutes);
+app.use('/', adminDemosRoutes);
+app.use('/api', apiRoutes);
+app.use('/moderation', moderatorRoutes);
+
+
+type Player = {
+    rating: number;
+    steamid: string;
+    name: string;
+    wins: number;
+    losses: number;
+    lastplayed: number;
+    hitblip: number;
+};
+
+// TODO: Cache the elo stuff and cron job it
+app.get('/', async (req, res) => {
+    try {
+        const players: Player[] = eloDb.all(sql`
+            SELECT * 
+            FROM mgemod_stats
+            ORDER BY rating DESC
+        `)
+        const updatedPlayers = players.map(player => ({
+            ...player,
+            steamid: steamId64FromSteamId32(player.steamid)
+        }));
+        res.render('layout', { body: 'index', title: 'home', session: req.session, elo: updatedPlayers });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/users', async (req, res) => {
+    try {
+        const allUsers = await db.select().from(users);
+        const moderatorIds = await db.select().from(moderators);
+
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        const usersWithModStatus = allUsers.map(user => ({
+            ...user,
+            isModerator: moderatorSet.has(user.steamId)
+        }));
+
+        res.render('layout', {
+            title: 'Users',
+            body: 'users',
+            users: allUsers,
+            mods: usersWithModStatus,
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+async function seed_teams_by_division(region_id: number, division_id: number) {
+    try {
+        const allTeamsInMatches = db
+            .select()
+            .from(teams)
+            .where(
+                and(
+                    eq(teams.regionId, region_id),
+                    eq(teams.divisionId, division_id),
+                    eq(teams.status, 2) // Active teams
+                )
+            )
+            .all();
+
+        // Sort by win-loss ratio, then points ratio
+        return allTeamsInMatches.sort((a, b) => {
+            const winLossRatioA = a.losses === 0 ? a.wins : a.wins / (a.wins + a.losses);
+            const winLossRatioB = b.losses === 0 ? b.wins : b.wins / (b.wins + b.losses);
+
+            if (winLossRatioA !== winLossRatioB) {
+                return winLossRatioB - winLossRatioA;
+            }
+
+            const pointsRatioA = a.pointsScored / (a.pointsScoredAgainst || 1);
+            const pointsRatioB = b.pointsScored / (b.pointsScoredAgainst || 1);
+
+            return pointsRatioB - pointsRatioA;
+        });
+    } catch (error) {
+        console.error('Error seeding teams:', error);
+        throw error;
+    }
+}
+
+app.get('/team_standings', async (req, res) => {
+    try {
+        const allDivisions = await db.select().from(divisions);
+        const standingsByDivision = {};
+
+        for (const division of allDivisions) {
+            const teamsInDivision = await seed_teams_by_division(1, division.id);
+            standingsByDivision[division.name] = teamsInDivision; 
+        }
+
+        res.render('layout', {
+            title: 'Team Standings by Division',
+            body: 'team_standings',
+            standingsByDivision,
+            session: req.session,
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/tournaments', async (req, res) => {
+    try {
+        const allTournaments = await db.select().from(tournaments);
+        const moderatorIds = await db.select().from(moderators);
+
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        const userIsMod = moderatorSet.has(req.session.user?.steamid || '');
+
+        res.render('layout', {
+            title: 'Tournaments',
+            body: 'tournaments',
+            user: req.session.user,
+            userIsMod: userIsMod,
+            tournaments: allTournaments,
+            session: req.session
+        });
+    } catch (err) {
+        console.error('Error querying database: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/tournaments', async (req, res) => {
+    try {
+        const moderatorIds = await db.select().from(moderators);
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        if (!req.session.user || !moderatorSet.has(req.session.user.steamid)) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        const { name, description, bracket_link, avatar, startedAt } = req.body;
+
+        // Convert the date to timestamp format
+        const timestamp = new Date(startedAt).toISOString();
+
+        await db.insert(tournaments).values({
+            name,
+            description,
+            bracket_link,
+            avatar,
+            startedAt: timestamp
+        });
+
+        res.redirect('/tournaments');
+    } catch (err) {
+        console.error('Error creating tournament: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/tournaments/:id', async (req, res) => {
+    try {
+        const moderatorIds = await db.select().from(moderators);
+        const moderatorSet = new Set(moderatorIds.map(m => m.steamId));
+
+        if (!req.session.user || !moderatorSet.has(req.session.user.steamid)) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        if (req.body._method === 'DELETE') {
+            await db.delete(tournaments)
+                .where(sql`${tournaments.id} = ${parseInt(req.params.id)}`);
+        }
+
+        res.redirect('/tournaments');
+    } catch (err) {
+        console.error('Error deleting tournament: ' + (err as Error).message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/2v2cup', (_req, res) => {
+    res.render('2v2cup');
+});
+
+app.get('/discord', (_req, res) => {
+    const discordInviteLink = 'https://discord.gg/j6kDYSpYbs';
+    res.redirect(discordInviteLink);
+});
+
+app.get('/league', (req, res) => {
+    res.render('layout', { title: 'League', body: 'league', session: req.session });
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Error destroying session: ' + err.message);
+        }
+        res.redirect('/');
+    });
+});
+
+const PORT = process.env.PORT || 3005;
+
+app.listen(PORT, () => {
+    console.log(`Service endpoint = http://localhost:${PORT}`);
+});

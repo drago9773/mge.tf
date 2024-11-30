@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit"
 
 export default defineConfig({
     dialect: "sqlite",
-    schema: "./schema.js",
+    schema: "./schema.ts",
     dbCredentials: {
         url: "users.db"
     }

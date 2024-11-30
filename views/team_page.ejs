@@ -1,89 +1,248 @@
-<% const region = regions.find(reg => reg.id === team.regionId); %> 
+<% const region = regions.find(reg => reg.id === team.regionId); %>
 <% const division = divisions.find(div => div.id === team.divisionId); %>
 
-<div class="text-black flex flex-col mx-auto max-w-5xl w-3/5 bg-white shadow-md rounded-lg p-6 gap-4 mt-2">
-  <div class="flex flex-col justify-center align-middle items-center">
-    <h1 class="text-3xl font-bold m-2">
-      <%= team.name %> 
+<div class="flex flex-col mx-auto max-w-7xl w-full bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+  <% if (existing_request) { %>
+    <h1 class="text-center w-full rounded-lg" style="font-size: 20px; color: #ff0000; background-color: #fce516;">
+        You have requested to join this team.
     </h1>
-    <img src="<%= team.team_avatar %>" alt="Team Avatar" class="w-24 h-24 rounded-full">
-    <p class="text-xl">Division: <%= division ? division.name : ' ' %></p>
-    <p class="text-xl">Region: <%= region ? region.name : ' ' %></p>
-    <p class="text-xl">Record: <%= team.record %></p>
-    <p class="text-xl">Status: <%= team.status === 0 ? 'Inactive' : 'Active' %></p>
-    <p class="text-sm text-gray-500">Created at: <%= new Date(team.created_at * 1000).toLocaleDateString() %></p>
+    <form action="/remove_request/<%= team.id %>" method="POST" class="mt-4 mx-auto">
+        <button type="submit" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition duration-200">
+            Remove Request
+        </button>
+    </form>
+  <% } %>
+
+  <div class="mx-auto w-3/5 flex flex-col justify-center items-center bg-gray-900 shadow-sm">
+    <h1 class="text-3xl font-bold m-2"><%= team.name %></h1>
+    <h1 class="text-3xl font-bold m-2"><%= team.acronym %></h1>
+    <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-40 rounded-md object-contain">
+    <p class="text-xl"><%= division ? division.name : ' ' %></p>
+    <p class="text-xl"><%= region ? region.name : ' ' %></p>
+    <p class="text-xl">Record: <%= team.wins %> - <%= team.losses %></p>
+    <p class="text-xl">Status: <% if (team.status === -1) { %> Dead <% } else if (team.status === 0) { %> Unready <% } else if (team.status === 1) { %> Pending Admin Approval <% } else if (team.status === 2) { %> Ready <% } %>
+    </p>    <p class="text-sm text-gray-500">Created at: <%= new Date(team.createdAt).toLocaleDateString() %></p>
+    <% const teamPlayers = players_in_teams.filter(p => p.teamId === team.id && p.active === 1); %>
+    <% const rosterSize = teamPlayers.length; %>
+    <p class="text-lg text-gray-700 mb-4">Roster Size: <%= rosterSize %> / 3</p>
   </div>
 
-  <div class="flex flex-col gap-2 mt-4">
-    <h2 class="text-2xl font-bold">Matches</h2>
+  <% const currentPlayerSteamId = session?.user; %>
+  <% if (currentPlayerSteamId) { %>
+    <% const playerInTeam = players_in_teams.find(p => p.playerSteamId === session.user.steamid && p.teamId === team.id && p.active === 1); %>
+    <% const ownersCount = teamPlayers.filter(p => p.permissionLevel === 2).length; %>
+    
+    <% if (pending_player_exists && playerInTeam && playerInTeam.permissionLevel >= 1) { %>
+      <h1 class="mx-auto text-black font-bold py-2 px-4 rounded bg-yellow-500">
+        You have pending players requesting to join the team
+      </h1>
+    <% } %>
 
-    <% 
-      const matchesBySeason = matches.reduce((acc, match) => {
-        const season = match.seasonNo;
-        if (!acc[season]) {
-          acc[season] = [];
-        }
-        acc[season].push(match);
-        return acc;
-      }, {});
-    %>
 
-    <% for (const season in matchesBySeason) { %>
-      <h3 class="text-xl font-bold mt-4">Season <%= season %></h3>
+    <% if (playerInTeam && playerInTeam.permissionLevel >= 1) { %>
+      <div class="mx-auto flex items-center mt-4">
+        <a href="/edit_team/<%= team.id %>" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">Edit Team</a>
+      </div>
+    <% } %>
+    
+    <% if (playerInTeam && playerInTeam.permissionLevel >= 2) { %>
+      <div class="mx-auto flex items-center mt-4">
+        <form action="/toggle_team/<%= team.id %>" method="POST">
+          <button type="submit" class="text-black font-bold py-2 px-4 rounded bg-yellow-500">
+            <%= team.status === 0 ? 'Ready' : 'Unready' %>
+          </button>
+        </form>
+      </div>
+    <% } %>
+    
 
-      <% 
-        // Sort the matches by week number
-        const seasonMatches = matchesBySeason[season].sort((a, b) => a.weekNo - b.weekNo);
-      %>
+    <% if (!team.is1v1 && !playerInTeam) { %>
+      <div class="flex justify-center mt-4">
+        <a href="/join_team/<%= team.id %>" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Join Team</a>
+      </div>
+    <% } %>
 
-      <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-4">
-        <thead>
-          <tr class="w-full bg-gray-200 text-gray-700 text-left text-sm uppercase">
-            <th class="px-4 py-2">Week No</th>
-            <th class="px-4 py-2">Match ID</th>
-            <th class="px-4 py-2">Team 1</th>
-            <th class="px-4 py-2">Score</th>
-            <th class="px-4 py-2">Team 2</th>
-            <th class="px-4 py-2">Created At</th>
+    <% if (playerInTeam && playerInTeam.permissionLevel === 2 && ownersCount < 2 && rosterSize > 1) { %>
+      <div class="flex justify-center mt-4">
+        <h3 class="text-red-500">MUST PROMOTE ANOTHER PLAYER TO OWNER TO LEAVE</h3>
+      </div>
+    <% } else if (playerInTeam) { %>
+      <div class="flex justify-center mt-4">
+        <form action="/leave_team/<%= team.id %>" method="POST">
+          <button type="submit" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600">Leave Team</button>
+        </form>
+      </div>
+    <% } %> 
+  <% } %> 
+
+  <div class="flex gap-8 mt-6">
+    <div class="w-1/2 text-gray-300 flex flex-col rounded-lg p-6 gap-2">
+      <% if (team.is1v1 !== 1) { %>
+        <h2 class="text-2xl mx-auto font-bold">Roster</h2>
+      <% } %>
+      <h3 class="text-xl font-semibold mt-4">Current Roster</h3>
+      <table class="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden mb-4">
+        <thead class="text-gray-700 text-left text-sm uppercase">
+          <tr>
+            <th class="px-4 py-2">Player</th>
+            <th class="px-4 py-2">Joined At</th>
           </tr>
         </thead>
-        <tbody>
-          <% seasonMatches.forEach(match => { %>
-            <tr onclick="window.location.href='/match_page/<%= match.id %>'" style="cursor: pointer;">
-              <td class="border px-4"><%= match.weekNo %></td>
-              <td class="border px-4"><%= match.id %></td>
-
-              <% const homeTeam = teams.find(t => t.id === match.homeTeamId); %>
-              <% const awayTeam = teams.find(t => t.id === match.awayTeamId); %>
-
-              <% if (team.id === match.homeTeamId) { %>
-                <td class="border px-4"><%= homeTeam ? homeTeam.name : ' ' %></td>
-                <td class="border px-4">
-                  <%= match.winnerId === match.homeTeamId 
-                    ? `${match.winnerScore} - ${match.loserScore}` 
-                    : `${match.loserScore} - ${match.winnerScore}` 
-                  %>
-                </td>
-                <td class="border px-4"><%= awayTeam ? awayTeam.name : ' ' %></td>
-              <% } else { %>
-                <td class="border px-4"><%= awayTeam ? awayTeam.name : ' ' %></td>
-                <td class="border px-4">
-                  <%= match.winnerId === match.awayTeamId 
-                    ? `${match.winnerScore} - ${match.loserScore}` 
-                    : `${match.loserScore} - ${match.winnerScore}` 
-                  %>
-                </td>
-                <td class="border px-4"><%= homeTeam ? homeTeam.name : ' ' %></td>
-              <% } %>
-
-              <td class="border px-4"><%= new Date(match.created_at * 1000).toLocaleDateString() %></td>
+        <tbody class="bg-gray-900">
+          <% const currentPlayers = players_in_teams.filter(p => p.teamId === team.id && p.active === 1); %>
+          <% currentPlayers.forEach(playerInTeam => { %>
+            <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+            <tr class= "<%= playerUser ? 'clickable' : '' %>" onclick="window.location.href='/player_page/<%= playerUser ? playerUser.steamId : 'unknown' %>'" style="cursor: pointer;">
+              <td class="px-4 py-2 flex items-center">
+                <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" class="overflow-hidden w-10 rounded-full mr-4">
+                <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
+                <% if (playerInTeam.permissionLevel === 2) { %>
+                  <span class="text-yellow-500 ml-2" title="Admin">&#9819;</span>
+                <% } %>
+              </td>
+              <td class="px-4 py-2"><%= new Date(playerInTeam.startedAt).toLocaleDateString() %></td>
             </tr>
-          <% }) %>
-        </tbody>        
+          <% }); %>
+          <% if (currentPlayers.length === 0) { %>
+            <tr>
+              <td colspan="2" class="text-center py-4 text-gray-500">No players in this team</td>
+            </tr>
+          <% } %>
+        </tbody>      
       </table>
-      <% if (seasonMatches.length === 0) { %>
-        <p class="text-gray-500">No matches found for this season.</p>
+
+      <h3 class="text-xl font-semibold mt-4">Past Roster</h3>
+      <table class="min-w-full bg-gray-900 rounded-lg overflow-hidden overflow-x-scroll mb-4">
+        <thead class="bg-gray-700 text-gray-700 text-left text-sm uppercase">
+          <tr>
+            <th class="px-4 py-2">Player</th>
+            <th class="px-4 py-2">Joined At</th>
+            <th class="px-4 py-2">Left At</th>
+          </tr>
+        </thead>
+        <tbody class="bg-gray-900"> 
+          <% const pastPlayers = players_in_teams.reverse().filter(p => p.teamId === team.id && p.active === 0); %>
+          <% pastPlayers.forEach(playerInTeam => { %>
+            <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+            <tr class="<%= pastPlayers ? 'clickable' : '' %>" onclick="window.location.href='/player_page/<%= playerUser ? playerUser.steamId : 'unknown' %>'" style="cursor: pointer;">
+              <td class="px-4 py-2 flex items-center">
+                <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" class="overflow-hidden w-10 rounded-full mr-4">
+                <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
+              </td>
+              <td class="px-4 py-2"><%= new Date(playerInTeam.startedAt).toLocaleDateString() %></td>
+              <td class="px-4 py-2"><%= new Date(playerInTeam.leftAt).toLocaleDateString() %></td>
+            </tr>
+          <% }); %>
+          <% if (pastPlayers.length === 0) { %>
+            <tr>
+              <td colspan="3" class="text-center py-4 text-gray-500">No past players in this team</td>
+            </tr>
+          <% } %>
+        </tbody>      
+      </table>
+    </div>
+    
+
+    <div class="w-1/2 text-gray-300 flex flex-col rounded-lg p-6 gap-2">
+      <h2 class="text-2xl mx-auto font-bold">Matches</h2>
+      <% const matchesBySeason = matches.reduce((acc, match) => {
+          const season = match.seasonNo;
+          if (!acc[season]) {
+            acc[season] = [];
+          }
+          acc[season].push(match);
+          return acc;
+        }, {}); %>
+        
+      <% if (Object.keys(matchesBySeason).length === 0) { %>
+        <h3 class="text-xl font-bold mt-4">Season <%= team.seasonNo %></h3>
+        <table class="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden mb-4">
+          <thead class="text-gray-700 text-left text-sm uppercase">
+            <tr>
+              <th class="px-4 py-2">Date</th>
+              <th class="px-4 py-2">Opponent</th>
+              <th class="px-4 py-2">Result</th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-900">
+            <tr>
+              <td colspan="3" class="text-center py-4 text-gray-500">No matches available for this season</td>
+            </tr>
+          </tbody> 
+        </table>
+      <% } else { %>
+        <% Object.keys(matchesBySeason).forEach(season => { %>
+          <h3 class="text-xl font-bold mt-4">Season <%= season %></h3>
+          <table class="min-w-full bg-gray-700 shadow-md rounded-lg overflow-hidden mb-4">
+            <thead class="text-gray-700 text-left text-sm uppercase">
+              <tr>
+                <th class="px-4 py-2">Date</th>
+                <th class="px-4 py-2">Opponent</th>
+                <th class="px-4 py-2">Result</th>
+              </tr>
+            </thead>
+            <tbody class="bg-gray-900">
+              <% matchesBySeason[season].forEach(match => { %>
+                <% const opponent = match.homeTeamId === team.id
+                  ? teams.find(t => t.id === match.awayTeamId)
+                  : teams.find(t => t.id === match.homeTeamId);
+                %>
+                <tr onclick="window.location.href='/match_page/<%= match.id %>'" style="cursor: pointer;">
+                  <td class="px-4 py-2">Week <%= match.weekNo %></td>
+                  <td class="px-4 py-2">
+                    <%= opponent ? opponent.name : 'Unknown Opponent' %>
+                  </td>
+                  <td class="px-4 py-2">
+                    <% if (match.winnerId) { %>
+                      <%= match.winnerId === team.id ? 'W' : 'L' %> (<%= match.winnerScore %> - <%= match.loserScore %>)
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>      
+          </table>
+        <% }); %>
       <% } %>
-    <% } %>
+
+    <h2 class="mx-auto text-xl font-semibold mt-4">Teamname History</h2>
+    <table class="min-w-full bg-gray-900 rounded-lg overflow-hidden overflow-x-scroll mb-4">
+      <thead class="bg-gray-700 text-gray-700 text-left text-sm uppercase">
+        <tr>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Change date</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-900">
+        <% const pastNames = teamname_history.reverse().filter(n => n.teamId === team.id); %>
+        <% pastNames.slice(1).forEach(pastName => { %>
+          <tr>
+            <td class="px-4 py-2"><%= pastName.name %></td>
+            <td class="px-4 py-2"><%= new Date(pastName.changeDate).toLocaleDateString() %></td>
+          </tr>
+        <% }); %>           
+        <% if (pastNames.length === 0) { %>
+          <tr>
+            <td colspan="2" class="text-center py-4 text-gray-500">No past names for this team</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
   </div>
 </div>
+
+<style>
+  tbody tr {
+    transition: background-color 0.5s ease; 
+  }
+
+  tbody tr.clickable:hover {
+    color: black;
+    background-color: rgb(255, 255, 255);
+    transition-duration: 0s;
+  }
+
+  tbody tr.linger {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: black;
+  }
+</style>
