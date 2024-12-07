@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { arenas, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report } from '../schema.ts';
+import { arenas, punishment, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report } from '../schema.ts';
 import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
@@ -73,6 +73,9 @@ router.get('/admin', async (req, res) => {
             .select()
             .from(demo_report)
             .leftJoin(users, eq(demo_report.reportedBy, users.steamId));
+
+        const allPunishments = await db.select().from(punishment)
+        .leftJoin(users, eq(punishment.playerSteamId, users.steamId));
         
         res.render('layout', {
             body: 'admin',
@@ -88,7 +91,8 @@ router.get('/admin', async (req, res) => {
             teamsWithPlayers: playersByTeam,
             users: allUsers,
             demos: allDemos,
-            demoReports: allDemoReports
+            demoReports: allDemoReports,
+            punishments: allPunishments
         });
     } catch (err) {
         console.error('Error fetching data in /admin:', (err as Error).message);
@@ -155,6 +159,36 @@ router.post('/admin/preview_match', async (req, res) => {
     } catch (error) {
         console.error('Error fetching teams:', error);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/punish', async (req, res) => {
+    const adminSteamID = req.session?.user?.steamid;
+    const { targetSteamID, duration, severity, reason }  = req.body;
+    console.log(req.body);
+
+    try {
+        let startTime = Math.floor(Date.now() / 1000);
+        let durationTime = duration;
+        
+        await db.insert(punishment).values({
+                playerSteamId: targetSteamID,
+                punishedBy: adminSteamID,
+                duration: durationTime,
+                startDateTime: startTime,
+                status: 1,
+                severity,
+                reason
+            })
+
+        await db.update(users).set({
+            banStatus: severity
+        }).where(eq(users.steamId, targetSteamID));
+
+        res.status(200).json({message: 'User punished successfully.'});
+    } catch (error) {
+        console.error('Error banning user:', error);
+        res.status(500).json({error: 'An error occurred while banning the user.'});
     }
 });
 

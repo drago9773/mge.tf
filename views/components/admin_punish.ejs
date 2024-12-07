@@ -1,0 +1,140 @@
+<div id="reportSection" class="bg-gray-800 p-4 rounded mt-4 hidden">
+  <h3 class="text-gray-300 text-lg mb-4">Report User</h3>
+  <form action="/punish" method="POST" class="space-y-4">
+    <input type="hidden" id="targetSteamID" name="targetSteamID">
+
+    <div class="flex items-center space-x-2">
+      <label for="duration" class="text-gray-300">Duration (hours)</label>
+      <input id="duration" name="duration" type="number" min="0" required placeholder="Enter duration" class="px-4 py-2 bg-gray-800 text-gray-300 rounded focus:outline-none w-1/2">
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <label for="severity" class="text-gray-300">Severity</label>
+      <select id="severity" name="severity" required class="px-4 py-2 bg-gray-800 text-gray-300 rounded focus:outline-none w-1/2">
+        <option value="1">Warning</option>
+        <option value="2">Suspension</option>
+        <option value="3">Permanent</option>
+      </select>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <label for="reason" class="text-gray-300">Reason</label>
+      <textarea id="reason" name="reason" required placeholder="Enter reason" class="px-4 py-2 bg-gray-800 text-gray-300 rounded focus:outline-none w-full"></textarea>
+    </div>
+
+    <div class="flex justify-end space-x-2">
+      <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Report</button>
+    </div>
+  </form>
+</div>
+
+<div id="userSearchSection" class="mb-6">
+  <input 
+    type="text" 
+    id="userSearchInput" 
+    placeholder="Search by username or Steam ID..." 
+    class="w-full px-4 py-2 bg-gray-800 text-gray-300 rounded focus:outline-none"
+  />
+</div>
+
+<div id="usersContainer">
+  <div class="mb-8 mt-6 min-w-full team">
+    <table class="bg-black divide-y divide-gray-700 min-w-full table-fixed">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Steam ID</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permission Level</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ban Status</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody" class="bg-gray-900 divide-y divide-gray-700">
+        <% users.forEach(user => { %>
+          <tr class="cursor-pointer hover:bg-gray-800 user-row" data-username="<%= user.steamUsername %>" data-steamid="<%= user.steamId %>">
+            <td class="px-4 py-2 text-sm font-medium text-gray-300"><%= user.steamId %></td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-300"><%= user.steamUsername %></td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-300"><%= user.permissionLevel %></td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-300"><%= user.banStatus %></td>
+            <td class="px-4 py-2 text-right">
+              <button
+                class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 report-button"
+                data-username="<%= user.steamUsername %>"
+                data-steamid="<%= user.steamId %>"
+              >
+                Report
+              </button>
+            </td>
+          </tr>
+          <% 
+          const userPunishments = punishments.filter(item => item.punishment.playerSteamId === user.steamId);
+          if (userPunishments.length > 0) { 
+        %>
+        <tr class="bg-gray-800 user-row-details">
+          <td colspan="5" class="p-4">
+            <div class="mb-4">
+              <h3 class="text-gray-300 text-lg">Punishment History</h3>
+              <% if (userPunishments.length > 0) { %>
+                <ul class="space-y-2">
+                  <% userPunishments.forEach(item => { %>
+                    <li class="<%= item.punishment.status === 0 ? 'bg-gray-700' : 'bg-red-500' %> p-2 rounded">
+                      <strong>Severity:</strong> <%= item.punishment.severity %> |
+                      <strong>Duration:</strong> <%= item.punishment.duration %> hours |
+                      <strong>Start Time:</strong> <%= new Date(item.punishment.startDateTime * 1000).toLocaleString() %> |
+                      <strong>Reason:</strong> <%= item.punishment.reason %>
+                    </li>
+                  <% }); %>
+                </ul>
+              <% } else { %>
+                <p class="text-gray-400">No punishments reported for this user.</p>
+              <% } %>
+            </div>
+          </td>
+        </tr>    
+        <% } %>    
+        <% }); %>
+      </tbody>      
+    </table>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const reportSection = document.getElementById('reportSection');
+      const targetSteamIDInput = document.getElementById('targetSteamID');
+      const reportButtons = document.querySelectorAll('.report-button');
+      const usernameSelector = document.getElementById('userSearchInput');
+      const userRows = document.querySelectorAll('.user-row');
+      const userRowDetails = document.querySelectorAll('.user-row-details');
+  
+      reportButtons.forEach(button => {
+          button.addEventListener('click', function () {
+              const steamId = this.getAttribute('data-steamid');
+              const username = this.getAttribute('data-username');
+  
+              targetSteamIDInput.value = steamId;
+              reportSection.querySelector('h3').textContent = `Report User: ${username}`;
+  
+              reportSection.classList.remove('hidden');
+              reportSection.scrollIntoView({ behavior: 'smooth' });
+          });
+      });
+  
+      usernameSelector.addEventListener('input', function () {
+          const filter = usernameSelector.value.toLowerCase();
+  
+          userRows.forEach((row, index) => {
+              const username = row.getAttribute('data-username').toLowerCase();
+              const steamid = row.getAttribute('data-steamid');
+              const detailsRow = userRowDetails[index];
+  
+              if (username.includes(filter) || steamid.includes(filter)) {
+                  row.style.display = '';
+                  detailsRow.style.display = '';
+              } else {
+                  row.style.display = 'none';
+                  detailsRow.style.display = 'none';
+              }
+          });
+      });
+  });
+  </script>
+  

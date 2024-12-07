@@ -6,6 +6,7 @@
     <button class="p-2" @click="panel = 'matches'">Create Matches</button>
     <button class="p-2" @click="panel = 'demos'">Demo Reports</button>
     <button class="p-2" @click="panel = 'disputed_matches'">Disputed Matches</button>
+    <button class="p-2" @click="panel = 'punish'">Punish Players</button>
   </div>
   <div x-show="panel == 'neptune'"><%- include('components/neptune-admin') %></div>
   <div x-show="panel == 'users'"><%- include('components/admin_users') %></div>
@@ -13,4 +14,6 @@
   <div x-show="panel == 'matches'"><%- include('components/admin_matches') %></div>
   <div x-show="panel == 'demos'"><%- include('components/admin_demos') %></div>
   <div x-show="panel == 'disputed_matches'"><%- include('components/admin_disputed_matches') %></div>
+  <div x-show="panel == 'punish'"><%- include('components/admin_punish') %></div>
+
 </div>

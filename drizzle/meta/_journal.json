@@ -22,6 +22,34 @@
       "when": 1732942320953,
       "tag": "0003_tidy_prism",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1732991495978,
+      "tag": "0004_steady_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1733467094065,
+      "tag": "0005_tricky_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1733467419755,
+      "tag": "0006_large_monster_badoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1733536209778,
+      "tag": "0007_goofy_joystick",
+      "breakpoints": true
     }
   ]
 }

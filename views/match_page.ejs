@@ -176,29 +176,44 @@
     <% if (match.status !== 0 && (isTeamOwner || isAdmin)) { %>
         <div class="mt-4 bg-gray-900 p-4 rounded-lg">
             <h2 class="text-xl font-bold mb-2">Submit Demo</h2>
-            <form action="/match_page/<%= match.id %>/submit_demo" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center space-x-4">
-                <div class="flex items-center space-x-4">
+            <form action="/match_page/<%= match.id %>/submit_demo" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <div class="relative">
                     <label for="userSearch" class="text-sm font-medium text-gray-300">
                         Player Name:
                     </label>
                     <input
-                        type="text" required id="userSearch" name="userSearch"
-                        class="p-2 border border-gray-300 text-black"
+                        type="text" id="userSearch" name="userSearch"
+                        class="p-2 border border-gray-300 text-black w-full rounded"
                         placeholder="Enter username or SteamID..."
                         autocomplete="off">
+                    <input type="hidden" id="playerSteamId" name="playerSteamId">
+                    
+                    <div id="users_container" class="absolute bg-black border border-gray-300 w-full mt-1 rounded shadow-lg max-h-48 overflow-y-auto z-50 hidden">
+                        <% users.forEach(user => { %>
+                            <div class="px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center" 
+                                 data-username="<%= user.username %>" 
+                                 data-steamid="<%= user.steamId %>">
+                                 <img src="<%= user.steamAvatar %>" alt="<%= user.steamAvatar %>'s Avatar" class="w-10 h-10 rounded-full mr-3">
+                                <%= user.steamUsername %> <%= user.steamId %>
+                            </div>
+                        <% }); %>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
+        
+                <div>
                     <label for="demo_file" class="text-sm font-medium text-white">Upload Player Demo:</label>
-                    <input required id="file" name="file" type="file" accept="image/*" class="border border-gray-300 p-2">
+                    <input required id="file" name="file" type="file" accept="image/*" class="border border-gray-300 p-2 w-full rounded">
                 </div>
-                <div class="flex items-center space-x-4">
+        
+                <div>
                     <label for="description" class="text-sm font-medium text-white">Explanation (Optional):</label>
                     <input id="description" name="description" type="text" placeholder="e.g., 'First 2 games'" 
-                        class="block rounded-md border border-gray-300 text-black placeholder-gray-500 px-4 py-2 text-lg w-48">
+                           class="block rounded-md border border-gray-300 text-black placeholder-gray-500 px-4 py-2 w-full">
                 </div>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">Submit</button>
+                
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Submit</button>
             </form>
-        </div>
+        </div>        
     <% } %>
 
     <div class="mt-4 bg-gray-900 p-4 rounded-lg">
@@ -324,43 +339,50 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
 <script>
-    function filterUsers() {
-        const input = document.getElementById('userSearch');
-        let filter = input.value.toLowerCase();
-        let users = document.getElementById('users_container').children;
+document.addEventListener('DOMContentLoaded', () => {
+    const userSearchInput = document.getElementById('userSearch');
+    const usersContainer = document.getElementById('users_container');
 
-        for (let i = 0; i < users.length; i++) {
-            const username = users[i].getAttribute('data-username').toLowerCase();
-            const steamId = users[i].getAttribute('data-steamid').toLowerCase();
+    function filterUsers() {
+        const filter = userSearchInput.value.toLowerCase();
+        const users = usersContainer.children;
+
+        Array.from(users).forEach(user => {
+            const username = user.getAttribute('data-username').toLowerCase();
+            const steamId = user.getAttribute('data-steamid').toLowerCase();
 
             if (username.includes(filter) || steamId.includes(filter)) {
-                users[i].style.display = '';
+                user.style.display = '';
             } else {
-                users[i].style.display = 'none';
+                user.style.display = 'none';
             }
-        }
+        });
     }
 
-    document.getElementById('userSearch').addEventListener('input', filterUsers);
-    document.getElementById('users_container').addEventListener('click', (e) => {
-        if (e.target.closest('div[data-username]')) {
-            const selectedUser = e.target.closest('div[data-username]');
+    userSearchInput.addEventListener('input', filterUsers);
+
+    usersContainer.addEventListener('click', (e) => {
+        const selectedUser = e.target.closest('div[data-username]');
+        if (selectedUser) {
             const steamId = selectedUser.getAttribute('data-steamid');
             const username = selectedUser.getAttribute('data-username');
 
-            document.getElementById('userSearch').value = `${username} (${steamId})`;
+            userSearchInput.value = `${username} (${steamId})`;
             document.getElementById('playerSteamId').value = steamId;
 
-            const usersContainer = document.getElementById('users_container');
             usersContainer.style.display = 'none';
         }
     });
 
-    document.getElementById('userSearch').addEventListener('focus', () => {
-        const usersContainer = document.getElementById('users_container');
+    userSearchInput.addEventListener('focus', () => {
         usersContainer.style.display = 'block';
     });
-</script>
 
+    document.addEventListener('click', (e) => {
+        if (!usersContainer.contains(e.target) && e.target !== userSearchInput) {
+            usersContainer.style.display = 'none';
+        }
+    });
+});
+</script>

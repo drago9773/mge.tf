@@ -116,21 +116,4 @@ router.get('/signup', async (req, res) => {
     });
 });
 
-router.post('/signup', async (req, res) => {
-    if (req.session?.user) {
-        try {
-            await db.update(users)
-                .set({ isSignedUp: 1 })
-                .where(eq(users.steamId, req.session.user.steamid));
-            req.session.user.isSignedUp = 1;
-            res.redirect('/signup');
-        } catch (error) {
-            console.error('Error updating user signup status:', error);
-            res.status(500).send('An error occurred during signup');
-        }
-    } else {
-        res.status(401).send('Unauthorized');
-    }
-});
-
 export default router;

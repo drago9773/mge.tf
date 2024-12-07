@@ -1,18 +1,25 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { users, teams, divisions, players_in_teams, seasons } from '../schema.ts';
+import { users, teams, divisions, players_in_teams, seasons, discord } from '../schema.ts';
 import { eq } from 'drizzle-orm';
 
 const router = express.Router();
 
 router.get('/player_page/:steamid', async (req, res) => {
-    const steamid = req.params.steamid;
+    // user
+    const userSteamId = req.session?.user?.steamid;
+    // player whos page the user is on
+    const playerSteamId = req.params.steamid;
     
     try {
-        const user = await db.select().from(users).where(eq(users.steamId, steamid)).get();
+        const user = await db.select().from(users).where(eq(users.steamId, playerSteamId)).get();
+        let owner = 0;
+        if (userSteamId == playerSteamId){
+            owner = 1;
+        }
         if (!user) {
             const name = req.query.name;
-            res.render('layout', { title: 'Player not found', body: 'empty_player_page', steamid, name, session: req.session });
+            res.render('layout', { title: 'Player not found', body: 'empty_player_page', playerSteamId, name, session: req.session });
         } else {
             const teamsForPlayer = await db
                 .select({
@@ -30,13 +37,17 @@ router.get('/player_page/:steamid', async (req, res) => {
                 .innerJoin(teams, eq(players_in_teams.teamId, teams.id))
                 .innerJoin(divisions, eq(teams.divisionId, divisions.id))
                 .innerJoin(seasons, eq(teams.seasonNo, seasons.id))
-                .where(eq(players_in_teams.playerSteamId, steamid));
+                .where(eq(players_in_teams.playerSteamId, playerSteamId));
+
+            const discordInfo = await db.select().from(discord).where(eq(discord.playerSteamId, playerSteamId)).get();
 
             res.render('layout', { 
                 body: 'player_page', 
                 title: user.steamUsername, 
                 user, 
                 teamsForPlayer,
+                discordInfo,
+                owner,
                 session: req.session 
             });
         }

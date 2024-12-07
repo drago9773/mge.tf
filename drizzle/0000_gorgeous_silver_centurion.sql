@@ -1,16 +1,20 @@
-select * from demos;
-select * from demo_report;
-select * from teams;
-select * from players_in_teams;
-select * from matches;
-select * from games;
-select * from match_comms;
+-- select * from demos;
+-- select * from demo_report;
+-- select * from teams;
+-- select * from players_in_teams;
+-- select * from matches;
+-- select * from games;
+-- select * from match_comms;
 
 -- drop table if exists teams;
 -- drop table if exists players_in_teams;
 -- drop table if exists matches;
 -- drop table if exists games;
 -- drop table if exists match_comms;
+select * from discord;
+select * from users;
+select * from demos;
+select * from matches;
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -98,11 +102,14 @@ CREATE TABLE IF NOT EXISTS `matches` (
     `week_no` integer NOT NULL,
 	`bo_series` integer,
 	`match_date_time` datetime,
-    `status` integer NOT NULL, -- 0 for unplayed, 1 for played, 2 for dispute
+    `status` integer NOT NULL,
+    `submitted_by` integer,
+    `submitted_at` integer,
     FOREIGN KEY (`home_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
     FOREIGN KEY (`away_team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
 	FOREIGN KEY (`winner_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE CASCADE,
-    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE
+    FOREIGN KEY (`season_no`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE CASCADE,
+    FOREIGN KEY (`submitted_by`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS `games` (
@@ -119,8 +126,12 @@ CREATE TABLE IF NOT EXISTS `moderators` (
 	`steam_id` text PRIMARY KEY NOT NULL,
 	FOREIGN KEY (`steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
+-- UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 -- INSERT INTO `moderators` (`steam_id`)
 -- VALUES ('76561198082657536');
+-- UPDATE users SET permission_level = 3 WHERE steam_id = 76561199668472297;
+-- INSERT INTO `moderators` (`steam_id`)
+-- VALUES ('76561199668472297');
 
 CREATE TABLE IF NOT EXISTS `players` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -129,9 +140,7 @@ CREATE TABLE IF NOT EXISTS `players` (
 	`steam_avatar` text,
 	`created_at` integer DEFAULT CURRENT_TIMESTAMP
 );
-PRAGMA table_info(pending_players);
 
-PRAGMA table_info(teams);
 CREATE TABLE IF NOT EXISTS `pending_players` (
     `player_steam_id` text,
     `team_id` integer,
@@ -187,10 +196,30 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`steam_id` text PRIMARY KEY NOT NULL,
 	`steam_username` text NOT NULL,
 	`steam_avatar` text,
-	`isSignedUp` integer default 0,
 	`permission_level` integer default 0,
-	`is_banned` integer default 0,
+	`ban_status` integer default 0,
 	`name_override` integer default 0
+);
+
+CREATE TABLE IF NOT EXISTS `discord` (
+    `discord_id` text PRIMARY KEY NOT NULL,
+    `discord_username` text NOT NULL,
+    `discord_avatar` text,
+	`player_steam_id` text NOT NULL,
+    FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
+);
+
+CREATE TABLE IF NOT EXISTS `punishment` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`player_steam_id` text NOT NULL,
+    `punished_by` text NOT NULL,
+    `duration` integer,
+    `start_date_time` integer,
+    `status` integer, --0 for passed, 1 for current
+    `severity` integer, --0 for warning, 1 for suspension 2 for permanent
+    `reason` text,
+    FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
+    FOREIGN KEY (`punished_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 
 CREATE TABLE IF NOT EXISTS `demos` (

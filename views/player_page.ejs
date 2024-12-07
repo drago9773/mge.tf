@@ -6,8 +6,38 @@
     </h1>
     <img class="h-40 rounded-md object-contain" src='<%= user.steamAvatar %>' alt="Avatar">
   </div>
-    
+  <% if (discordInfo) { %>
+    <div class="flex flex-col items-center bg-discord-gray text-white p-4 rounded-lg mt-4">
+      <h2 class="text-xl font-bold">Discord Info</h2>
+      <p class="mt-2">
+        Username: 
+        <a href="https://discord.com/channels/@me/<%= discordInfo.discordId %>" target="_blank" class="text-discord-blue hover:underline">
+          <%= discordInfo.discordUsername %>#<%= discordInfo.discordDiscriminator %>
+        </a>
+      </p>
+      <a href="https://discord.com/channels/@me/<%= discordInfo.discordId %>" target="_blank">
+        <img class="h-20 w-20 rounded-full mt-2" src="https://cdn.discordapp.com/avatars/<%= discordInfo.discordId %>/<%= discordInfo.discordAvatar %>.png" alt="Discord Avatar">
+      </a>
+    </div>
+  <% } else { %>
+    <% if (owner === 1) { %>
+      <div class="flex items-center justify-center bg-discord-gray text-white mt-4">
+        <a href="https://discord.com/oauth2/authorize?client_id=1258116543250829343&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A3005%2Fauth%2Fdiscord%2Fcallback&scope=identify" 
+           class="bg-discord-blue px-2 text-xl py-2 rounded-md font-bold flex items-center hover:bg-gray-600 transition duration-75">
+          <i class="fa-brands fa-discord text-2xl"></i>
+          <span>Login with Discord</span>
+        </a>
+      </div>
+    <% } else { %>
+      <div class="flex items-center justify-center bg-gray-600 text-white mt-4">
+        <p>Discord account not linked.</p>
+      </div>
+    <% } %>
+  <% } %>
   <div class="flex flex-col gap-2">
+    <a href="https://discord.com/channels/@me/<%= discordInfo.discordId %>" target="_blank">
+      <img class="h-10 w-28 object-contain" src="/images/discord-logo.png" alt="Discord Logo" class="discord-profile-logo">
+    </a>
     <a href="https://steamcommunity.com/profiles/<%= user.steamId %>" target="_blank">
       <img class="h-10 w-28 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
     </a>
@@ -118,3 +148,28 @@
     color: black;
   }
 </style>
+
+<script>
+  window.onload = () => {
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
+
+  if (!accessToken) {
+      window.location.href('/')
+      return (document.getElementById('login').style.display = 'block');
+  }
+  fetch('https://discord.com/api/users/@me', {
+    headers: {
+        authorization: `${tokenType} ${accessToken}`,
+    },
+  })
+  .then(result => result.json())
+  .then(response => {
+    const { username, discriminator, avatar, id} = response;
+    document.getElementById('name').innerText = ` ${username}#${discriminator}`;
+    document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${id}/${avatar}.jpg`;
+  })
+  .catch(console.error);
+
+  };
+</script>

@@ -1,7 +1,7 @@
 import express from 'express';
 import {db} from '../db.ts';
 import {eq, or, like} from 'drizzle-orm';
-import {users, moderators, UserRole} from '../schema.ts';
+import {users, moderators, UserRole, BanStatus, punishment} from '../schema.ts';
 
 const router = express.Router();
 const supermods = ['76561199032212844', '76561198082657536'];
@@ -72,8 +72,7 @@ router.get('/usersearch', async (req, res) => {
             steamId: user.steamId,
             steamUsername: user.steamUsername,
             permissionLevel: user.permissionLevel === UserRole.ADMIN ? 'Admin' : user.permissionLevel === UserRole.MODERATOR ? 'Moderator' : user.permissionLevel === UserRole.USER ? 'User' : 'Guest',
-            isSignedUp: Boolean(user.isSignedUp),
-            isBanned: Boolean(user.isBanned)
+            banStatus: user.banStatus === BanStatus.NONE ? 'None' : user.banStatus === BanStatus.SUSPENDED ? 'Suspended' : user.banStatus === BanStatus.BANNED ? 'Ban' : "Null",
         }));
 
         return res.json(formattedResults);
@@ -81,36 +80,6 @@ router.get('/usersearch', async (req, res) => {
     } catch (err) {
         console.error('Error in user search:', err);
         return res.json({error: 'An error occurred while searching users'});
-    }
-});
-
-router.post('/ban', async (req, res) => {
-    const adminSteamID = req.session?.user?.steamid;
-    const targetSteamID = req.body.steamId;
-
-    if (!adminSteamID || !targetSteamID) {
-        return res.status(400).json({error: 'Missing admin or target Steam ID.'});
-    }
-
-    try {
-        const adminUser = db.select().from(users).where(eq(users.steamId, adminSteamID)).get();
-        if (!adminUser || adminUser.permissionLevel < UserRole.ADMIN) {
-            return res.status(403).json({error: 'Unauthorized. Admin access required.'});
-        }
-
-        const result = db.update(users)
-            .set({isBanned: 1})
-            .where(eq(users.steamId, targetSteamID))
-            .run();
-
-        if (result.changes === 0) {
-            return res.status(404).json({error: 'User not found.'});
-        }
-
-        res.status(200).json({message: 'User banned successfully.'});
-    } catch (error) {
-        console.error('Error banning user:', error);
-        res.status(500).json({error: 'An error occurred while banning the user.'});
     }
 });
 
