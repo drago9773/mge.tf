@@ -1,15 +1,17 @@
 //TODO: general
     //payment on signup
+    //make discord api key thing private
 
 //TODO:
     ////ROSTER LOCK, SIGNUP_LOCK
     ////rulebook
-    ////playoffs
+    ////playoffs?
     ////FF option
 
 //TODO: admin
     ////automatic match generation equation
     ////pending players need to be confirmed by staff?
+    ////SQL injection
 
 //FUTURE
 //1. In admin panel, needs to be a 'commit team history' button to move all teams from current
@@ -25,7 +27,7 @@ import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.ts';
-import { users, moderators, tournaments, teams, divisions, regions} from './schema.ts';
+import { users, moderators } from './schema.ts';
 import { sql, eq, and } from 'drizzle-orm';
 
 import { scheduleTasks } from './views/js/scheduler.ts';
@@ -47,6 +49,7 @@ import teamPageRoutes from './routes/teamPage.ts';
 import playerPageRoutes from './routes/playerPage.ts';
 import matchesRoutes from './routes/matches.ts';
 import demosRoutes from './routes/demos.ts';
+import paypalRoutes from './routes/paypal.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,10 +86,10 @@ app.use('/', matchesRoutes);
 app.use('/', playerPageRoutes);
 app.use('/', signupRoutes);
 app.use('/', demosRoutes);
+app.use('/', paypalRoutes);
 app.use('/', adminDemosRoutes);
 app.use('/api', apiRoutes);
 app.use('/moderation', moderatorRoutes);
-
 
 type Player = {
     rating: number;
@@ -110,7 +113,12 @@ app.get('/', async (req, res) => {
             ...player,
             steamid: steamId64FromSteamId32(player.steamid)
         }));
-        res.render('layout', { body: 'index', title: 'home', session: req.session, elo: updatedPlayers });
+        res.render('layout', { 
+            body: 'index', 
+            title: 'home', 
+            session: req.session, 
+            elo: updatedPlayers 
+        });
     } catch (err) {
         console.error('Error querying database: ' + (err as Error).message);
         res.status(500).send('Internal Server Error');

@@ -11,10 +11,11 @@
 -- drop table if exists matches;
 -- drop table if exists games;
 -- drop table if exists match_comms;
-select * from discord;
-select * from users;
-select * from demos;
-select * from matches;
+
+-- select * from discord;
+-- select * from users;
+-- select * from demos;
+-- select * from matches;
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -62,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `teams` (
     `season_no` integer,
     `is_1v1` integer DEFAULT 0,
     `status` integer DEFAULT 0,
+    `payment_status` integer DEFAULT 0,
     `join_password` text,
     `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`division_id`) REFERENCES `divisions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
@@ -257,4 +259,16 @@ CREATE TABLE IF NOT EXISTS `tournaments` (
 	`description` text,
 	`avatar` text,
 	`bracket_link` text
+);
+select * from payments;
+CREATE TABLE IF NOT EXISTS `payments` (
+	`payment_id` text PRIMARY KEY NOT NULL,
+	`purchased_for` text NOT NULL,
+    `purchased_by` text NOT NULL,
+    `amount` text,
+    `currency` text,
+    `purchase_date` integer,
+    `description` text,
+    FOREIGN KEY (`purchased_for`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
+    FOREIGN KEY (`purchased_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );

@@ -19,6 +19,7 @@ router.get('/player_page/:steamid', async (req, res) => {
         }
         if (!user) {
             const name = req.query.name;
+            console.log("player steam id: ", playerSteamId)
             res.render('layout', { title: 'Player not found', body: 'empty_player_page', playerSteamId, name, session: req.session });
         } else {
             const teamsForPlayer = await db

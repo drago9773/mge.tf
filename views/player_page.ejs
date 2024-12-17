@@ -34,101 +34,95 @@
       </div>
     <% } %>
   <% } %>
-  <div class="flex flex-col gap-2">
-    <a href="https://discord.com/channels/@me/<%= discordInfo.discordId %>" target="_blank">
-      <img class="h-10 w-28 object-contain" src="/images/discord-logo.png" alt="Discord Logo" class="discord-profile-logo">
-    </a>
+  <div class="flex gap-2">
+    <% if(discordInfo) { %>
+      <a href="https://discord.com/channels/@me/<%= discordInfo.discordId %>" target="_blank">
+        <img class="h-10 object-contain" src="/images/discord-logo.png" alt="Discord Logo" class="discord-profile-logo">
+      </a>
+    <% } %>
     <a href="https://steamcommunity.com/profiles/<%= user.steamId %>" target="_blank">
-      <img class="h-10 w-28 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
+      <img class="h-10 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/8/87/New_Steam_Logo_with_name.jpg" alt="Steam Logo" class="steam-profile-logo">
     </a>
     <a href="https://logs.tf/profile/<%= user.steamId %>" target="_blank">
-      <img class="h-14 w-28 object-contain" src="/images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
+      <img class="h-10 object-contain" src="/images/logs-tf-logo.png" alt="Logs.tf Logo" class="logs-profile-logo">
     </a>
     <a href="https://rgl.gg/Public/PlayerProfile?p=<%= user.steamId %>&r=40" target="_blank">
-      <img class="h-14 w-28 object-contain" src="/images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
+      <img class="h-10 object-contain" src="/images/rgl-logo.png" alt="RGL.gg Logo" class="rgl-profile-logo">
     </a>
   </div>
 
   <div class="text-gray-300 flex flex-col mx-auto max-w-5xl w-full bg-gray-800 rounded-lg p-6 gap-4 mt-2">
     <h2 class="text-2xl mx-auto font-bold mb-4">Teams</h2>
     
-    <h3 class="text-xl font-bold text-gray-300">1v1</h3>
-    <div class="overflow-x-auto rounded-lg">
-      <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
-        <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
-          <tr>
-            <th class="px-4 py-2">TEAM</th>
-            <th class="px-4 py-2">DIVISION</th>
-            <th class="px-4 py-2">RECORD</th>
-            <th class="px-4 py-2">JOINED</th>
-            <th class="px-4 py-2">LEFT</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-600">
-          <% teamsForPlayer.filter(team => team.is1v1 === 1).reverse().forEach(team => { %>
-            <tr class="cursor-pointer">
-              <td class="px-4 py-2"><%= team.teamName %></td>
-              <td class="px-4 py-2"><%= team.division %></td>
-              <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-2"> 
-                <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
-                <div class="text-gray-500">Season <%= team.season %></div>
-              </td>
-              <td class="px-4 py-2">
+    <% if (teamsForPlayer.some(team => team.is1v1 === 1)) { %>
+      <h3 class="text-xl font-bold text-gray-300">1v1</h3>
+      <div class="overflow-x-auto rounded-lg">
+        <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
+          <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
+            <tr>
+              <th class="px-4 py-2">TEAM</th>
+              <th class="px-4 py-2">DIVISION</th>
+              <th class="px-4 py-2">RECORD</th>
+              <th class="px-4 py-2">JOINED</th>
+              <th class="px-4 py-2">LEFT</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-600">
+            <% teamsForPlayer.filter(team => team.is1v1 === 1).reverse().forEach(team => { %>
+              <tr class="cursor-pointer">
+                <td class="px-4 py-2"><%= team.teamName %></td>
+                <td class="px-4 py-2"><%= team.division %></td>
+                <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
+                <td class="px-4 py-2"> 
+                  <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
+                  <div class="text-gray-500">Season <%= team.season %></div>
+                </td>
+                <td class="px-4 py-2">
                   <div><%= new Date(team.leftAt).toLocaleDateString() %></div>
                   <div class="text-gray-500">Season <%= team.season %></div>
-              </td>
-            </tr>
-          <% }); %>
-          
-          <% if (teamsForPlayer.filter(team => team.is1v1 === 1).length === 0) { %>
-            <tr>
-              <td colspan="5" class="text-center py-4 text-gray-500">No 1v1 teams associated with this player.</td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
     
-    <h3 class="text-xl font-bold text-gray-300 mt-4">2v2</h3>
-    <div class="overflow-x-auto rounded-lg">
-      <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
-        <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
-          <tr>
-            <th class="px-4 py-2">TEAM</th>
-            <th class="px-4 py-2">DIVISION</th>
-            <th class="px-4 py-2">RECORD</th>
-            <th class="px-4 py-2">JOINED</th>
-            <th class="px-4 py-2">LEFT</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% teamsForPlayer.filter(team => team.is1v1 === 0).reverse().forEach(team => { %>
-            <tr class="cursor-pointer clickable" onclick="window.location.href='/team_page/<%= team ? team.teamId : 'unknown' %>'">
-              <td class="px-4 py-2"><%= team.teamName %></td>
-              <td class="px-4 py-2"><%= team.division %></td>
-              <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
-              <td class="px-4 py-2"> 
-                <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
-                <div class="text-gray-500">Season <%= team.season %></div>
-              </td>
-              <td class="px-4 py-2">
-                <div>
-                  <%= team.leftAt ? (new Date(team.leftAt).toLocaleDateString()) : '' %>
-                </div>
-                <div class="text-gray-500"><%= team.leftAt ? 'Season ' + team.season : '' %></div>
-              </td>
-            </tr>
-          <% }); %>
-          
-          <% if (teamsForPlayer.filter(team => team.is1v1 === 0).length === 0) { %>
+    <% if (teamsForPlayer.some(team => team.is1v1 === 0)) { %>
+      <h3 class="text-xl font-bold text-gray-300 mt-4">2v2</h3>
+      <div class="overflow-x-auto rounded-lg">
+        <table class="min-w-full bg-gray-900 rounded-lg mb-4 w-full">
+          <thead class="bg-gray-700 text-gray-300 text-left text-sm uppercase">
             <tr>
-              <td colspan="5" class="text-center py-4 text-gray-500">No 2v2 teams associated with this player.</td>
+              <th class="px-4 py-2">TEAM</th>
+              <th class="px-4 py-2">DIVISION</th>
+              <th class="px-4 py-2">RECORD</th>
+              <th class="px-4 py-2">JOINED</th>
+              <th class="px-4 py-2">LEFT</th>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <% teamsForPlayer.filter(team => team.is1v1 === 0).reverse().forEach(team => { %>
+              <tr class="cursor-pointer clickable" onclick="window.location.href='/team_page/<%= team ? team.teamId : 'unknown' %>'">
+                <td class="px-4 py-2"><%= team.teamName %></td>
+                <td class="px-4 py-2"><%= team.division %></td>
+                <td class="px-4 py-2"><%= team.wins %> - <%= team.losses %></td>
+                <td class="px-4 py-2"> 
+                  <div><%= new Date(team.startedAt).toLocaleDateString() %></div>
+                  <div class="text-gray-500">Season <%= team.season %></div>
+                </td>
+                <td class="px-4 py-2">
+                  <div>
+                    <%= team.leftAt ? new Date(team.leftAt).toLocaleDateString() : '' %>
+                  </div>
+                  <div class="text-gray-500"><%= team.leftAt ? 'Season ' + team.season : '' %></div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>    
   </div>
 </div>
 

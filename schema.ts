@@ -35,6 +35,11 @@ export const DemoStatus = {
   REVIEW: 1,
   ACTION: 2,
 };
+export const playerStatus = {
+  MEMBER: 0,
+  ADMIN: 1,
+  STATUS: 2,
+};
 
 export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
@@ -131,6 +136,7 @@ export const teams = sqliteTable('teams', {
   seasonNo: integer('season_no').references(() => seasons.id),
   is1v1: integer('is_1v1').default(0),
   status: integer('status').notNull().default(TeamStatus.UNREADY),
+  paymentStatus: integer('payment_status').notNull().default(0),
   joinPassword: text('join_password'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
@@ -226,4 +232,14 @@ export const tournaments = sqliteTable('tournaments', {
   description: text('description'),
   avatar: text('avatar'),
   bracketLink: text('bracket_link')
+});
+
+export const payments = sqliteTable('payments', {
+  paymentId: text('payment_id').notNull().primaryKey(),
+  purchasedFor: text('purchased_for').notNull().references(() => users.steamId),
+  purchasedBy: text('purchased_by').notNull().references(() => users.steamId),
+  amount: text('amount').notNull(),
+  currency: text('currency'),
+  purchaseDate: text('purchase_date').notNull(),
+  description: text('description')
 });
