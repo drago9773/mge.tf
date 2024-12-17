@@ -272,7 +272,12 @@ router.post('/toggle_team/:teamid', async (req, res) => {
             if (!team) {
                 return res.status(404).send('Team not found');
             }
-
+            let numPlayers = 0; 
+            if (team.status === 0) {
+                const playersInTeam = await db.select().from(players_in_teams)
+                    .where(eq(players_in_teams.teamId, teamId)).all();
+                numPlayers = playersInTeam.length;
+            }
             const newStatus = team.status === 0 ? 1 : 0;
             const result = await db.update(teams)
                 .set({ status: newStatus })

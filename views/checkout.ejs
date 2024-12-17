@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://www.paypal.com/sdk/js?client-id=AbAm_8-1aFq77szD-D9w4Gbq_6F25gMJYTNwSXrC71cHTX3Ps8sK3isXj8qXmXdxmcO813tdPrmFqgw2&components=buttons"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Checkout</h1>
+    </nav>
+  </header>
+  <main>
+    <section id="cart-summary">
+      <h2>Your Cart</h2>
+      <ul id="cart-items">
+        <li class="cart-item">
+          <span class="item-name">Product Name</span>
+          <span class="item-quantity">x2</span>
+          <span class="item-price">$50.00</span>
+        </li>
+      </ul>
+      <div class="cart-total">
+        <strong>Total: </strong><span id="total-price">$100.00</span>
+      </div>
+    </section>
+
+    <section id="payment-section">
+      <h2>Payment</h2>
+      <div id="paypal-button-container"></div>
+      <div id="confirmation-message" class="hidden"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Your Company</p>
+  </footer>
+
+  <script>
+    const cart = [
+      { id: 'product-1', name: 'Product 1', quantity: 1, price: 50 },
+      { id: 'product-2', name: 'Product 2', quantity: 2, price: 25 }
+    ];
+    const cartItemsContainer = document.getElementById('cart-items');
+    const totalPriceEl = document.getElementById('total-price');
+    const confirmationMessageEl = document.getElementById('confirmation-message');
+
+    let totalPrice = 0;
+    cart.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'cart-item';
+      li.innerHTML = `
+        <span class="item-name">${item.name}</span>
+        <span class="item-quantity">x${item.quantity}</span>
+        <span class="item-price">$${(item.price * item.quantity).toFixed(2)}</span>
+      `;
+      cartItemsContainer.appendChild(li);
+      totalPrice += item.price * item.quantity;
+    });
+    totalPriceEl.textContent = `$${totalPrice.toFixed(2)}`;
+
+    paypal.Buttons({
+      createOrder: async () => {
+        try {
+          const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart })
+          });
+
+          const orderData = await response.json();
+          if (!orderData.id) throw new Error('Failed to create order.');
+          return orderData.id;
+        } catch (error) {
+          console.error('Error creating order:', error);
+          alert('Something went wrong while creating the order.');
+        }
+      },
+      onApprove: async (data) => {
+        try {
+          const response = await fetch(`/api/orders/${data.orderID}/capture`, {
+            method: 'POST'
+          });
+
+          const captureData = await response.json();
+          if (captureData.error) throw new Error('Payment failed.');
+
+          confirmationMessageEl.textContent = `Payment Successful! Transaction ID: ${captureData.id}`;
+          confirmationMessageEl.classList.remove('hidden');
+          document.getElementById('paypal-button-container').style.display = 'none';
+        } catch (error) {
+          console.error('Error capturing order:', error);
+          alert('Payment failed. Please try again.');
+        }
+      },
+      onError: (err) => {
+        console.error('PayPal Button Error:', err);
+        alert('Something went wrong with the payment. Please try again.');
+      }
+    }).render('#paypal-button-container');
+  </script>
+</body>
+</html>
