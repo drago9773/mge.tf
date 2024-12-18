@@ -2,14 +2,14 @@ import express from 'express';
 import { db } from '../db.ts';
 import { discord } from '../schema.ts';
 import session from 'express-session';
+import dotenv from 'dotenv';
 
 const router = express.Router();
+dotenv.config();
 
-// check .env
-// const DISCORD_CLIENT_ID = 
-// const DISCORD_CLIENT_SECRET = 
-// const DISCORD_REDIRECT_URI = 'http://localhost:3005/auth/discord/callback';
-
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 
 router.get('/auth/discord/callback', async (req, res) => {
     const code = req.query.code as string | undefined;

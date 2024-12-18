@@ -1,23 +1,13 @@
 import express from 'express';
-import {
-  ApiError,
-  CheckoutPaymentIntent,
-  Client,
-  Environment,
-  LogLevel,
-  OrdersController,
-} from '@paypal/paypal-server-sdk';
+import { ApiError, CheckoutPaymentIntent, Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
 import dotenv from 'dotenv';
 import { db } from '../db.ts';
 import { payments } from '../schema.ts';
-import { and } from 'drizzle-orm';
 
 dotenv.config();
 
-// const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
-
-const PAYPAL_CLIENT_ID = 'AbAm_8-1aFq77szD-D9w4Gbq_6F25gMJYTNwSXrC71cHTX3Ps8sK3isXj8qXmXdxmcO813tdPrmFqgw2';
-const PAYPAL_CLIENT_SECRET = 'EGn_nrDmvPgPcGAdx9J-CRlnSwY2SqE9gykeCwupQJFz2R6d8b7cXS2d8lpEHKS-I4RdCL47BzGKnO5h';
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 
 if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
   throw new Error('PayPal client credentials are missing.');

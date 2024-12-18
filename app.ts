@@ -1,6 +1,5 @@
 //TODO: general
-    //payment on signup
-    //make discord api key thing private
+    ////payment on signup
 
 //TODO:
     ////rulebook
@@ -27,9 +26,8 @@ import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.ts';
 import { users, moderators } from './schema.ts';
 import { sql, eq, and } from 'drizzle-orm';
-
+import dotenv from 'dotenv';
 import { scheduleTasks } from './views/js/scheduler.ts';
-
 import forumPostRoutes from './routes/forumPosts.ts';
 import leagueStandingsRoutes from './routes/leagueStandings.ts';
 import steamRoutes from './routes/steamAuth.ts';
@@ -52,6 +50,7 @@ import paypalRoutes from './routes/paypal.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+dotenv.config();
 
 const app = express();
 app.use(express.json());
