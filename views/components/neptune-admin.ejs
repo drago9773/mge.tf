@@ -1,7 +1,43 @@
 <div class="bg-gray-800">
-  <h2 class="bg-red-500 rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS. CONFER WITH TEAM BEFORE MAKING CHANGES. </h2>
+  <h2 class="rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS. CONFER WITH TEAM BEFORE MAKING CHANGES. </h2>
   <div class="max-w-2xl mx-auto p-6 space-y-8">
   <h1 class="text-4xl font-bold mb-10">Administrative Dashboard </h1>
+  <section class="space-y-4 max-w-md">
+    <h2 class="text-2xl font-bold">Roster and Signups Controls</h2>
+    <div class="flex flex-col space-y-4">
+      <div>
+        <h3 class="text-lg font-bold mb-2">
+          Roster Lock Status: 
+          <span class="<%= global.rosterLocked ? 'text-red-500' : 'text-green-500' %>">
+            <%= global.rosterLocked ? 'LOCKED' : 'OPEN' %>
+          </span>
+        </h3>
+        <form action="/update_status" method="POST" class="flex space-x-4">
+          <input type="hidden" name="action" value="roster">
+          <input type="hidden" name="value" value="<%= global.rosterLocked ? 0 : 1 %>">
+          <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded-md">
+            <%= global.rosterLocked ? 'Unlock' : 'Lock' %>
+          </button>
+        </form>
+      </div>
+  
+      <div>
+        <h3 class="text-lg font-bold mb-2">
+          Signup Lock Status: 
+          <span class="<%= global.signupClosed ? 'text-red-500' : 'text-green-500' %>">
+            <%= global.signupClosed ? 'LOCKED' : 'OPEN' %>
+          </span>
+        </h3>
+        <form action="/update_status" method="POST" class="flex space-x-4">
+          <input type="hidden" name="action" value="signup">
+          <input type="hidden" name="value" value="<%= global.signupClosed ? 0 : 1 %>">
+          <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded-md">
+            <%= global.signupClosed ? 'Unlock' : 'Lock' %>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>  
 
   <section class="space-y-4 max-w-md">
       <h2 class="text-2xl font-bold">Seasons</h2>
@@ -50,18 +86,26 @@
         <table class="min-w-auto shadow-md rounded-lg overflow-hidden">
           <thead class="bg-gray-700">
             <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Division ID</th>
               <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Division Name</th>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Update Division Name</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Signup Cost</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-gray-900">
             <% if (divisions && divisions.length > 0) { %>
               <% divisions.forEach((division, index) => { %>
                 <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
-                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= division.name %></td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= division.id %></td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm">
                     <form action="/admin_update_division_name" method="POST" class="flex items-center">
-                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="text" name="name" placeholder="<%= division.name %>" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                      <input type="hidden" name="divisionId" value="<%= division.id %>">
+                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                    </form>
+                  </td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm">
+                    <form action="/admin_update_division_cost" method="POST" class="flex items-center">
+                      <input type="integer" name="signupCost" placeholder="<%= division.signupCost %>" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
                       <input type="hidden" name="divisionId" value="<%= division.id %>">
                       <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
                     </form>

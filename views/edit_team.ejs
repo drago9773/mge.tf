@@ -42,8 +42,8 @@
                         <tr class="bg-gray-900 overflow-hidden">
                             <td class="px-4 py-2 flex items-center">
                                 <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
-                                     alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
-                                     class="overflow-hidden w-10 rounded-full mr-4">
+                                        alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
+                                        class="overflow-hidden w-10 rounded-full mr-4">
                                 <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
                             </td>
                             <td class="overflow-hidden px-4 py-2">
@@ -112,19 +112,21 @@
             Save Changes
         </button>
     </form>
-    </div>
+</div>
 
 <div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
     <h2 class="text-2xl font-bold">Pending Players</h2>
     <table class="min-w-full bg-gray-900 shadow-md rounded-lg overflow-hidden mb-4">
-        <thead class="bg-gray-700 text-gray-700 text-left text-sm uppercase">
+        <thead class="bg-gray-700 text-white text-left text-sm uppercase">
             <tr>
                 <th class="px-4 py-2">Player</th>
                 <th class="px-4 py-2">Action</th>
             </tr>
         </thead>
         <tbody>
-            <% const pendingPlayers = pending_players.filter(p => p.teamId === team.id); %>
+            <% const pendingPlayers = pending_players.filter(p => p.teamId == team.id); %>
+            <% console.log(pendingPlayers); %>
+
             <% pendingPlayers.forEach(playerInTeam => { %>
                 <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
                 <tr class="bg-gray-900">
@@ -153,7 +155,40 @@
             <% } %>
         </tbody>      
     </table>
-    </div>
+</div>
+<div class="flex flex-col mx-auto max-w-5xl w-3/5 bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+    <h2 class="text-2xl font-bold">Denied Players</h2>
+    <table class="min-w-full bg-gray-900 shadow-md rounded-lg overflow-hidden mb-4">
+        <thead class="bg-gray-700 text-white text-left text-sm uppercase">
+            <tr>
+                <th class="px-4 py-2">Player</th>
+                <th class="px-4 py-2">Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% const deniedPlayers = denied_players.filter(p => p.teamId == team.id); %>
+            <% deniedPlayers.forEach(playerInTeam => { %>
+                <% const playerUser = users.find(user => user.steamId === playerInTeam.playerSteamId); %>
+                <tr class="bg-gray-900">
+                    <td class="px-4 py-2 flex items-center">
+                        <img src="<%= playerUser ? playerUser.steamAvatar : '/default-avatar.png' %>" 
+                                alt="<%= playerUser ? playerUser.steamUsername : 'Unknown Player' %> Avatar" 
+                                class="overflow-hidden w-10 rounded-full mr-4">
+                        <%= playerUser ? playerUser.steamUsername : 'Unknown Player' %>
+                    </td>
+                    <td class="px-4 py-2">
+                        <%= playerInTeam.reason %>
+                    </td>
+                </tr>
+            <% }); %>
+            <% if (deniedPlayers.length === 0) { %>
+                <tr>
+                    <td colspan="2" class="text-center py-4 text-gray-500">No denied players</td>
+                </tr>
+            <% } %>
+        </tbody>      
+    </table>
+</div>
 </div>
 <script>
     document.getElementById('team_name').addEventListener('input', function() {

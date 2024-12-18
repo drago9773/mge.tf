@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { users, teams, pending_players, players_in_teams, teamname_history } from '../schema.ts';
+import { users, teams, pending_players, players_in_teams, teamname_history, denied_players } from '../schema.ts';
 import { eq, and } from 'drizzle-orm';
 import multer from 'multer';
 import path from 'path';
@@ -49,7 +49,8 @@ router.get('/edit_team/:teamid', async (req, res) => {
         })
         .from(pending_players)
         .innerJoin(users, eq(pending_players.playerSteamId, users.steamId))
-        .innerJoin(teams, eq(pending_players.teamId, teams.id));
+        .innerJoin(teams, eq(pending_players.teamId, teams.id))
+        .where(eq(pending_players.status, 0));
 
         const allPlayersInTeams = await db.select({
             playerSteamId: players_in_teams.playerSteamId,
@@ -73,6 +74,19 @@ router.get('/edit_team/:teamid', async (req, res) => {
                 )
             ).get();
 
+        const deniedPlayers = await db.select({
+            playerSteamId: denied_players.playerSteamId,
+            teamId: denied_players.teamId,
+            reason: denied_players.reason,
+            adminId: denied_players.adminId,
+            deniedAt: denied_players.deniedAt,
+            steamUsername: users.steamUsername,
+            steamAvatar: users.steamAvatar
+        })
+        .from(denied_players)
+        .innerJoin(users, eq(denied_players.playerSteamId, users.steamId))
+        .where(eq(denied_players.teamId, teamid));
+
         if (!playerInTeam || playerInTeam.permissionLevel < 1) {
             return res.status(403).send('You do not have permission to edit this team');
         }
@@ -83,6 +97,7 @@ router.get('/edit_team/:teamid', async (req, res) => {
             users: allUsers,
             players_in_teams: allPlayersInTeams,
             pending_players: allPendingPlayers,
+            denied_players: deniedPlayers,
             session: req.session
         });
     } catch (err) {
@@ -260,14 +275,7 @@ router.post('/approve_player/:teamid', async (req, res) => {
                 return res.status(400).send('Player already in a 2v2 team');
             }
 
-            await db.insert(players_in_teams).values({
-                playerSteamId: playerSteamId,
-                teamId: teamId,
-                active: 1,
-                permissionLevel: 0
-            });
-
-            await db.delete(pending_players).where(eq(pending_players.playerSteamId, playerSteamId));
+            await db.update(pending_players).set({status: 1}).where(eq(pending_players.playerSteamId, playerSteamId))
 
             return res.redirect('/');
         } catch (err) {

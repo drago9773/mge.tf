@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history } from '../schema.ts';
+import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history, global } from '../schema.ts';
 import { eq, and} from 'drizzle-orm';
 
 const router = express.Router();
@@ -21,7 +21,7 @@ router.get('/teams', async (req, res) => {
     }
 });
 
-router.get('/team_page/:teamid', async (req, res) => {
+router.get('/team_page/:teamid', async (req, res) => {  
     const teamid = Number(req.params.teamid);
 
     try {
@@ -41,6 +41,7 @@ router.get('/team_page/:teamid', async (req, res) => {
         const allDivisions = await db.select().from(divisions);
         const allSeasons = await db.select().from(seasons);
         const allRegions = await db.select().from(regions);
+        const allGlobal = await db.select().from(global);  
         const allTeamnameHistory = await db.select().from(teamname_history);
         const allPlayersInTeams = await db.select({
             playerSteamId: players_in_teams.playerSteamId, 
@@ -57,14 +58,15 @@ router.get('/team_page/:teamid', async (req, res) => {
         if (req.session?.user) {
             const userSteamId = req.session.user.steamid;
                 const existingRequest = await db
-                .select()
-                .from(pending_players)
-                .innerJoin(teams, eq(pending_players.teamId, teams.id))
-                .where(and(
-                    eq(pending_players.playerSteamId, userSteamId),
-                    eq(pending_players.teamId, teamid)
-                ))
-                .get();
+                    .select()
+                    .from(pending_players)
+                    .innerJoin(teams, eq(pending_players.teamId, teams.id))
+                    .where(and(
+                        eq(pending_players.playerSteamId, userSteamId),
+                        eq(pending_players.teamId, teamid),
+                        eq(pending_players.status, 0)
+                    ))
+                    .get();
 
             if (existingRequest) {
                 request = 1;
@@ -74,7 +76,8 @@ router.get('/team_page/:teamid', async (req, res) => {
                 .select()
                 .from(pending_players)
                 .where(and(
-                    eq(pending_players.teamId, teamid)
+                    eq(pending_players.teamId, teamid),
+                    eq(pending_players.status, 0)
                 ))
                 .get();
         
@@ -93,6 +96,8 @@ router.get('/team_page/:teamid', async (req, res) => {
             teamname_history: allTeamnameHistory,
             existing_request: request,
             pending_player_exists: pendingPlayerExists,
+            signupClosed: allGlobal[0].signupClosed,
+            rosterLocked: allGlobal[0].rosterLocked,
             session: req.session
         });
     } catch (err) {
@@ -103,7 +108,10 @@ router.get('/team_page/:teamid', async (req, res) => {
 
 
 router.get('/join_team/:teamid', async (req, res) => {
-    if (req.session?.user) {
+    const allGlobal = await db.select().from(global);  
+    const rosterLocked = allGlobal[0].rosterLocked;
+
+    if (req.session?.user && !rosterLocked) {
         const teamid = Number(req.params.teamid);
         const userSteamId = req.session.user.steamid;
         try {
@@ -148,7 +156,10 @@ router.get('/join_team/:teamid', async (req, res) => {
 });
 
 router.post('/join_team', async (req, res) => {
-    if (req.session?.user) {
+    const allGlobal = await db.select().from(global);  
+    const rosterLocked = allGlobal[0].rosterLocked;
+
+    if (req.session?.user && !rosterLocked) {
         const userSteamId = req.session.user.steamid;
         const { teamPassword, teamId } = req.body;
 
@@ -190,7 +201,10 @@ router.post('/join_team', async (req, res) => {
 });
 
 router.post('/leave_team/:teamid', async (req, res) => {
-    if (req.session?.user) {
+    const allGlobal = await db.select().from(global);  
+    const rosterLocked = allGlobal[0].rosterLocked;
+
+    if (req.session?.user && !rosterLocked) {
         const teamId = Number(req.params.teamid);
         const userSteamId = req.session.user.steamid;
 
@@ -265,7 +279,10 @@ router.post('/remove_request/:teamid', async (req, res) => {
 });
 
 router.post('/toggle_team/:teamid', async (req, res) => {
-    if (req.session?.user) {
+    const allGlobal = await db.select().from(global);  
+    const signupClosed = allGlobal[0].signupClosed;
+
+    if (req.session?.user && !signupClosed) {
         const teamId = Number(req.params.teamid);
         try {
             const team = await db.select().from(teams).where(eq(teams.id, teamId)).get();

@@ -3,7 +3,7 @@ const SEASON_ID = 1;
 
 import express from 'express';
 import { db } from '../db.ts';
-import { teams, players_in_teams, teamname_history, divisions, regions, seasons, users } from '../schema.ts';
+import { teams, players_in_teams, teamname_history, divisions, regions, seasons, global } from '../schema.ts';
 import multer from 'multer';
 import path from 'path';
 import { eq, and} from 'drizzle-orm';
@@ -27,22 +27,45 @@ const upload = multer({
 });
 
 router.get('/1v1signup', async (req, res) => {
-  res.status(200);
   return res.render('layout', { title: '1v1 Signups', body: '1v1signup', session: req.session })
 });
 
 router.get('/2v2signup', async (req, res) => {
-  res.status(200);
-  return res.render('layout', { title: '1v1 Signups', body: '2v2signup', session: req.session })
+  return res.render('layout', { title: 'Signups', body: '2v2signup', session: req.session })
 })
+
+router.get('/signup', async (req, res) => {
+    const allTeams = await db.select().from(teams);
+    const allDivisions = await db.select().from(divisions);
+    const allSeasons = await db.select().from(seasons);
+    const allRegions = await db.select().from(regions);
+    const allGlobal = await db.select().from(global);    
+
+    res.render('layout', {
+        body: 'signup',
+        title: 'Signup',
+        session: req.session,
+        teams: allTeams,
+        divisions: allDivisions,
+        seasons: allSeasons,
+        regions: allRegions,
+        signupClosed: allGlobal[0].signupClosed,
+    });
+});
+
 
 
 router.post('/team_signup', upload.single('avatar'), async (req, res) => {
     const { name, acronym, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
     const player_steam_id = req.session?.user?.steamid;
+    const allGlobal = await db.select().from(global);
+    const signupClosed = allGlobal[0].signupClosed;
     
     try {
         // check if they are in a 1v1/2v2 team and if active
+        if(signupClosed){
+            return res.status(400).send(`Signups are CLOSED`);
+        }
         const existingTeam = db
             .select()
             .from(players_in_teams)
@@ -98,22 +121,5 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
     }
 });
 
-router.get('/signup', async (req, res) => {
-    const allTeams = await db.select().from(teams);
-    const allDivisions = await db.select().from(divisions);
-    const allSeasons = await db.select().from(seasons);
-    const allRegions = await db.select().from(regions);
-    
-
-    res.render('layout', {
-        body: 'signup',
-        title: 'Signup',
-        session: req.session,
-        teams: allTeams,
-        divisions: allDivisions,
-        seasons: allSeasons,
-        regions: allRegions,
-    });
-});
 
 export default router;

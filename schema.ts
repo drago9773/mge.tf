@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { datetime } from 'drizzle-orm/mysql-core';
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const UserRole = {
   GUEST: 0,
@@ -40,6 +40,16 @@ export const playerStatus = {
   ADMIN: 1,
   STATUS: 2,
 };
+export const pendingStatus = {
+  TEAM: 0,
+  ADMIN: 1,
+};
+
+
+export const global = sqliteTable('global', {
+  signupClosed: integer('signup_closed').default(0),
+  rosterLocked: integer('roster_locked').default(0),
+});
 
 export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
@@ -107,7 +117,8 @@ export const arenas = sqliteTable('arenas', {
 
 export const divisions = sqliteTable('divisions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull()
+  name: text('name').notNull(),
+  signupCost: real('signup_cost').default(0.00)
 });
 
 export const regions = sqliteTable('regions', {
@@ -185,7 +196,16 @@ export const players = sqliteTable('players', {
 
 export const pending_players = sqliteTable('pending_players', {
   playerSteamId: text('player_steam_id').references(() => users.steamId),
-  teamId: integer('team_id').references(() => teams.id)
+  teamId: integer('team_id').references(() => teams.id),
+  status: integer('status').default(0)
+});
+
+export const denied_players = sqliteTable('denied_players', {
+  playerSteamId: text('player_steam_id').references(() => users.steamId),
+  teamId: integer('team_id').references(() => teams.id),
+  reason: text('reason'),
+  adminId: text('admin_id').references(() => users.steamId),
+  deniedAt: text('denied_at').default(sql`CURRENT_TIMESTAMP`)
 });
 
 export const teamname_history = sqliteTable('teamname_history', {

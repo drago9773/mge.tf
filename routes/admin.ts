@@ -1,6 +1,6 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { arenas, punishment, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report } from '../schema.ts';
+import { arenas, punishment, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report, global, pending_players } from '../schema.ts';
 import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
@@ -63,12 +63,25 @@ router.get('/admin', async (req, res) => {
             .from(players_in_teams)
             .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
             .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
-
+        const pendingPlayers = await db
+            .select({
+                playerSteamId: pending_players.playerSteamId,
+                playerName: users.steamUsername,
+                playerSteamAvatar: users.steamAvatar,
+                teamId: pending_players.teamId,
+                teamName: teams.name,
+                status: pending_players.status
+            })
+            .from(pending_players)
+            .innerJoin(users, eq(pending_players.playerSteamId, users.steamId))
+            .innerJoin(teams, eq(pending_players.teamId, teams.id))
+            .where(eq(pending_players.status, 1)); 
         const playersByTeam = allTeams.map(team => ({
             ...team,
             players: allPlayersInTeams.filter(player => player.teamId === team.id)
         }));        
         const allDemos = await db.select().from(demos);
+        const allGlobal = await db.select().from(global);
         const allDemoReports = await db
             .select()
             .from(demo_report)
@@ -89,8 +102,10 @@ router.get('/admin', async (req, res) => {
             disputedMatches,
             players_in_teams: allPlayersInTeams,
             teamsWithPlayers: playersByTeam,
+            global: allGlobal[0],
             users: allUsers,
             demos: allDemos,
+            pendingPlayers: pendingPlayers,
             demoReports: allDemoReports,
             punishments: allPunishments
         });

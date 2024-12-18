@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { divisions, regions, seasons, arenas } from '../schema.ts';
+import { divisions, regions, seasons, arenas, global, pending_players } from '../schema.ts';
 import { eq } from 'drizzle-orm';
 import multer from 'multer';
 import path from 'path';
@@ -23,28 +23,52 @@ const upload = multer({
     limits: { fileSize: 10 * 1024 * 1024 }
 });
 
+router.post('/update_status', async (req, res) => {
+    const { action, value } = req.body;
+    const numericValue = parseInt(value); 
+
+    try {
+        const allPendingPlayers = await db.select().from(pending_players);
+        if (action === 'roster') { 
+            await db.update(global).set({ rosterLocked: numericValue });
+            const allGlobal = await db.select().from(global);  
+            if (allGlobal[0].rosterLocked == 1) {
+                await db.delete(pending_players);
+                console.log("Dropping all pending players...");
+            }
+        } else if (action === 'signup') { await db.update(global).set({ signupClosed: numericValue });
+        } else { throw new Error('Invalid action'); }
+
+        res.redirect('/admin');
+    } catch (error) {
+        console.error('Error updating status:', error);
+        res.status(500).send('Server Error');
+    }
+});
+
+
 router.post('/update_num_weeks', async (req, res) => {
     const { numWeeks, seasonId } = req.body;
-    await db.update(seasons).set({numWeeks: numWeeks}).where(eq(seasons.id, seasonId));
+    await db.update(seasons).set({numWeeks}).where(eq(seasons.id, seasonId));
     res.redirect('/admin');
-})
+});
 
 router.post('/admin_update_division_name', async (req, res) => {
     const { divisionId, name } = req.body; 
-    await db.update(divisions)
-        .set({ name })
-        .where(eq(divisions.id, divisionId));
+    await db.update(divisions).set({ name }).where(eq(divisions.id, divisionId));
+    res.redirect('/admin');
+});
 
+router.post('/admin_update_division_cost', async (req, res) => {
+    const { divisionId, signupCost } = req.body; 
+    await db.update(divisions).set({ signupCost }).where(eq(divisions.id, divisionId));
     res.redirect('/admin');
 });
 
 router.post('/admin_update_region_name', async (req, res) => {
     const { regionId, name } = req.body; 
     try {
-        await db.update(regions)
-            .set({ name }) 
-            .where(eq(regions.id, regionId));
-
+        await db.update(regions).set({ name }) .where(eq(regions.id, regionId));
         res.redirect('/admin');
     } catch (err) {
         console.error('Error updating region:', err);

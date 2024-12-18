@@ -3,14 +3,12 @@
     //make discord api key thing private
 
 //TODO:
-    ////ROSTER LOCK, SIGNUP_LOCK
     ////rulebook
     ////playoffs?
     ////FF option
 
 //TODO: admin
     ////automatic match generation equation
-    ////pending players need to be confirmed by staff?
     ////SQL injection
 
 //FUTURE
@@ -42,6 +40,7 @@ import apiRoutes from './routes/api.ts';
 import adminRoutes from './routes/admin.ts';
 import adminMatchesRoutes from './routes/adminMatches.js';
 import adminDemosRoutes from './routes/adminDemos.js';
+import adminPendingPlayersRoutes from './routes/adminPendingPlayers.js';
 import adminDashboardRoutes from './routes/adminDashboard.js';
 import moderatorRoutes from './routes/moderation.js';
 import editTeamRoutes from './routes/editTeam.ts';
@@ -88,6 +87,7 @@ app.use('/', signupRoutes);
 app.use('/', demosRoutes);
 app.use('/', paypalRoutes);
 app.use('/', adminDemosRoutes);
+app.use('/', adminPendingPlayersRoutes);
 app.use('/api', apiRoutes);
 app.use('/moderation', moderatorRoutes);
 

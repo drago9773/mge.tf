@@ -1,21 +1,7 @@
--- select * from demos;
--- select * from demo_report;
--- select * from teams;
--- select * from players_in_teams;
--- select * from matches;
--- select * from games;
--- select * from match_comms;
-
--- drop table if exists teams;
--- drop table if exists players_in_teams;
--- drop table if exists matches;
--- drop table if exists games;
--- drop table if exists match_comms;
-
--- select * from discord;
--- select * from users;
--- select * from demos;
--- select * from matches;
+CREATE TABLE IF NOT EXISTS `global` (
+    `signup_closed` INTEGER DEFAULT 0,
+    `roster_locked` INTEGER DEFAULT 0
+);
 
 CREATE TABLE IF NOT EXISTS `activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -34,7 +20,8 @@ CREATE TABLE IF NOT EXISTS `arenas` (
 
 CREATE TABLE IF NOT EXISTS `divisions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text NOT NULL
+	`name` text NOT NULL,
+    `signup_cost` float DEFAULT 0.00
 );
 
 CREATE TABLE IF NOT EXISTS `regions` (
@@ -146,7 +133,19 @@ CREATE TABLE IF NOT EXISTS `players` (
 CREATE TABLE IF NOT EXISTS `pending_players` (
     `player_steam_id` text,
     `team_id` integer,
+    `status` integer DEFAULT 0,
     FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS `denied_players` (
+    `player_steam_id` text,
+    `team_id` integer,
+    `reason` text,
+    `admin_id` text,
+    `denied_at` datetime DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (`admin_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
     FOREIGN KEY (`player_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
