@@ -12,6 +12,7 @@ router.get('/teams', async (req, res) => {
         res.render('layout', {
             title: 'Teams',
             body: 'teams',
+            announcements: [],
             teams: allTeams,
             session: req.session
         });
@@ -98,6 +99,7 @@ router.get('/team_page/:teamid', async (req, res) => {
         res.render('layout', {
             body: 'team_page',
             title: team.name,
+            announcements: [],
             users: allUsers,
             team: team,
             teams: allTeams,
@@ -157,6 +159,7 @@ router.get('/join_team/:teamid', async (req, res) => {
             res.render('layout', {
                 body: 'join_team',
                 title: "Join Team",
+                announcements: [],
                 team: team,
                 session: req.session
             });

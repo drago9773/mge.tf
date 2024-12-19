@@ -1,11 +1,13 @@
 <% if (announcements && announcements.length > 0) { %>
-    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
-      <ul class="space-y-2">
-        <% announcements.forEach((announcement) => { %>
-          <% if (announcement.visible) { %>
-            <li class="text-center font-bold"><%= announcement.content %></li>
-          <% } %>
-        <% }) %>
-      </ul>
-    </div>
-  <% } %>
+  <div class="text-white p-2 rounded-md mb-2 text-2xl">
+    <ul class="space-y-2">
+      <% announcements.forEach((announcement, index) => { %>
+        <% if (announcement.visible) { %>
+          <li class="<%= index % 2 === 0 ? 'bg-red-500' : 'bg-red-600' %> text-center font-bold p-2 rounded-md">
+            <%= announcement.content %>
+          </li>
+        <% } %>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>

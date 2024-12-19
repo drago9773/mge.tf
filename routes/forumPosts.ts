@@ -14,7 +14,7 @@ router.get('/create_post', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'You must be logged in to do this' });
     }
-    res.render('layout', { title: 'Create Thread', body: 'create_post', session: req.session });
+    res.render('layout', { title: 'Create Thread', body: 'create_post', announcements: [], session: req.session });
 });
 
 router.get('/forums', async (req, res) => {
@@ -45,6 +45,7 @@ router.get('/forums', async (req, res) => {
         res.render('layout', {
             title: 'Forums',
             body: 'forums',
+            announcements: [],
             threads: formattedThreads,
             session: session,
             moderators: moderatorIds
@@ -267,6 +268,7 @@ router.get('/thread/:threadId', async (req, res) => {
         res.render('layout', {
             title: thread.title,
             body: 'thread',
+            announcements: [],
             session: session,
             moderators: moderatorIds,
             replies: replies,

@@ -60,6 +60,7 @@ router.get('/demos/:demoid', async (req, res) => {
         res.render('layout', {
             body: 'demos',
             title: 'Demo',
+            announcements: [],
             demo,
             match: matchDetails,
             homeTeamName,

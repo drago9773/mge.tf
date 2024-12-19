@@ -17,6 +17,7 @@ router.get('/tournaments', async (req, res) => {
         res.render('layout', {
             title: 'Tournaments',
             body: 'tournaments',
+            announcements: [],
             user: req.session.user,
             userIsMod: userIsMod,
             tournaments: allTournaments,

@@ -43,6 +43,7 @@ const ordersController = new OrdersController(client);
 router.get("/checkout", (req, res) => {
     res.render("checkout", {
       title: "Checkout",
+      announcements: [],
       session: req.session,
     });
   });

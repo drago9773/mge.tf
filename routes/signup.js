@@ -27,11 +27,11 @@ const upload = multer({
 });
 
 router.get('/1v1signup', async (req, res) => {
-  return res.render('layout', { title: '1v1 Signups', body: '1v1signup', session: req.session })
+  return res.render('layout', { title: '1v1 Signups', body: '1v1signup', announcements: [], session: req.session })
 });
 
 router.get('/2v2signup', async (req, res) => {
-  return res.render('layout', { title: 'Signups', body: '2v2signup', session: req.session })
+  return res.render('layout', { title: 'Signups', body: '2v2signup', announcements: [], session: req.session })
 })
 
 router.get('/signup', async (req, res) => {
@@ -44,6 +44,7 @@ router.get('/signup', async (req, res) => {
     res.render('layout', {
         body: 'signup',
         title: 'Signup',
+        announcements: [],
         session: req.session,
         teams: allTeams,
         divisions: allDivisions,

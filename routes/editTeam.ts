@@ -93,6 +93,7 @@ router.get('/edit_team/:teamid', async (req, res) => {
         res.render('layout', {
             body: 'edit_team',
             title: 'Edit Team',
+            announcements: [],
             team: team,
             users: allUsers,
             players_in_teams: allPlayersInTeams,

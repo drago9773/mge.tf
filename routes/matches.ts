@@ -147,6 +147,7 @@ router.get('/match_page/:matchid', async (req, res) => {
         res.render('layout', {
             body: 'match_page',
             title: match.id,
+            announcements: [],
             match,
             isAdmin: admin,
             isTeamOwner: isHomeTeamOwner || isAwayTeamOwner,

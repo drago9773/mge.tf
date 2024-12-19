@@ -51,6 +51,7 @@ router.get('/team_standings', async (req, res) => {
         res.render('layout', {
             title: 'Team Standings by Division',
             body: 'team_standings',
+            announcements: [],
             standingsByDivision,
             session: req.session,
         });

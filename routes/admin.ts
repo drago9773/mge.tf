@@ -95,6 +95,7 @@ router.get('/admin', async (req, res) => {
         res.render('layout', {
             body: 'admin',
             title: 'Admin',
+            announcements: [],
             session: req.session,
             teams: allTeams,
             arenas: allArenas,
@@ -165,6 +166,7 @@ router.post('/admin/preview_match', async (req, res) => {
         res.render('layout', {
             body: 'preview_match',
             title: 'Preview',
+            announcements: [],
             session: req.session,
             teams: sortedTeams,
             regionId: region_id,

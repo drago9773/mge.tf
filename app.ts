@@ -102,9 +102,9 @@ type Player = {
     hitblip: number;
 };
 
-// TODO: Cache the elo stuff and cron job it
 app.get('/', async (req, res) => {
     try {
+        const allAnnouncements = await db.select().from(announcements).where(eq(announcements.visible, 1));
         const players: Player[] = eloDb.all(sql`
             SELECT * 
             FROM mgemod_stats
@@ -117,6 +117,7 @@ app.get('/', async (req, res) => {
         res.render('layout', { 
             body: 'index', 
             title: 'home', 
+            announcements: allAnnouncements,
             session: req.session, 
             elo: updatedPlayers 
         });
@@ -139,6 +140,7 @@ app.get('/users', async (req, res) => {
         res.render('layout', {
             title: 'Users',
             body: 'users',
+            announcements: [],
             users: allUsers,
             mods: usersWithModStatus,
             session: req.session
@@ -155,28 +157,12 @@ app.get('/discord', (_req, res) => {
 });
 
 app.get('/2v2cup', (_req, res) => { res.render('2v2cup'); });
-app.get('/league', (req, res) => { res.render('layout', { title: 'League', body: 'league', session: req.session }); });
-app.get('/rulebook', (req, res) => { res.render('layout', { title: 'Rulebook', body: 'rulebook', session: req.session }); });
+app.get('/league', (req, res) => { res.render('layout', { title: 'League', body: 'league', announcements: [], session: req.session }); });
+app.get('/rulebook', (req, res) => { res.render('layout', { title: 'Rulebook', body: 'rulebook', announcements: [], session: req.session }); });
 
 app.get('/auth/discord', (_req, res) => {
     res
 });
-
-app.use(async (req, res, next) => {
-    try {
-      const allAnnouncements = await db
-        .select()
-        .from(announcements)
-        .where(eq(announcements.visible, 1));
-      
-      res.locals.announcements = allAnnouncements;
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-      res.locals.announcements = [];
-    }
-    next();
-  });
-  
 
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
