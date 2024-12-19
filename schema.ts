@@ -51,6 +51,12 @@ export const global = sqliteTable('global', {
   rosterLocked: integer('roster_locked').default(0),
 });
 
+export const announcements = sqliteTable('announcements', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  content: text('content').notNull(),
+  visible: integer('visible').default(0)
+});
+
 export const users = sqliteTable('users', {
   steamId: text('steam_id').primaryKey(),
   steamUsername: text('steam_username').notNull(),

@@ -1,6 +1,7 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
-import { arenas, punishment, divisions, matches, players_in_teams, regions, seasons, teams, users, demos, demo_report, global, pending_players } from '../schema.ts';
+import { arenas, announcements, punishment, divisions, matches, players_in_teams, regions, seasons, 
+        teams, users, demos, demo_report, global, pending_players } from '../schema.ts';
 import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
@@ -49,6 +50,7 @@ router.get('/admin', async (req, res) => {
         const allDivisions = await db.select().from(divisions);
         const allRegions = await db.select().from(regions);
         const allSeasons = await db.select().from(seasons);
+        const allAnnouncements = await db.select().from(announcements);
         const allUsers = await db.select().from(users);
         const disputedMatches = await db.select().from(matches).where(eq(matches.status, 2));
         const allPlayersInTeams = await db.select({
@@ -105,6 +107,7 @@ router.get('/admin', async (req, res) => {
             global: allGlobal[0],
             users: allUsers,
             demos: allDemos,
+            announcements: allAnnouncements,
             pendingPlayers: pendingPlayers,
             demoReports: allDemoReports,
             punishments: allPunishments

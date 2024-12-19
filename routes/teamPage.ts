@@ -50,26 +50,41 @@ router.get('/team_page/:teamid', async (req, res) => {
             permissionLevel: players_in_teams.permissionLevel,
             startedAt: players_in_teams.startedAt,
             leftAt: players_in_teams.leftAt    
-        })
-        .from(players_in_teams)
-        .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
-        .innerJoin(teams, eq(players_in_teams.teamId, teams.id));
+            })
+            .from(players_in_teams)
+            .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
+            .innerJoin(teams, eq(players_in_teams.teamId, teams.id
+        ));
         let request = 0;
+        let adminRequest = 0;
         if (req.session?.user) {
             const userSteamId = req.session.user.steamid;
-                const existingRequest = await db
-                    .select()
-                    .from(pending_players)
-                    .innerJoin(teams, eq(pending_players.teamId, teams.id))
-                    .where(and(
-                        eq(pending_players.playerSteamId, userSteamId),
-                        eq(pending_players.teamId, teamid),
-                        eq(pending_players.status, 0)
-                    ))
-                    .get();
+            const existingRequest = await db
+                .select()
+                .from(pending_players)
+                .innerJoin(teams, eq(pending_players.teamId, teams.id))
+                .where(and(
+                    eq(pending_players.playerSteamId, userSteamId),
+                    eq(pending_players.teamId, teamid),
+                    eq(pending_players.status, 0)
+                ))
+                .get();
+            const existingAdminRequest = await db
+                .select()
+                .from(pending_players)
+                .innerJoin(teams, eq(pending_players.teamId, teams.id))
+                .where(and(
+                    eq(pending_players.playerSteamId, userSteamId),
+                    eq(pending_players.teamId, teamid),
+                    eq(pending_players.status, 1)
+                ))
+                .get();
 
             if (existingRequest) {
                 request = 1;
+            }
+            if (existingAdminRequest) {
+                adminRequest = 1;
             }
         }  
         const pendingPlayerExists = await db
@@ -77,7 +92,6 @@ router.get('/team_page/:teamid', async (req, res) => {
                 .from(pending_players)
                 .where(and(
                     eq(pending_players.teamId, teamid),
-                    eq(pending_players.status, 0)
                 ))
                 .get();
         
@@ -95,6 +109,7 @@ router.get('/team_page/:teamid', async (req, res) => {
             players_in_teams: allPlayersInTeams,  
             teamname_history: allTeamnameHistory,
             existing_request: request,
+            admin_request: adminRequest,
             pending_player_exists: pendingPlayerExists,
             signupClosed: allGlobal[0].signupClosed,
             rosterLocked: allGlobal[0].rosterLocked,
@@ -105,7 +120,6 @@ router.get('/team_page/:teamid', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 router.get('/join_team/:teamid', async (req, res) => {
     const allGlobal = await db.select().from(global);  

@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { divisions, regions, seasons, arenas, global, pending_players } from '../schema.ts';
+import { divisions, regions, seasons, arenas, global, pending_players, announcements } from '../schema.ts';
 import { eq } from 'drizzle-orm';
 import multer from 'multer';
 import path from 'path';
@@ -22,6 +22,70 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }
 });
+
+router.post('/create_announcement', async (req, res) => {
+    const { name } = req.body;
+    if (!name || name.trim() === '') {
+      return res.status(400).send('Announcement content cannot be empty.');
+    }
+  
+    try {
+      await db.insert(announcements).values({ content: name.trim(), visible: 0 });
+      res.redirect('/admin');
+    } catch (error) {
+      console.error('Error creating announcement:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+router.post('/toggle_announcement_visibility', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).send('Announcement ID is required.');
+    }
+
+    try {
+        const announcement = await db.select().from(announcements).where(eq(announcements.id, id)).get();
+
+        if (!announcement) {
+        return res.status(404).send('Announcement not found.');
+        }
+
+        const newVisibility = announcement.visible === 0 ? 1 : 0;
+
+        await db
+            .update(announcements)
+            .set({ visible: newVisibility })
+            .where(eq(announcements.id, id));
+
+        res.redirect('/admin');
+    } catch (error) {
+        console.error('Error toggling announcement visibility:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/edit_announcement', async (req, res) => {
+    const { id, content } = req.body;
+  
+    if (!id || !content || content.trim() === '') {
+      return res.status(400).send('Announcement ID and new content are required.');
+    }
+  
+    try {
+      await db
+        .update(announcements)
+        .set({ content: content.trim() })
+        .where(eq(announcements.id, id));
+  
+      res.redirect('/admin');
+    } catch (error) {
+      console.error('Error editing announcement:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
 
 router.post('/update_status', async (req, res) => {
     const { action, value } = req.body;

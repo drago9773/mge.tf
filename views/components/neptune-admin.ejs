@@ -2,6 +2,68 @@
   <h2 class="rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS. CONFER WITH TEAM BEFORE MAKING CHANGES. </h2>
   <div class="max-w-2xl mx-auto p-6 space-y-8">
   <h1 class="text-4xl font-bold mb-10">Administrative Dashboard </h1>
+  
+  <section class="space-y-4 max-w-md">
+    <h2 class="text-2xl font-bold">Global Announcements</h2>
+  
+    <div class="flex flex-col space-y-4">
+      <div>
+        <form action="/create_announcement" method="POST" class="space-y-4">
+          <%- include('input_admin', { id: "name", label: "Announcement:", type: "text" }) %>
+          <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create</button>
+        </form>
+      </div>
+    </div>
+  
+    <div>
+      <% if (announcements && announcements.length > 0) { %>
+        <ul class="space-y-2">
+          <% announcements.forEach((announcement) => { %>
+            <li class="flex flex-col bg-gray-900 p-2 rounded space-y-2">
+              <div class="flex justify-between items-center">
+                <span><%= announcement.content %></span>
+                <div class="flex space-x-2">
+                  <form action="/toggle_announcement_visibility" method="POST">
+                    <input type="hidden" name="id" value="<%= announcement.id %>">
+                    <button type="submit" class="px-2 rounded <%= announcement.visible ? 'bg-green-500' : 'bg-gray-500' %> hover:opacity-75">
+                      <%= announcement.visible ? 'Hide' : 'Show' %>
+                    </button>
+                  </form>
+  
+                  <button onclick="toggleEditForm(<%= announcement.id %>)" class="px-2 bg-blue-500 rounded hover:bg-blue-800">Edit</button>
+                </div>
+              </div>
+  
+              <form id="edit-form-<%= announcement.id %>" action="/edit_announcement" method="POST" class="space-y-2 hidden">
+                <input type="hidden" name="id" value="<%= announcement.id %>">
+                <input
+                  type="text"   name="content"
+                  value="<%= announcement.content %>"
+                  class="text-black w-full border rounded p-2"
+                />
+                <button type="submit" class="px-2 bg-orange-500 rounded hover:bg-yellow-800">Save</button>
+                <button type="button" onclick="toggleEditForm(<%= announcement.id %>)" class="px-2 bg-gray-500 rounded hover:bg-gray-800">Cancel</button>
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No announcements found.</p>
+      <% } %>
+    </div>
+  </section>
+  
+  <script>
+    function toggleEditForm(id) {
+      const form = document.getElementById(`edit-form-${id}`);
+      if (form) {
+        form.classList.toggle('hidden');
+      }
+    }
+  </script>
+  
+  
+
   <section class="space-y-4 max-w-md">
     <h2 class="text-2xl font-bold">Roster and Signups Controls</h2>
     <div class="flex flex-col space-y-4">

@@ -1,0 +1,11 @@
+<% if (announcements && announcements.length > 0) { %>
+    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+      <ul class="space-y-2">
+        <% announcements.forEach((announcement) => { %>
+          <% if (announcement.visible) { %>
+            <li class="text-center font-bold"><%= announcement.content %></li>
+          <% } %>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>

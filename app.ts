@@ -2,9 +2,13 @@
     ////payment on signup
 
 //TODO:
+    ////global messages (rosters locking! submit demos! pending players! globally)
+        //include 'message' and 'timer' thats posted globally
+    ////poost roster lock/signups close in league info
     ////rulebook
     ////playoffs?
     ////FF option
+    ////all routing redirects
 
 //TODO: admin
     ////automatic match generation equation
@@ -24,9 +28,8 @@ import { renderFile } from 'ejs';
 import { fileURLToPath } from 'url';
 import { db, eloDb } from './db.ts';
 import { steamId64FromSteamId32 } from './helpers/steamid.ts';
-import { users, moderators } from './schema.ts';
+import { users, moderators, announcements } from './schema.ts';
 import { sql, eq, and } from 'drizzle-orm';
-import dotenv from 'dotenv';
 import { scheduleTasks } from './views/js/scheduler.ts';
 import forumPostRoutes from './routes/forumPosts.ts';
 import leagueStandingsRoutes from './routes/leagueStandings.ts';
@@ -50,7 +53,6 @@ import paypalRoutes from './routes/paypal.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -160,6 +162,22 @@ app.get('/auth/discord', (_req, res) => {
     res
 });
 
+app.use(async (req, res, next) => {
+    try {
+      const allAnnouncements = await db
+        .select()
+        .from(announcements)
+        .where(eq(announcements.visible, 1));
+      
+      res.locals.announcements = allAnnouncements;
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+      res.locals.announcements = [];
+    }
+    next();
+  });
+  
+
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -174,3 +192,4 @@ const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
     console.log(`Service endpoint = http://localhost:${PORT}`);
 });
+

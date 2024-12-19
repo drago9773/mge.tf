@@ -1,3 +1,5 @@
+select * from pending_players;
+
 CREATE TABLE IF NOT EXISTS `global` (
     `signup_closed` INTEGER DEFAULT 0,
     `roster_locked` INTEGER DEFAULT 0
@@ -259,7 +261,6 @@ CREATE TABLE IF NOT EXISTS `tournaments` (
 	`avatar` text,
 	`bracket_link` text
 );
-select * from payments;
 CREATE TABLE IF NOT EXISTS `payments` (
 	`payment_id` text PRIMARY KEY NOT NULL,
 	`purchased_for` text NOT NULL,
@@ -270,4 +271,9 @@ CREATE TABLE IF NOT EXISTS `payments` (
     `description` text,
     FOREIGN KEY (`purchased_for`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (`purchased_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
+);
+CREATE TABLE IF NOT EXISTS `announcements` (
+    `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `content` text,
+    `visible` integer DEFAULT 0
 );

@@ -1,11 +1,17 @@
 import express from 'express';
-import { ApiError, CheckoutPaymentIntent, Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
-import dotenv from 'dotenv';
+import {
+  ApiError,
+  CheckoutPaymentIntent,
+  Client,
+  Environment,
+  LogLevel,
+  OrdersController,
+} from '@paypal/paypal-server-sdk';
 import { db } from '../db.ts';
 import { payments } from '../schema.ts';
+import dotenv from 'dotenv';
 
 dotenv.config();
-
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 
@@ -21,7 +27,7 @@ const client = new Client({
     oAuthClientSecret: PAYPAL_CLIENT_SECRET,
   },
   timeout: 0,
-  environment: Environment.Sandbox, // Change to `Environment.Production` for production
+  environment: Environment.Sandbox, // change to `Environment.Production` for production
   logging: {
     logLevel: LogLevel.Info,
     logRequest: {

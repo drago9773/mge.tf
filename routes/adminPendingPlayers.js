@@ -17,7 +17,7 @@ router.post('/approve_player', async (req, res) => {
       playerSteamId: player_steamid,
       teamId: team_id,
       active: 1,
-      permissionLevel: 0, 
+      permissionLevel: 1, 
     });
 
     await db.delete(pending_players).where(eq(pending_players.playerSteamId, player_steamid));
