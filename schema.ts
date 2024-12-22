@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { datetime } from 'drizzle-orm/mysql-core';
+import { unique } from 'drizzle-orm/mysql-core';
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const UserRole = {
@@ -47,9 +47,13 @@ export const pendingStatus = {
 
 
 export const global = sqliteTable('global', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
   signupClosed: integer('signup_closed').default(0),
   rosterLocked: integer('roster_locked').default(0),
+  naSignupSeasonId: integer('na_signup_season_id').references(() => seasons.id),
+  euSignupSeasonId: integer('eu_signup_season_id').references(() => seasons.id),
 });
+export type Global = typeof global.$inferSelect;
 
 export const announcements = sqliteTable('announcements', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -134,7 +138,30 @@ export const regions = sqliteTable('regions', {
 
 export const seasons = sqliteTable('seasons', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  numWeeks: integer('num_weeks').default(0)
+  seasonNum: integer('season_num').notNull(),
+  numWeeks: integer('num_weeks').notNull(),
+  regionId: integer('region_id').notNull().references(() => regions.id),
+});
+
+export type Region = typeof regions.$inferSelect;
+export type Season = typeof seasons.$inferSelect;
+
+export interface JoinedSeason extends Season {
+  regionName: string;
+}
+
+export interface SeasonsByRegion {
+  [key: number]: {
+    regionName: string;
+    seasons: JoinedSeason[];
+  }
+}
+
+export const playoffs = sqliteTable('playoffs', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  seasonId: integer('season_id').notNull().references(() => seasons.id),
+  numRounds: integer('num_rounds'),
+  isTournament: integer('is_tournament', { mode: 'boolean' }).notNull(),
 });
 
 export const teams = sqliteTable('teams', {
@@ -150,12 +177,34 @@ export const teams = sqliteTable('teams', {
   pointsScoredAgainst: integer('points_scored_against').notNull().default(0),
   divisionId: integer('division_id').references(() => divisions.id),
   regionId: integer('region_id').references(() => regions.id),
-  seasonNo: integer('season_no').references(() => seasons.id),
+  seasonId: integer('season_id').references(() => seasons.id),
   is1v1: integer('is_1v1').default(0),
   status: integer('status').notNull().default(TeamStatus.UNREADY),
   paymentStatus: integer('payment_status').notNull().default(0),
   joinPassword: text('join_password'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
+});
+
+export const teams_history = sqliteTable('teams_history', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  name: text('name').notNull(),
+  acronym: text('acronym'),
+  avatar: text('avatar'),
+  wins: integer('wins').notNull().default(0),
+  losses: integer('losses').notNull().default(0),
+  gamesWon: integer('games_won').notNull().default(0),
+  gamesLost: integer('games_lost').notNull().default(0),
+  pointsScored: integer('points_scored').notNull().default(0),
+  pointsScoredAgainst: integer('points_scored_against').notNull().default(0),
+  divisionId: integer('division_id'),
+  regionId: integer('region_id'),
+  seasonId: integer('season_id').notNull(),
+  is1v1: integer('is_1v1').default(0),
+  status: integer('status').notNull().default(0),
+  paymentStatus: integer('payment_status').notNull().default(0),
+  joinPassword: text('join_password'),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const matches = sqliteTable('matches', {
@@ -165,7 +214,7 @@ export const matches = sqliteTable('matches', {
   winnerId: integer('winner_id').references(() => teams.id),
   winnerScore: integer('winner_score'),
   loserScore: integer('loser_score'),
-  seasonNo: integer('season_no').notNull().references(() => seasons.id),
+  seasonId: integer('season_id').notNull().references(() => seasons.id),
   weekNo: integer('week_no').notNull(),
   boSeries: integer('bo_series'),
   matchDateTime: text('match_date_time'),
@@ -224,7 +273,7 @@ export const players_in_teams = sqliteTable('players_in_teams', {
   playerSteamId: text('player_steam_id').references(() => users.steamId),
   teamId: integer('team_id').references(() => teams.id),
   active: integer('active').default(1),
-  permissionLevel: integer('permission_level').notNull().default(0),
+  permissionLevel: integer('permission_level').notNull().default(0), // 0 for member, 1 for moderator, 2 for owner
   startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
   leftAt: text('left_at').default(sql`0`)
 });

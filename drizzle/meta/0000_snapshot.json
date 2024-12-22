@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "706f59a8-be89-4730-a0f7-ec53fd6bb9a8",
+  "id": "6e044c32-ba46-4332-b09b-7466c6fd2e32",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "activity": {
@@ -59,6 +59,37 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "announcements": {
+      "name": "announcements",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "visible": {
+          "name": "visible",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -128,7 +159,7 @@
           "name": "status",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 1
         },
@@ -305,6 +336,142 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "denied_players": {
+      "name": "denied_players",
+      "columns": {
+        "player_steam_id": {
+          "name": "player_steam_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "admin_id": {
+          "name": "admin_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "denied_at": {
+          "name": "denied_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "denied_players_player_steam_id_users_steam_id_fk": {
+          "name": "denied_players_player_steam_id_users_steam_id_fk",
+          "tableFrom": "denied_players",
+          "tableTo": "users",
+          "columnsFrom": [
+            "player_steam_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "denied_players_team_id_teams_id_fk": {
+          "name": "denied_players_team_id_teams_id_fk",
+          "tableFrom": "denied_players",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "denied_players_admin_id_users_steam_id_fk": {
+          "name": "denied_players_admin_id_users_steam_id_fk",
+          "tableFrom": "denied_players",
+          "tableTo": "users",
+          "columnsFrom": [
+            "admin_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "discord": {
+      "name": "discord",
+      "columns": {
+        "discord_id": {
+          "name": "discord_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "discord_username": {
+          "name": "discord_username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "discord_avatar": {
+          "name": "discord_avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "player_steam_id": {
+          "name": "player_steam_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "discord_player_steam_id_users_steam_id_fk": {
+          "name": "discord_player_steam_id_users_steam_id_fk",
+          "tableFrom": "discord",
+          "tableTo": "users",
+          "columnsFrom": [
+            "player_steam_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "divisions": {
       "name": "divisions",
       "columns": {
@@ -321,6 +488,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "signup_cost": {
+          "name": "signup_cost",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
         }
       },
       "indexes": {},
@@ -399,6 +574,79 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "global": {
+      "name": "global",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "signup_closed": {
+          "name": "signup_closed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "roster_locked": {
+          "name": "roster_locked",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "na_signup_season_id": {
+          "name": "na_signup_season_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "eu_signup_season_id": {
+          "name": "eu_signup_season_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "global_na_signup_season_id_seasons_id_fk": {
+          "name": "global_na_signup_season_id_seasons_id_fk",
+          "tableFrom": "global",
+          "tableTo": "seasons",
+          "columnsFrom": [
+            "na_signup_season_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "global_eu_signup_season_id_seasons_id_fk": {
+          "name": "global_eu_signup_season_id_seasons_id_fk",
+          "tableFrom": "global",
+          "tableTo": "seasons",
+          "columnsFrom": [
+            "eu_signup_season_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "match_comms": {
       "name": "match_comms",
       "columns": {
@@ -430,13 +678,12 @@
           "notNull": false,
           "autoincrement": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
+        "created_At": {
+          "name": "created_At",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "autoincrement": false
         },
         "match_id": {
           "name": "match_id",
@@ -530,8 +777,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "season_no": {
-          "name": "season_no",
+        "season_id": {
+          "name": "season_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -560,6 +807,21 @@
         },
         "status": {
           "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "submitted_by": {
+          "name": "submitted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "submitted_at": {
+          "name": "submitted_at",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -607,15 +869,28 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "matches_season_no_seasons_id_fk": {
-          "name": "matches_season_no_seasons_id_fk",
+        "matches_season_id_seasons_id_fk": {
+          "name": "matches_season_id_seasons_id_fk",
           "tableFrom": "matches",
           "tableTo": "seasons",
           "columnsFrom": [
-            "season_no"
+            "season_id"
           ],
           "columnsTo": [
             "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matches_submitted_by_users_steam_id_fk": {
+          "name": "matches_submitted_by_users_steam_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "users",
+          "columnsFrom": [
+            "submitted_by"
+          ],
+          "columnsTo": [
+            "steam_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -654,6 +929,91 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "payments": {
+      "name": "payments",
+      "columns": {
+        "payment_id": {
+          "name": "payment_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "purchased_for": {
+          "name": "purchased_for",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "purchased_by": {
+          "name": "purchased_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "purchase_date": {
+          "name": "purchase_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payments_purchased_for_users_steam_id_fk": {
+          "name": "payments_purchased_for_users_steam_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "purchased_for"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payments_purchased_by_users_steam_id_fk": {
+          "name": "payments_purchased_by_users_steam_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "purchased_by"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "pending_players": {
       "name": "pending_players",
       "columns": {
@@ -670,6 +1030,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
         }
       },
       "indexes": {},
@@ -831,6 +1199,57 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "playoffs": {
+      "name": "playoffs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "season_id": {
+          "name": "season_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "num_rounds": {
+          "name": "num_rounds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_tournament": {
+          "name": "is_tournament",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "playoffs_season_id_seasons_id_fk": {
+          "name": "playoffs_season_id_seasons_id_fk",
+          "tableFrom": "playoffs",
+          "tableTo": "seasons",
+          "columnsFrom": [
+            "season_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "posts": {
       "name": "posts",
       "columns": {
@@ -911,6 +1330,98 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "punishment": {
+      "name": "punishment",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "player_steam_id": {
+          "name": "player_steam_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "punished_by": {
+          "name": "punished_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "start_date_time": {
+          "name": "start_date_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "severity": {
+          "name": "severity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "punishment_player_steam_id_users_steam_id_fk": {
+          "name": "punishment_player_steam_id_users_steam_id_fk",
+          "tableFrom": "punishment",
+          "tableTo": "users",
+          "columnsFrom": [
+            "player_steam_id"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "punishment_punished_by_users_steam_id_fk": {
+          "name": "punishment_punished_by_users_steam_id_fk",
+          "tableFrom": "punishment",
+          "tableTo": "users",
+          "columnsFrom": [
+            "punished_by"
+          ],
+          "columnsTo": [
+            "steam_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "regions": {
       "name": "regions",
       "columns": {
@@ -944,17 +1455,44 @@
           "notNull": true,
           "autoincrement": true
         },
+        "season_num": {
+          "name": "season_num",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "num_weeks": {
           "name": "num_weeks",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "notNull": true,
+          "autoincrement": false
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "seasons_region_id_regions_id_fk": {
+          "name": "seasons_region_id_regions_id_fk",
+          "tableFrom": "seasons",
+          "tableTo": "regions",
+          "columnsFrom": [
+            "region_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -1096,8 +1634,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "season_no": {
-          "name": "season_no",
+        "season_id": {
+          "name": "season_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -1115,7 +1653,15 @@
           "name": "status",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false,
           "default": 0
         },
@@ -1163,12 +1709,178 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "teams_season_no_seasons_id_fk": {
-          "name": "teams_season_no_seasons_id_fk",
+        "teams_season_id_seasons_id_fk": {
+          "name": "teams_season_id_seasons_id_fk",
           "tableFrom": "teams",
           "tableTo": "seasons",
           "columnsFrom": [
-            "season_no"
+            "season_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "teams_history": {
+      "name": "teams_history",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "acronym": {
+          "name": "acronym",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "wins": {
+          "name": "wins",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "losses": {
+          "name": "losses",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "games_won": {
+          "name": "games_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "games_lost": {
+          "name": "games_lost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored": {
+          "name": "points_scored",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "points_scored_against": {
+          "name": "points_scored_against",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "division_id": {
+          "name": "division_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "season_id": {
+          "name": "season_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_1v1": {
+          "name": "is_1v1",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "join_password": {
+          "name": "join_password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teams_history_team_id_teams_id_fk": {
+          "name": "teams_history_team_id_teams_id_fk",
+          "tableFrom": "teams_history",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_id"
           ],
           "columnsTo": [
             "id"
@@ -1331,14 +2043,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "isSignedUp": {
-          "name": "isSignedUp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
         "permission_level": {
           "name": "permission_level",
           "type": "integer",
@@ -1347,8 +2051,8 @@
           "autoincrement": false,
           "default": 0
         },
-        "is_banned": {
-          "name": "is_banned",
+        "ban_status": {
+          "name": "ban_status",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

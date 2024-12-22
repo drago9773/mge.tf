@@ -43,27 +43,29 @@
                         <input id="avatar" name="avatar" type="file" accept="image/*">
                     </div>
 
-                  <div class="space-y-5 mt-5">
-                    <div>
-                      <label for="division_id" class="block text-sm font-medium text-white whitespace-nowrap">Division ID:</label>
-                      <select id="division_id" name="division_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
-                        <option value="" disabled selected>-</option>
-                        <option value="1">OPEN</option>
-                        <option value="2">INVITE</option>
-                      </select>
+                    <div class="space-y-5 mt-5">
+                      <div>
+                        <label for="division_id" class="block text-sm font-medium text-white whitespace-nowrap">Division:</label>
+                        <select id="division_id" name="division_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                          <option value="" disabled selected>-</option>
+                          <% divisions.forEach(function(division) { %>
+                            <option value="<%= division.id %>"><%= division.name %></option>
+                          <% }); %>
+                        </select>
+                      </div>
                     </div>
-                  </div>
-    
-                  <div class="space-y-5 mt-5">
-                    <div>
-                      <label for="region_id" class="block text-sm font-medium text-white whitespace-nowrap">Region ID:</label>
-                      <select id="region_id" name="region_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
-                        <option value="" disabled selected>-</option>
-                        <option value="1">NA</option>
-                        <option value="2">EU</option>
-                      </select>
+                    
+                    <div class="space-y-5 mt-5">
+                      <div>
+                        <label for="region_id" class="block text-sm font-medium text-white whitespace-nowrap">Region:</label>
+                        <select id="region_id" name="region_id" required class="mt-1 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                          <option value="" disabled selected>-</option>
+                          <% regions.forEach(function(region) { %>
+                            <option value="<%= region.id %>"><%= region.name %></option>
+                          <% }); %>
+                        </select>
+                      </div>
                     </div>
-                  </div>
 
                   <div class="space-y-5 mt-5 max-w-md">
                     <div>

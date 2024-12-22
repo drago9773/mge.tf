@@ -1,17 +1,8 @@
 //TODO: general
+    ////action for new season signup but old team (in signup.ejs give option to select their team instead of make one)
     ////payment on signup
-
-//TODO:
-    ////global messages (rosters locking! submit demos! pending players! globally)
-        //include 'message' and 'timer' thats posted globally
-    ////poost roster lock/signups close in league info
     ////rulebook
-    ////playoffs?
-    ////FF option
-    ////all routing redirects
-
-//TODO: admin
-    ////automatic match generation equation
+    ////automatic match generation equation/playoffs
     ////SQL injection
 
 //FUTURE

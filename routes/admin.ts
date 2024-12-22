@@ -1,7 +1,7 @@
 import express from 'express';
 import { db, isAdmin } from '../db.ts';
 import { arenas, announcements, punishment, divisions, matches, players_in_teams, regions, seasons, 
-        teams, users, demos, demo_report, global, pending_players } from '../schema.ts';
+        teams, users, demos, demo_report, global, pending_players, playoffs, type JoinedSeason, type SeasonsByRegion } from '../schema.ts';
 import { and, eq } from 'drizzle-orm';
 
 const router = express.Router();
@@ -49,7 +49,34 @@ router.get('/admin', async (req, res) => {
         const allArenas = await db.select().from(arenas);
         const allDivisions = await db.select().from(divisions);
         const allRegions = await db.select().from(regions);
-        const allSeasons = await db.select().from(seasons);
+        const allSeasons = await db
+            .select({
+            id: seasons.id,
+            seasonNum: seasons.seasonNum,
+            numWeeks: seasons.numWeeks,
+            regionId: seasons.regionId,
+            regionName: regions.name,
+            playoff: {
+                isTournament: playoffs.isTournament,
+                numRounds: playoffs.numRounds,
+            },
+            })
+            .from(seasons)
+            .innerJoin(regions, eq(seasons.regionId, regions.id))
+            .leftJoin(playoffs, eq(playoffs.seasonId, seasons.id))
+            .orderBy(regions.name, seasons.seasonNum);
+
+        const seasonsByRegion = allSeasons.reduce<SeasonsByRegion>((acc, season) => {
+            if (!acc[season.regionId]) {
+                acc[season.regionId] = {
+                regionName: season.regionName,
+                seasons: []
+                };
+            }
+            acc[season.regionId].seasons.push(season);
+            return acc;
+            }, {} as SeasonsByRegion);
+        
         const allAnnouncements = await db.select().from(announcements);
         const allUsers = await db.select().from(users);
         const disputedMatches = await db.select().from(matches).where(eq(matches.status, 2));
@@ -83,29 +110,51 @@ router.get('/admin', async (req, res) => {
             players: allPlayersInTeams.filter(player => player.teamId === team.id)
         }));        
         const allDemos = await db.select().from(demos);
-        const allGlobal = await db.select().from(global);
+        let allGlobal = await db.select().from(global);
+        if (allGlobal.length === 0) {
+            await db.insert(global).values({ 
+                signupClosed: 0, 
+                rosterLocked: 0,
+                naSignupSeasonId: null,
+                euSignupSeasonId: null 
+            });
+            allGlobal = await db.select().from(global);
+        }
+
+        const currentSignupSeasons = {
+            na: allGlobal[0].naSignupSeasonId ? 
+                allSeasons.find(s => s.id === allGlobal[0].naSignupSeasonId) : null,
+            eu: allGlobal[0].euSignupSeasonId ? 
+                allSeasons.find(s => s.id === allGlobal[0].euSignupSeasonId) : null
+        };
         const allDemoReports = await db
             .select()
             .from(demo_report)
             .leftJoin(users, eq(demo_report.reportedBy, users.steamId));
 
         const allPunishments = await db.select().from(punishment)
-        .leftJoin(users, eq(punishment.playerSteamId, users.steamId));
+            .leftJoin(users, eq(punishment.playerSteamId, users.steamId));
+
+        const naRegion = allRegions.find(r => r.name === 'NA');
+        const euRegion = allRegions.find(r => r.name === 'EU');
         
         res.render('layout', {
             body: 'admin',
             title: 'Admin',
-            announcements: [],
             session: req.session,
             teams: allTeams,
             arenas: allArenas,
             divisions: allDivisions,
             seasons: allSeasons,
+            seasonsByRegion,
             regions: allRegions,
             disputedMatches,
             players_in_teams: allPlayersInTeams,
             teamsWithPlayers: playersByTeam,
             global: allGlobal[0],
+            currentSignupSeasons,
+            naRegionId: naRegion?.id,
+            euRegionId: euRegion?.id,
             users: allUsers,
             demos: allDemos,
             announcements: allAnnouncements,

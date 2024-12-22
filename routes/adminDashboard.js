@@ -1,7 +1,7 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { divisions, regions, seasons, arenas, global, pending_players, announcements } from '../schema.ts';
-import { eq } from 'drizzle-orm';
+import { divisions, regions, seasons, arenas, global, pending_players, announcements, playoffs } from '../schema.ts';
+import { eq, desc } from 'drizzle-orm';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -85,7 +85,25 @@ router.post('/edit_announcement', async (req, res) => {
       res.status(500).send('Internal Server Error');
     }
   });
-  
+
+router.post('/update_signup_seasons', async (req, res) => {
+const { naSignupSeasonId, euSignupSeasonId } = req.body;
+
+try {
+    await db
+    .update(global)
+    .set({
+        naSignupSeasonId: naSignupSeasonId ? parseInt(naSignupSeasonId) : null,
+        euSignupSeasonId: euSignupSeasonId ? parseInt(euSignupSeasonId) : null,
+    })
+    .where(eq(global.id, 1)); 
+
+    res.redirect('/admin');
+} catch (error) {
+    console.error('Error updating signup seasons:', error);
+    res.status(500).send('Error updating signup seasons');
+}
+  });
 
 router.post('/update_status', async (req, res) => {
     const { action, value } = req.body;
@@ -109,7 +127,6 @@ router.post('/update_status', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
 
 router.post('/update_num_weeks', async (req, res) => {
     const { numWeeks, seasonId } = req.body;
@@ -174,13 +191,55 @@ router.post('/admin_update_arena_avatar/:arenaid', upload.single('avatar'), asyn
 });
 
 router.post('/create_season', async (req, res) => {
-    const { numWeeks } = req.body;
+    const { numWeeks, regionId } = req.body;
+    
     try {
-        await db.insert(seasons).values({ numWeeks });
-        res.redirect('/admin');
+      const existingSeasons = await db
+        .select({ seasonNum: seasons.seasonNum })
+        .from(seasons)
+        .where(eq(seasons.regionId, parseInt(regionId)))
+        .orderBy(desc(seasons.seasonNum))
+        .limit(1);
+  
+      const newSeasonNum = existingSeasons.length > 0 
+        ? existingSeasons[0].seasonNum + 1 
+        : 1;
+  
+      await db.insert(seasons).values({
+        seasonNum: newSeasonNum,
+        numWeeks: parseInt(numWeeks),
+        regionId: parseInt(regionId)
+      });
+  
+      res.redirect('/admin');
     } catch (err) {
-        console.error('Error creating season:', err);
-        res.status(500).send('Internal Server Error');
+      console.error('Error creating season:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+router.post('/manage_playoffs', async (req, res) => {
+    const { seasonId, format, numRounds } = req.body;
+
+    try {
+        const existingPlayoff = await db.select().from(playoffs).where(eq(playoffs.seasonId, parseInt(seasonId))).get();
+        const playoffData = {
+            seasonId: parseInt(seasonId),
+            numRounds: format === 'rounds' ? parseInt(numRounds) : null,
+            isTournament: format === 'tournament',
+        };
+        if (existingPlayoff) {
+            await db
+                .update(playoffs)
+                .set(playoffData)
+                .where(eq(playoffs.id, existingPlayoff.id));
+        } else {
+            await db.insert(playoffs).values({ ...playoffData });
+        }
+        res.redirect('/admin');
+    } catch (error) {
+        console.error('Error managing playoffs:', error);
+        res.status(500).send('Error managing playoffs');
     }
 });
 
@@ -239,6 +298,7 @@ router.post('/remove_season', async (req, res) => {
     res.redirect('/admin');
 
 });
+
 router.post('/remove_division', async (req, res) => {
     const divisionId = req.body.division_id;
     try{
@@ -248,6 +308,7 @@ router.post('/remove_division', async (req, res) => {
     }
     res.redirect('/admin');
 });
+
 router.post('/remove_region', async (req, res) => {
     const regionId = req.body.region_id;
     try{
@@ -257,6 +318,7 @@ router.post('/remove_region', async (req, res) => {
     }
     res.redirect('/admin');
 });
+
 router.post('/remove_arena', async (req, res) => {
     const arenaId = req.body.arena_id;
     try{

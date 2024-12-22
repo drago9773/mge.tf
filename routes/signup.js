@@ -59,14 +59,27 @@ router.get('/signup', async (req, res) => {
 router.post('/team_signup', upload.single('avatar'), async (req, res) => {
     const { name, acronym, division_id, region_id, join_password, is_1v1, permission_level } = req.body;
     const player_steam_id = req.session?.user?.steamid;
-    const allGlobal = await db.select().from(global);
-    const signupClosed = allGlobal[0].signupClosed;
-    
+
     try {
-        // check if they are in a 1v1/2v2 team and if active
-        if(signupClosed){
+        const allGlobal = await db.select().from(global);
+        if (allGlobal[0].signupClosed) {
             return res.status(400).send(`Signups are CLOSED`);
         }
+
+        let seasonId;
+        if (region_id === '1') {
+            seasonId = allGlobal[0].naSignupSeasonId;
+        } else if (region_id === '2') {
+            seasonId = allGlobal[0].euSignupSeasonId;
+        } else {
+            return res.status(400).send(`No active season found for region: ${region_id}`);
+        }
+        
+        if (!seasonId) {
+            return res.status(400).send(`No active season found for ${region_id.name} region`);
+        }
+
+        // check if they are in a 1v1/2v2 team and if active
         const existingTeam = db
             .select()
             .from(players_in_teams)
@@ -80,29 +93,29 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
         if (existingTeam) {
             return res.status(400).send(`Error: You are already in a ${is_1v1 ? '1v1' : '2v2'} team.`);
         }
+
+        let avatarFilename = null;
+        if (req.file) {
+            const timestamp = Date.now();
+            const ext = path.extname(req.file.originalname);
+            avatarFilename = `${name}_CreatedAt_${timestamp}${ext}`;
+            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
+            const newPath = `./views/images/team_avatars/${avatarFilename}`;
+
+            fs.renameSync(oldPath, newPath);
+        }
+
         const result = await db.insert(teams).values({
             name,
             acronym,
-            avatar: req.file ? req.file.filename : null,
+            avatar: avatarFilename,
             divisionId: division_id,
             regionId: region_id,
-            seasonNo: SEASON_ID,
+            seasonId: seasonId,
             is1v1: is_1v1,
             joinPassword: join_password
         });
-        
         const team_id = Number(result.lastInsertRowid);
-        const timestamp = Date.now();
-        if (req.file) {
-            const ext = path.extname(req.file.originalname);
-            const newFilename = `team${name}_avatarCreatedAt${timestamp}${ext}`;
-            const oldPath = `./views/images/team_avatars/${req.file.filename}`;
-            const newPath = `./views/images/team_avatars/${newFilename}`;
-
-            fs.renameSync(oldPath, newPath);
-
-            await db.update(teams).set({ avatar: newFilename }).where(eq(teams.id, team_id));
-        }
 
         await db.insert(players_in_teams).values({
             playerSteamId: player_steam_id,

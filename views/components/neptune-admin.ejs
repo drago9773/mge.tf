@@ -98,49 +98,205 @@
           </button>
         </form>
       </div>
-    </div>
-  </section>  
-
-  <section class="space-y-4 max-w-md">
-      <h2 class="text-2xl font-bold">Seasons</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
-          <thead class="bg-gray-700">
-            <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Season Number</th>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Number of Weeks</th>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Update Number of Weeks</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-gray-900">
-            <% if (seasons && seasons.length > 0) { %>
-              <% seasons.forEach((season, index) => { %>
-                <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
-                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.id %></td>
-                  <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.numWeeks %></td>
-                  <td class="px-4 py-2 whitespace-nowrap text-sm">
-                    <form action="/update_num_weeks" method="POST" class="flex items-center">
-                      <input type="number" name="numWeeks" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required >
-                      <input type="hidden" name="seasonId" value="<%= season.id %>">
-                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
-                    </form>
-                  </td>
-                </tr>
+  
+      <div class="mt-6">
+        <h3 class="text-lg font-bold mb-4">Current Signup Season Assignment</h3>
+        <form action="/update_signup_seasons" method="POST" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">NA Region Season:</label>
+            <select 
+              name="naSignupSeasonId" 
+              class="w-full bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-2"
+            >
+              <option value="">Select Season</option>
+              <% seasons.filter(s => s.regionId === naRegionId).forEach(season => { %>
+                <option 
+                  value="<%= season.id %>" 
+                  <%= global.naSignupSeasonId === season.id ? 'selected' : '' %>
+                >
+                  Season <%= season.seasonNum %>
+                </option>
               <% }) %>
-            <% } else { %>
-              <tr>
-                <td colspan="3" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>        
+            </select>
+          </div>
+  
+          <div>
+            <label class="block text-sm font-medium mb-2">EU Region Season:</label>
+            <select 
+              name="euSignupSeasonId" 
+              class="w-full bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-2"
+            >
+              <option value="">Select Season</option>
+              <% seasons.filter(s => s.regionId === euRegionId).forEach(season => { %>
+                <option 
+                  value="<%= season.id %>" 
+                  <%= global.euSignupSeasonId === season.id ? 'selected' : '' %>
+                >
+                  Season <%= season.seasonNum %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+  
+          <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            Update Season Assignments
+          </button>
+        </form>
       </div>
-      <h2 class="font-bold">Create Season</h2>
-      <form action="/create_season" method="POST" class="space-y-4">
+    </div>
+  </section>
+
+  <section class="space-y-8 max-w-2xl">
+    <% Object.values(seasonsByRegion).forEach(({ regionName, seasons }) => { %>
+      <div>
+        <h2 class="text-2xl font-bold mb-4"><%= regionName %> Seasons</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-auto shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Season Number</th>
+                <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Number of Weeks</th>
+                <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Playoffs</th>
+                <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-gray-900">
+              <% if (seasons.length > 0) { %>
+                <% seasons.forEach((season, index) => { %>
+                  <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">Season <%= season.seasonNum %></td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm"><%= season.numWeeks %></td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">
+                      <% if (season.playoff) { %>
+                        <%= console.log(season); %>
+                        <%= season.playoff.isTournament == '1' ? 'Tournament' : `${season.playoff.numRounds} Rounds` %>
+                      <% } else { %>
+                        No playoffs set
+                      <% } %>
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">
+                      <div class="flex space-x-2">
+                        <form action="/update_num_weeks" method="POST" class="flex items-center">
+                          <input type="number" name="numWeeks" class="w-20 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                          <input type="hidden" name="seasonId" value="<%= season.id %>">
+                          <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update Weeks</button>
+                        </form>
+  
+                        <button 
+                          onclick="togglePlayoffModal('<%= season.id %>')"
+                          class="bg-green-600 text-white px-2 py-1 rounded-md"
+                        >
+                          <%= season.playoff ? 'Update Playoffs' : 'Add Playoffs' %>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="4" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No seasons created yet</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>        
+        </div>
+      </div>
+    <% }) %>
+  
+    <div id="playoffModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+        <h3 class="text-xl font-bold mb-4">Manage Playoffs</h3>
+        <form action="/manage_playoffs" method="POST" class="space-y-4">
+          <input type="hidden" id="seasonId" name="seasonId">
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium">Playoff Format:</label>
+            <select 
+              name="format" 
+              id="playoffFormat"
+              onchange="toggleRoundsInput()"
+              class="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-2"
+            >
+              <option value="tournament">Tournament</option>
+              <option value="rounds">Rounds</option>
+            </select>
+          </div>
+  
+          <div id="roundsInput" class="space-y-2 hidden">
+            <label class="block text-sm font-medium">Number of Rounds:</label>
+            <input 
+              type="number" 
+              name="numRounds"
+              class="w-full bg-gray-700 text-gray-300 border border-gray-600 rounded-md p-2"
+              min="1"
+            >
+          </div>
+  
+          <div class="flex justify-end space-x-3">
+            <button 
+              type="button" 
+              onclick="closePlayoffModal()"
+              class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="px-4 py-2 bg-green-600 rounded hover:bg-green-700"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Create Season Form -->
+    <div>
+      <h2 class="font-bold mb-4">Create New Season</h2>
+      <form action="/create_season" method="POST" class="space-y-4 max-w-md">
+        <div class="space-y-2">
+          <label for="regionId" class="block text-sm font-medium">Region:</label>
+          <select 
+            id="regionId" 
+            name="regionId" 
+            required
+            class="w-full bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-2"
+          >
+            <option value="">Select a region</option>
+            <% regions.forEach(region => { %>
+              <option value="<%= region.id %>"><%= region.name %></option>
+            <% }) %>
+          </select>
+        </div>
         <%- include('input_admin', { id: "numWeeks", label: "Number of Weeks:", type: "integer" }) %>
-        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Season</button>
+        <button type="submit" class="px-4 py-2 bg-red-500 rounded hover:bg-red-800">Create Season</button>
       </form>
-    </section>
+    </div>
+  </section>
+  
+  <script>
+  function togglePlayoffModal(seasonId) {
+    const modal = document.getElementById('playoffModal');
+    document.getElementById('seasonId').value = seasonId;
+    modal.classList.remove('hidden');
+  }
+  
+  function closePlayoffModal() {
+    const modal = document.getElementById('playoffModal');
+    modal.classList.add('hidden');
+  }
+  
+  function toggleRoundsInput() {
+    const format = document.getElementById('playoffFormat').value;
+    const roundsInput = document.getElementById('roundsInput');
+    if (format === 'rounds') {
+      roundsInput.classList.remove('hidden');
+    } else {
+      roundsInput.classList.add('hidden');
+    }
+  }
+  </script>
 
     <section class="space-y-4 max-w-md">
       <h3 class="text-xl font-semibold">Divisions</h3>

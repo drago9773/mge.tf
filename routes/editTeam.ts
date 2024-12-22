@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { users, teams, pending_players, players_in_teams, teamname_history, denied_players } from '../schema.ts';
+import { users, teams, global, pending_players, players_in_teams, teamname_history, denied_players } from '../schema.ts';
 import { eq, and } from 'drizzle-orm';
 import multer from 'multer';
 import path from 'path';
@@ -25,6 +25,7 @@ const upload = multer({
 router.get('/edit_team/:teamid', async (req, res) => {
     const teamid = Number(req.params.teamid);
     const allUsers = await db.select().from(users);
+    const allGlobal = await db.select().from(global);  
 
     if (isNaN(teamid)) {
         return res.status(404).json({error: 'No such team'});
@@ -99,6 +100,7 @@ router.get('/edit_team/:teamid', async (req, res) => {
             players_in_teams: allPlayersInTeams,
             pending_players: allPendingPlayers,
             denied_players: deniedPlayers,
+            rosterLocked: allGlobal[0].rosterLocked,
             session: req.session
         });
     } catch (err) {
@@ -114,6 +116,10 @@ router.post('/edit_team/:teamid', async (req, res) => {
     }
 
     try {
+        const allGlobal = await db.select().from(global);
+        if (allGlobal[0].rosterLocked) {
+            return res.status(400).send(`Rosters are locked. Cannot make team changes.`);
+        }
         const { team_name, acronym, join_password } = req.body;
         const teamData = db.select().from(teams).where(eq(teams.id, teamid)).get();
 
@@ -132,7 +138,7 @@ router.post('/edit_team/:teamid', async (req, res) => {
             })
             .where(eq(teams.id, teamid));
 
-        res.redirect(`/teams`);
+        res.redirect(`/team_page/${teamid}`);
     } catch (err) {
         console.error('Error querying database: ', err);
         res.status(500).send('Internal Server Error');
@@ -141,16 +147,20 @@ router.post('/edit_team/:teamid', async (req, res) => {
 
 
 router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, res) => {
-    console.log("Route hit");
     const teamid = Number(req.params.teamid);
     const timestamp = Date.now();
     if (isNaN(teamid)) {
         return res.status(403).send('Invalid team id');
     }
     try {
+        const allGlobal = await db.select().from(global);
+        if (allGlobal[0].rosterLocked) {
+            return res.status(400).send(`Rosters are locked. Cannot make team changes.`);
+        }
+
         if (req.file) {
             const ext = path.extname(req.file.originalname);
-            const newFilename = `team${teamid}_avatarCreatedAt${timestamp}${ext}`; 
+            const newFilename = `${teamid}_CreatedAt_${timestamp}${ext}`; 
             const oldPath = `./views/images/team_avatars/${req.file.filename}`;
             const newPath = `./views/images/team_avatars/${newFilename}`;
             
@@ -165,14 +175,18 @@ router.post('/upload_team_avatar/:teamid', upload.single('avatar'), async (req, 
 });
 
 router.post('/remove_player/:teamid', async (req, res) => {
-    const teamid = Number(req.params.teamid);
+    const teamId = Number(req.params.teamid);
     const playerSteamId = req.body.player_steamid;
 
-    if (isNaN(teamid)) {
+    if (isNaN(teamId)) {
         return res.status(403).send('Invalid team id');
     }
 
     try {
+        const allGlobal = await db.select().from(global);
+        if (allGlobal[0].rosterLocked) {
+            return res.status(400).send(`Rosters are CLOSED`);
+        }
         if (!playerSteamId) {
             return res.status(400).send('Player Steam ID is required');
         }
@@ -186,54 +200,17 @@ router.post('/remove_player/:teamid', async (req, res) => {
             .where(
                 and(
                     eq(players_in_teams.playerSteamId, playerSteamId),
-                    eq(players_in_teams.teamId, teamid)
+                    eq(players_in_teams.teamId, teamId)
                 )
             );
 
-        res.redirect(`/`);
+        return res.redirect(`/edit_team/${teamId}`);
     } catch (err) {
         console.error('Error querying database: ', err);
         res.status(500).send('Internal Server Error');
     }
 });
 
-router.post('/delete_team/:teamid', async (req, res) => {
-    const teamid = Number(req.params.teamid);
-    const playerSteamId = req?.session?.user?.steamid;
-
-    if (isNaN(teamid)) {
-        return res.status(403).send('Invalid team id');
-    }
-
-    if (!playerSteamId) {
-        return res.status(403).send('Invalid steam id');
-    }
-
-    try {
-        const playerInTeam = db
-        .select()
-        .from(players_in_teams)
-        .where(
-            and(
-                eq(players_in_teams.playerSteamId, playerSteamId),
-                eq(players_in_teams.teamId, teamid)
-            )
-        )
-        .get();
-    
-        if (!playerInTeam || playerInTeam.permissionLevel !== 2) {
-            return res.status(403).send('You do not have permission to delete this team');
-        }
-
-        await db.delete(players_in_teams).where(eq(players_in_teams.teamId, teamid));
-        await db.delete(teams).where(eq(teams.id, teamid));
-
-        res.redirect('/teams');
-    } catch (err) {
-        console.error('Error deleting team: ', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
 router.post('/approve_player/:teamid', async (req, res) => {
     if (req.session?.user) {
         const teamId = Number(req.params.teamid);
@@ -244,6 +221,11 @@ router.post('/approve_player/:teamid', async (req, res) => {
         }
 
         try {
+            const allGlobal = await db.select().from(global);
+            if (allGlobal[0].rosterLocked) {
+                return res.status(400).send(`Rosters are CLOSED`);
+            }
+
             const team = db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
                 return res.status(404).send('Team not found');
@@ -278,7 +260,7 @@ router.post('/approve_player/:teamid', async (req, res) => {
 
             await db.update(pending_players).set({status: 1}).where(eq(pending_players.playerSteamId, playerSteamId))
 
-            return res.redirect('/');
+            return res.redirect(`/edit_team/${teamId}`);
         } catch (err) {
             console.error('Error querying database: ' + (err as Error).message);
             return res.status(500).send('Internal Server Error');
@@ -298,6 +280,11 @@ router.post('/decline_player/:teamid', async (req, res) => {
         }
 
         try {
+            const allGlobal = await db.select().from(global);
+            if (allGlobal[0].rosterLocked) {
+                return res.status(400).send(`Rosters are CLOSED`);
+            }
+
             const team = db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
                 return res.status(404).send('Team not found');
@@ -314,7 +301,7 @@ router.post('/decline_player/:teamid', async (req, res) => {
             await db.delete(pending_players)
                 .where(and(eq(pending_players.playerSteamId, playerSteamId), eq(pending_players.teamId, teamId)));
 
-            return res.redirect('/'); 
+            return res.redirect(`/edit_team/${teamId}`);
         } catch (err) {
             console.error('Error querying database: ' + (err as Error).message);
             return res.status(500).send('Internal Server Error');
@@ -334,7 +321,7 @@ router.post('/promote_player/:teamid', async (req, res) => {
             return res.status(403).send('Invalid team id');
         }
 
-        try {
+        try {            
             const team = db.select().from(teams).where(eq(teams.id, teamId)).get();
             if (!team) {
                 return res.status(404).send('Team not found');
