@@ -1,8 +1,7 @@
 //TODO: general
-    ////action for new season signup but old team (in signup.ejs give option to select their team instead of make one)
-    ////payment on signup
-    ////rulebook
+    ////reset teams paymnet and status after season
     ////automatic match generation equation/playoffs
+    ////rulebook
     ////SQL injection
 
 //FUTURE

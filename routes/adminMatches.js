@@ -6,10 +6,15 @@ import { eq, sql, and } from 'drizzle-orm';
 const router = express.Router();
 
 router.post('/admin/create_match_set', async (req, res) => {
-    const { teams, boSeries, weekNo, seasonNo, arenaId, matchDateTime } = req.body;
+    const { teams, boSeries, weekNo, seasonId, seasonNo, arenaId, matchDateTime } = req.body;
     try {
         const allTeams = JSON.parse(teams);
         const bestOfSeries = parseInt(boSeries, 10);
+
+        const numericSeasonId = Number(seasonId);
+        if (!numericSeasonId) {
+            throw new Error('Invalid season ID');
+        }
 
         for (let i = 0; i < allTeams.length - 1; i += 2) {
             if (i + 1 < allTeams.length) {
@@ -19,8 +24,9 @@ router.post('/admin/create_match_set', async (req, res) => {
                 const match = await db.insert(matches).values({
                     homeTeamId: home_team_id,
                     awayTeamId: away_team_id,
-                    seasonNo: seasonNo,
-                    weekNo: weekNo,
+                    seasonId: numericSeasonId, 
+                    seasonNo: Number(seasonNo),
+                    weekNo: Number(weekNo),
                     boSeries: bestOfSeries,
                     matchDateTime: matchDateTime,
                     status: 0
@@ -41,6 +47,7 @@ router.post('/admin/create_match_set', async (req, res) => {
         res.redirect('/admin');
     } catch (error) {
         console.error("Error creating match set:", error);
+        console.error("Request body:", req.body);
         res.status(500).send("Internal Server Error");
     }
 });

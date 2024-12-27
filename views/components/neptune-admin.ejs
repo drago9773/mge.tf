@@ -1,5 +1,7 @@
 <div class="bg-gray-800">
-  <h2 class="rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS. CONFER WITH TEAM BEFORE MAKING CHANGES. </h2>
+  <h2 class="rounded-lg px-4 py-2 text-2xl font-bold text-red-500">CHANGES HERE CAN HAVE DRASTIC AFFECTS</h2>
+  <h2 class="rounded-lg px-4 py-2 text-2xl font-bold mb-10 text-red-500">CONFER WITH NEPTUNE BEFORE MAKING CHANGES. </h2>
+
   <div class="max-w-2xl mx-auto p-6 space-y-8">
   <h1 class="text-4xl font-bold mb-10">Administrative Dashboard </h1>
   
@@ -98,6 +100,22 @@
           </button>
         </form>
       </div>
+
+      <div>
+        <h3 class="text-lg font-bold mb-2">
+          Require Payment (for matches): 
+          <span class="<%= global.paymentRequired ? 'text-red-500' : 'text-green-500' %>">
+            <%= global.paymentRequired ? 'REQUIRED' : 'NOT REQUIRED' %>
+          </span>
+        </h3>
+        <form action="/update_status" method="POST" class="flex space-x-4">
+          <input type="hidden" name="action" value="payment">
+          <input type="hidden" name="value" value="<%= global.paymentRequired ? 0 : 1 %>">
+          <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded-md">
+            <%= global.paymentRequired ? 'Payment Not Required' : 'Payment Required' %> 
+          </button>
+        </form>
+      </div>
   
       <div class="mt-6">
         <h3 class="text-lg font-bold mb-4">Current Signup Season Assignment</h3>
@@ -106,7 +124,7 @@
             <label class="block text-sm font-medium mb-2">NA Region Season:</label>
             <select 
               name="naSignupSeasonId" 
-              class="w-full bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-2"
+              class="w-full bg-white text-black border border-gray-700 rounded-md p-2"
             >
               <option value="">Select Season</option>
               <% seasons.filter(s => s.regionId === naRegionId).forEach(season => { %>
@@ -124,7 +142,7 @@
             <label class="block text-sm font-medium mb-2">EU Region Season:</label>
             <select 
               name="euSignupSeasonId" 
-              class="w-full bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-2"
+              class="w-full bg-white text-black border border-gray-700 rounded-md p-2"
             >
               <option value="">Select Season</option>
               <% seasons.filter(s => s.regionId === euRegionId).forEach(season => { %>
@@ -386,57 +404,59 @@
     <section class="space-y-4 max-w-md">
       <h3 class="text-xl font-semibold">Arenas</h3>
       <div class="overflow-x-auto">
-        <table class="min-w-autoshadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full shadow-md rounded-lg overflow-hidden">
           <thead class="bg-gray-700">
             <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Avatar</th>
-              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena Name</th>
-
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Arena</th>
+              <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-gray-900">
             <% if (arenas && arenas.length > 0) { %>
               <% arenas.forEach((arena, index) => { %>
                 <tr class="<%= index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-950' %>">
-                  <td class="overflow-x-hidden h-10 px-2 py-2 whitespace-nowrap text-sm font-medium text-gray-300 flex items-center space-x-2">
-                    <img src="/images/arena_avatars/<%= arena.avatar %>" alt="Arena Avatar" class="px-4 py-2 h-10 rounded-md">
-                    <span><%= arena.name %></span>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+                    <div class="flex items-center space-x-3">
+                      <img src="/images/arena_avatars/<%= arena.avatar %>" alt="Arena Avatar" class="h-8 w-8 rounded-md object-cover">
+                      <span><%= arena.name %></span>
+                    </div>
                   </td>
-                  <td class="px-4 py-2 whitespace-nowrap text-sm">
-                    <form action="/admin_update_arena_avatar/<%= arena.id %>" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
-                      <div class="space-y-5 mt-5">
-                              <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
-                              <input id="avatar" name="avatar" type="file" accept="image/*">
-                              <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">Upload Image</button>
-                      </div>
-                    </form>
-                  </td>
-                  <td class="px-4 py-2 whitespace-nowrap text-sm">
-                    <form action="/admin_update_arena_name" method="POST" class="flex items-center">
-                      <input type="text" name="name" class="w-1/2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm space-y-2">
+                    <form action="/admin_update_arena_name" method="POST" class="flex items-center space-x-2">
+                      <input type="text" name="name" placeholder="New name" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
                       <input type="hidden" name="arenaId" value="<%= arena.id %>">
-                      <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
+                      <button type="submit" class="bg-blue-600 text-white px-2 py-1 rounded-md">Update Name</button>
+                    </form>
+                    <form action="/admin_update_arena_avatar/<%= arena.id %>" method="POST" enctype="multipart/form-data" class="flex items-center space-x-2">
+                      <input id="avatar" name="avatar" type="file" accept="image/*" class="text-sm text-gray-300">
+                      <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded-md">Update Image</button>
                     </form>
                   </td>
                 </tr>
               <% }) %>
             <% } else { %>
               <tr>
-                <td colspan="2" class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-center">No regions created yet</td>
+                <td colspan="2" class="px-4 py-2 text-sm text-gray-500 text-center">No arenas created yet</td>
               </tr>
             <% } %>
           </tbody>   
         </table>
       </div>
-      <h2 class="font-bold">Create Arena</h2>
-      <form action="/create_arena" method="POST" enctype="multipart/form-data" class="space-y-4">
-        <%- include('input_admin', { id: "name", label: "Arena Name:", type: "text" }) %>
-        <div class="space-y-5 mt-5">
-          <label for="arena_image" class="block text-sm font-medium text-white">Upload Arena Image:</label>
-          <input id="avatar" name="avatar" type="file" accept="image/*">
-        </div>
-        <button type="submit" class="px-2 bg-red-500 rounded hover:bg-red-800">Create Arena</button>
-      </form>
+
+      <div class="mt-8">
+        <h2 class="font-bold mb-4">Create Arena</h2>
+        <form action="/create_arena" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div class="space-y-2">
+            <label for="name" class="block text-sm font-medium">Arena Name:</label>
+            <input type="text" id="name" name="name" required class="w-full bg-white text-black border border-gray-700 rounded-md p-2">
+          </div>
+          <div class="space-y-2">
+            <label for="avatar" class="block text-sm font-medium">Arena Image:</label>
+            <input id="avatar" name="avatar" type="file" accept="image/*" required class="text-sm text-gray-300">
+          </div>
+          <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-800">Create Arena</button>
+        </form>
+      </div>
     </section>
     
     <a href="/" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">HOME</a>

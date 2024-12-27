@@ -44,12 +44,11 @@
         <thead>
           <tr>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
-            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Division</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Set Division</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record</th>
-            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Set Status</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
           </tr>
         </thead>
         <tbody class="bg-gray-900 divide-y divide-gray-700 rounded-lg">
@@ -59,13 +58,9 @@
               <span><%= team.name %></span>
             </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-              <%= division.name %>
-            </td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
               <form action="/admin/update_division" method="POST" class="flex items-center" onsubmit="return updateDivision(event, '<%= team.id %>')">
                 <label>
                   <select name="divisionId" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
-                    <option value="" disabled selected>Select Division</option>
                     <% divisions.forEach(division => { %>
                       <option value="<%= division.id %>" <%= division.id === team.divisionId ? 'selected' : '' %>>
                         <%= division.name %>
@@ -84,36 +79,24 @@
               <%= team.wins %> - <%= team.losses %>
             </td>
             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                <% if (team.status === -1) { %> 
-                  bg-gray-800 text-white
-                <% } else if (team.status === 0) { %> 
-                  bg-red-500
-                <% } else if (team.status === 1) { %> 
-                  bg-yellow-500 text-gray-900
-                <% } else if (team.status === 2) { %> 
-                  bg-green-500 text-white
-                <% } %>">
-                <% if (team.status === -1) { %> Dead <% } %>
-                <% if (team.status === 0) { %> Unready <% } %>
-                <% if (team.status === 1) { %> Pending Admin Approval <% } %>
-                <% if (team.status === 2) { %> Ready <% } %>
-              </span>
-            </td>
-            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
               <form action="/admin/update_team_status" method="POST" class="flex items-center" onsubmit="return updateTeamStatus(event, '<%= team.id %>')">
                 <label>
                     <select name="status" class="bg-gray-800 text-gray-300 border border-gray-700 rounded-md p-1" required>
-                        <option value="" disabled selected>Select Status</option>
-                        <option value="-1">Dead</option>
-                        <option value="0">Unready</option>
-                        <option value="1">Pending Admin Approval</option>
-                        <option value="2">Ready</option>
+                        <option value="-1" <%= team.status === -1 ? 'selected' : '' %>>Dead</option>
+                        <option value="0" <%= team.status === 0 ? 'selected' : '' %>>Unready</option>
+                        <option value="1" <%= team.status === 1 ? 'selected' : '' %>>Pending Admin Approval</option>
+                        <option value="2" <%= team.status === 2 ? 'selected' : '' %>>Ready</option>
                     </select>
                 </label>
                 <input type="hidden" name="teamId" value="<%= team.id %>">
                 <button type="submit" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded-md">Update</button>
             </form>            
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                <%= team.paymentStatus === 1 ? 'bg-green-500 text-white' : 'bg-red-500 text-white' %>">
+                <%= team.paymentStatus === 1 ? 'Paid' : 'Unpaid' %>
+              </span>
             </td>
           </tr>
         </tbody>

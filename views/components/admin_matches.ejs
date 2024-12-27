@@ -9,7 +9,7 @@
 
                 <div>
                     <label for="region_id" class="block text-sm font-medium text-gray-700">Region</label>
-                    <select id="regionSelect" name="region_id" class="bg-gray-700 text-gray-300 rounded-lg p-2" required>
+                    <select id="region_select" name="region_id" class="bg-gray-700 text-gray-300 rounded-lg p-2" onchange="updateSeasonDropdown()" required>
                         <option value="" disabled selected>Select a Region</option>
                         <% regions.forEach(region => { %>
                             <option value="<%= region.id %>"><%= region.name %></option>
@@ -28,13 +28,11 @@
                 </div>
 
                 <div>
-                    <label for="season_no" class="block text-sm font-medium text-gray-700">Season Number:</label>
-                    <select id="match_season_no" name="season_no" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black" onchange="updateWeeksDropdown()">
-                        <option value="" disabled selected>-</option>
-                        <% seasons.forEach(season => { %>
-                            <option value="<%= season.id %>" data-weeks="<%= season.numWeeks %>"><%= season.id %></option>
-                        <% }) %>
+                    <label for="season_select" class="block text-sm font-medium text-gray-700">Season:</label>
+                    <select id="season_select" name="season_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black" onchange="updateWeeksDropdown()" disabled>
+                        <option value="" disabled selected>Select a Region First</option>
                     </select>
+                    <input type="hidden" id="season_no" name="season_no" value="">
                 </div>
 
                 <div>
@@ -79,13 +77,55 @@
     </section>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    const allSeasons = JSON.parse('<%- JSON.stringify(seasons) %>');
+    console.log('Loaded seasons:', allSeasons);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+function updateSeasonDropdown() {
+    const regionSelect = document.getElementById('region_select');
+    const seasonSelect = document.getElementById('season_select');
+    const selectedRegionId = Number(regionSelect.value);
+    console.log("test");
+    console.log(regionSelect);
+    
+    if (!selectedRegionId) {
+        seasonSelect.innerHTML = '<option value="" disabled selected>Select a Region First</option>';
+        seasonSelect.disabled = true;
+        return;
+    }
+
+    const regionSeasons = allSeasons.filter(s => Number(s.regionId) === selectedRegionId);
+    seasonSelect.innerHTML = '<option value="" disabled selected>Select a Season</option>';
+    
+    if (regionSeasons.length > 0) {
+        regionSeasons.sort((a, b) => Number(b.seasonNum) - Number(a.seasonNum));
+        regionSeasons.forEach(season => {
+            const option = document.createElement('option');
+            option.value = season.id;
+            option.dataset.weeks = season.numWeeks;
+            option.dataset.seasonNo = season.seasonNum;
+            option.textContent = `Season ${season.seasonNum}`;
+            seasonSelect.appendChild(option);
+        });
+    }
+    
+    seasonSelect.disabled = false;
+}
+
 function updateWeeksDropdown() {
-    const seasonSelect = document.getElementById('match_season_no');
+    const seasonSelect = document.getElementById('season_select');
     const weekSelect = document.getElementById('week_no');
+    const seasonNoInput = document.getElementById('season_no');
     const selectedOption = seasonSelect.options[seasonSelect.selectedIndex];
     const weeksCount = selectedOption.dataset.weeks;
+    const seasonNo = selectedOption.dataset.seasonNo;
+
+    // Update hidden season number input
+    seasonNoInput.value = seasonNo;
 
     weekSelect.innerHTML = '';
     
@@ -97,7 +137,10 @@ function updateWeeksDropdown() {
     }
 }
 
+// Remove the DOMContentLoaded event listener since we're using inline onchange
 document.addEventListener('DOMContentLoaded', function () {
+    
+    // Rest of your existing DOMContentLoaded code...
     function getNextSaturday() {
         const today = new Date();
         const dayOfWeek = today.getDay();
@@ -121,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })(),
     });
 });
+
 </script>
 
 <div id="teamsContainer">
@@ -138,7 +182,14 @@ document.addEventListener('DOMContentLoaded', function () {
           <tbody class="bg-gray-800 divide-y divide-gray-700 rounded-lg">
             <% 
               teamsWithPlayers
-                .filter(team => team.divisionId === division.id && team.status === 2)
+                .filter(team => {
+                    const baseCondition = team.divisionId === division.id && team.status === 2;
+                    // Only show teams that have paid if payment is required
+                    if (global.paymentRequired === 1) {
+                        return baseCondition && team.paymentStatus === 1;
+                    }
+                    return baseCondition;
+                })
                 .forEach(team => { 
                   const region = regions.find(reg => reg.id === team.regionId); 
             %>
@@ -172,4 +223,3 @@ document.addEventListener('DOMContentLoaded', function () {
       color: black;
     }
   </style>
-  

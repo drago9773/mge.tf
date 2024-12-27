@@ -118,8 +118,13 @@ router.post('/update_status', async (req, res) => {
                 await db.delete(pending_players);
                 console.log("Dropping all pending players...");
             }
-        } else if (action === 'signup') { await db.update(global).set({ signupClosed: numericValue });
-        } else { throw new Error('Invalid action'); }
+        } else if (action === 'signup') { 
+            await db.update(global).set({ signupClosed: numericValue });
+        } else if (action === 'payment') {
+            await db.update(global).set({ paymentRequired: numericValue });
+        } else { 
+            throw new Error('Invalid action'); 
+        }
 
         res.redirect('/admin');
     } catch (error) {

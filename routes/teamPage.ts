@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.ts';
-import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history, global } from '../schema.ts';
+import { users, teams, regions, divisions, seasons, matches, arenas, players_in_teams, pending_players, teamname_history, global, teams_history } from '../schema.ts';
 import { eq, and} from 'drizzle-orm';
 
 const router = express.Router();
@@ -56,6 +56,12 @@ router.get('/team_page/:teamid', async (req, res) => {
             .innerJoin(users, eq(players_in_teams.playerSteamId, users.steamId))
             .innerJoin(teams, eq(players_in_teams.teamId, teams.id
         ));
+        const teamHistory = await db
+            .select()
+            .from(teams_history)
+            .where(eq(teams_history.teamId, teamid))
+            .orderBy(teams_history.seasonId)
+            .all();
         let request = 0;
         let adminRequest = 0;
         if (req.session?.user) {
@@ -115,6 +121,7 @@ router.get('/team_page/:teamid', async (req, res) => {
             pending_player_exists: pendingPlayerExists,
             signupClosed: allGlobal[0].signupClosed,
             rosterLocked: allGlobal[0].rosterLocked,
+            teamHistory: teamHistory,
             session: req.session
         });
     } catch (err) {

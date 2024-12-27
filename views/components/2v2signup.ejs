@@ -4,6 +4,79 @@
           <h2 class="mx-auto max-w-3xl text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">2v2 Signups</h2>
           <% if (!signupClosed) { %>
               <% if (session?.user) { %>
+                <% if (ownedTeams && ownedTeams.length > 0 && ownedTeams[0].teams.seasonId !== signupSeasonId) { %>
+                  <% console.log(ownedTeams); %>
+                  <form action="/existing_team_signup" method="POST" class="space-y-4">
+                    <div class="space-y-5 py-4">
+                      <div class="relative">
+                        <label class="flex items-center justify-between p-4 border rounded-lg bg-gray-800 hover:bg-gray-700 cursor-pointer">
+                          <div class="flex items-center space-x-4">
+                            <% if (ownedTeams[0].teams.avatar) { %>
+                              <img src="/images/team_avatars/<%= ownedTeams[0].teams.avatar %>" alt="Team Avatar" class="w-16 h-16 rounded-full">
+                            <% } else { %>
+                              <div class="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center">
+                                <span class="text-2xl text-white"><%= ownedTeams[0].teams.name.charAt(0) %></span>
+                              </div>
+                            <% } %>
+                            <div>
+                              <p class="text-lg font-semibold text-white"><%= ownedTeams[0].teams.name %></p>
+                              <p class="text-sm text-gray-400">Select to sign up for new season</p>
+                            </div>
+                          </div>
+                          <input type="checkbox" 
+                                 name="team_id" 
+                                 value="<%= ownedTeams[0].teams.id %>" 
+                                 required
+                                 class="w-6 h-6 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                        </label>
+                      </div>
+
+                      <div class="mt-6 space-y-4">
+                        <div>
+                          <label for="region_id" class="block text-sm font-medium text-white">Region:</label>
+                          <select id="region_id" name="region_id" required 
+                                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                            <option value="" disabled selected>Select Region</option>
+                            <% regions.forEach(function(region) { %>
+                              <option value="<%= region.id %>"><%= region.name %></option>
+                            <% }); %>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label for="division_id" class="block text-sm font-medium text-white">Division:</label>
+                          <select id="division_id" name="division_id" required 
+                                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-black">
+                            <option value="" disabled selected>Select Division</option>
+                            <% divisions.forEach(function(division) { %>
+                              <option value="<%= division.id %>"><%= division.name %></option>
+                            <% }); %>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="space-y-5 mt-5">
+                      <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                          <input required id="ToS" name="ToS" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                          <label for="ToS" class="font-medium text-white">I agree to the <span class="text-neutral-300 cursor-pointer" id="openTOSPopup">Terms and Conditions</span></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="w-full flex justify-center mt-6">
+                      <button type="submit" class="flex-none rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Sign Up for New Season</button>
+                    </div>
+                  </form>
+
+                  <div class="text-center mt-4">
+                    <p class="text-white">Or</p>
+                    <button onclick="window.location.href='/new_team_signup'" class="mt-2 text-sm text-indigo-400 hover:text-indigo-300">Create a New Team</button>
+                  </div>
+                <% } else { %>
                 <form action="/team_signup" method="POST" enctype="multipart/form-data" class="space-y-4">
                   <fieldset>
                     <div class="space-y-5 py-4">
@@ -124,8 +197,8 @@
                   document.getElementById('TOSpopup').classList.add('hidden');
                 });
               </script>
-              
-            <% } else { %>
+            <% } %>
+              <% } else { %>
               <div class="mt-10 text-center text-white font-bold">
                 You must be logged in to sign up.
               </div>

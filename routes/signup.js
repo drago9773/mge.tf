@@ -40,6 +40,22 @@ router.get('/signup', async (req, res) => {
     const allSeasons = await db.select().from(seasons);
     const allRegions = await db.select().from(regions);
     const allGlobal = await db.select().from(global);    
+    const ownedTeams = req.session?.user?.steamid ? 
+            await db.select()
+                .from(teams)
+                .innerJoin(players_in_teams, 
+                    and(
+                        eq(players_in_teams.teamId, teams.id),
+                        eq(players_in_teams.playerSteamId, req.session.user.steamid),
+                        eq(players_in_teams.permissionLevel, 2)
+                    )
+                )
+                .where(eq(teams.is1v1, 0))
+                .all() 
+            : [];
+
+    const naRegion = allRegions.find(r => r.name === 'NA');
+    const euRegion = allRegions.find(r => r.name === 'EU');
 
     res.render('layout', {
         body: 'signup',
@@ -50,7 +66,11 @@ router.get('/signup', async (req, res) => {
         divisions: allDivisions,
         seasons: allSeasons,
         regions: allRegions,
+        ownedTeams,
+        naRegionId: naRegion?.id,
+        euRegionId: euRegion?.id,
         signupClosed: allGlobal[0].signupClosed,
+        signupSeasonId: allGlobal[0].naSignupSeasonId || allGlobal[0].euSignupSeasonId,
     });
 });
 
@@ -135,5 +155,60 @@ router.post('/team_signup', upload.single('avatar'), async (req, res) => {
     }
 });
 
+router.post('/existing_team_signup', async (req, res) => {
+    const { team_id, region_id, division_id, ToS } = req.body;
+    const userSteamId = req.session?.user?.steamid;
+
+    if (!userSteamId || !team_id || !region_id || !division_id || !ToS) {
+        return res.status(400).send('Missing required fields');
+    }
+
+    try {
+        const teamMember = await db.select()
+            .from(players_in_teams)
+            .where(and(
+                eq(players_in_teams.teamId, team_id),
+                eq(players_in_teams.playerSteamId, userSteamId),
+                eq(players_in_teams.permissionLevel, 2)
+            ))
+            .get();
+
+        if (!teamMember) {
+            return res.status(403).send('Not authorized to sign up this team');
+        }
+
+        // Get the appropriate signup season based on selected region
+        const allGlobal = await db.select().from(global);
+        const signupSeasonId = region_id === '2' ? // '2' for EU, '1' for NA
+            allGlobal[0].euSignupSeasonId :
+            allGlobal[0].naSignupSeasonId;
+
+        if (!signupSeasonId) {
+            return res.status(400).send('No active season found for selected region');
+        }
+
+        // Update team's season and other details
+        await db.update(teams)
+            .set({ 
+                seasonId: signupSeasonId,
+                regionId: parseInt(region_id),
+                divisionId: parseInt(division_id),
+                status: 0, // UNREADY
+                paymentStatus: 0,
+                wins: 0,
+                losses: 0,
+                gamesWon: 0,
+                gamesLost: 0,
+                pointsScored: 0,
+                pointsScoredAgainst: 0
+            })
+            .where(eq(teams.id, team_id));
+
+        res.redirect('/team_page/' + team_id);
+    } catch (error) {
+        console.error('Error signing up team for new season:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 export default router;

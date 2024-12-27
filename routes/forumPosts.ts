@@ -119,65 +119,65 @@ router.post('/create_thread', async (req, res) => {
     }
 });
 
-router.post('/thread', async (req, res) => {
-    const { content, thread_id } = req.body;
-    const user = req.session.user;
+// router.post('/thread', async (req, res) => {
+//     const { content, thread_id } = req.body;
+//     const user = req.session.user;
 
-    if (!user) {
-        return res.status(401).json({ error: 'Login to create post' });
-    }
+//     if (!user) {
+//         return res.status(401).json({ error: 'Login to create post' });
+//     }
 
-    if (!content) {
-        return res.status(400).json({ error: 'Content is required' });
-    }
+//     if (!content) {
+//         return res.status(400).json({ error: 'Content is required' });
+//     }
 
-    try {
-        const activityRow = await db.select().from(activity).where(eq(activity.owner, user.steamid)).get();
+//     try {
+//         const activityRow = await db.select().from(activity).where(eq(activity.owner, user.steamid)).get();
 
-        const current_time = Date.now();
-        let postCount = 0;
-        let lastPeriod = current_time;
+//         const current_time = Date.now();
+//         let postCount = 0;
+//         let lastPeriod = current_time;
 
-        if (activityRow) {
-            postCount = activityRow.postCount;
-            lastPeriod = activityRow.period;
+//         if (activityRow) {
+//             postCount = activityRow.postCount;
+//             lastPeriod = activityRow.period;
 
-            if (current_time - lastPeriod >= REFRESH_PERIOD) {
-                postCount = 0;
-                lastPeriod = current_time;
-            }
-        }
+//             if (current_time - lastPeriod >= REFRESH_PERIOD) {
+//                 postCount = 0;
+//                 lastPeriod = current_time;
+//             }
+//         }
 
-        if (postCount >= MAX_POSTS) {
-            return res.status(400).json({ error: 'You have reached the limit of posts. Try again later.' })
-        }
+//         if (postCount >= MAX_POSTS) {
+//             return res.status(400).json({ error: 'You have reached the limit of posts. Try again later.' })
+//         }
 
-        await db.insert(posts).values({
-            content,
-            thread: thread_id,
-            owner: user.steamid,
-            createdAt: new Date().toISOString()
-        });
+//         await db.insert(posts).values({
+//             content,
+//             thread: thread_id,
+//             owner: user.steamid,
+//             createdAt: new Date().toISOString()
+//         });
 
-        if (activityRow) {
-            await db.update(activity)
-                .set({ postCount: postCount + 1, period: lastPeriod })
-                .where(eq(activity.owner, user.steamid));
-        } else {
-            await db.insert(activity).values({
-                threadCount: 0,
-                postCount: 1,
-                period: current_time,
-                owner: user.steamid
-            });
-        }
+//         if (activityRow) {
+//             await db.update(activity)
+//                 .set({ postCount: postCount + 1, period: lastPeriod })
+//                 .where(eq(activity.owner, user.steamid));
+//         } else {
+//             await db.insert(activity).values({
+//                 threadCount: 0,
+//                 postCount: 1,
+//                 period: current_time,
+//                 owner: user.steamid
+//             });
+//         }
 
-        return res.status(200).redirect('/thread/' + thread_id);
-    } catch (err) {
-        console.error('Error:', (err as Error).message);
-        return res.status(500).json({ error: 'Failed to post content.' });
-    }
-});
+//         return res.status(200).redirect('/thread/' + thread_id);
+//     } catch (err) {
+//         console.error('Error:', (err as Error).message);
+//         return res.status(500).json({ error: 'Failed to post content.' });
+//     }
+// });
 
 router.post('/remove_reply', async (req, res) => {
     const replyId = req.body.reply_id;
@@ -253,7 +253,7 @@ router.get('/thread/:threadId', async (req, res) => {
             createdAt: posts.createdAt,
             thread: posts.thread,
             owner: posts.owner,
-            hidden: posts.hidden, // Include other columns as necessary
+            hidden: posts.hidden, 
             steamUsername: users.steamUsername,
         })
             .from(posts)

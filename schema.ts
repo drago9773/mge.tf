@@ -50,6 +50,7 @@ export const global = sqliteTable('global', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   signupClosed: integer('signup_closed').default(0),
   rosterLocked: integer('roster_locked').default(0),
+  paymentRequired: integer('payment_required').default(0),
   naSignupSeasonId: integer('na_signup_season_id').references(() => seasons.id),
   euSignupSeasonId: integer('eu_signup_season_id').references(() => seasons.id),
 });
@@ -92,6 +93,7 @@ export const threads = sqliteTable('threads', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),
   content: text('content').notNull(),
+  categories: text('categories'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   bumpedAt: text('bumped_at').default(sql`CURRENT_TIMESTAMP`),
   owner: text('owner').references(() => users.steamId),
@@ -214,7 +216,8 @@ export const matches = sqliteTable('matches', {
   winnerId: integer('winner_id').references(() => teams.id),
   winnerScore: integer('winner_score'),
   loserScore: integer('loser_score'),
-  seasonId: integer('season_id').notNull().references(() => seasons.id),
+  seasonId: integer('season_id').notNull().references(() => seasons.id), // References the season's primary key
+  seasonNo: integer('season_no').notNull(), 
   weekNo: integer('week_no').notNull(),
   boSeries: integer('bo_series'),
   matchDateTime: text('match_date_time'),
@@ -316,5 +319,6 @@ export const payments = sqliteTable('payments', {
   amount: text('amount').notNull(),
   currency: text('currency'),
   purchaseDate: text('purchase_date').notNull(),
-  description: text('description')
+  description: text('description'),
+  teamId: integer('team_id').references(() => teams.id),
 });

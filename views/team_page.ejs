@@ -2,6 +2,13 @@
 <% const division = divisions.find(div => div.id === team.divisionId); %>
 
 <div class="flex flex-col mx-auto max-w-7xl w-full bg-gray-800 shadow-sm rounded-lg p-6 gap-4 mt-2">
+  <% if (team.status === 2 && team.paymentStatus === 0) { %>
+    <div class="text-center w-full" onclick="window.location.href='/checkout/<%= team.id %>'" style="cursor: pointer;">
+      <h1 class="text-center w-full rounded-lg" style="font-size: 20px; color: #ff0000; background-color: #fce516;">
+          PAYMENT DUE - Click here to pay
+      </h1>
+    </div>
+  <% } %>
   <% if (existing_request) { %>
     <h1 class="text-center w-full rounded-lg" style="font-size: 20px; color: #ff0000; background-color: #fce516;">
         You have requested to join this team
@@ -245,6 +252,32 @@
         <% } %>
       </tbody>
     </table>
+
+    <h2 class="text-2xl mx-auto font-bold mb-4">Team History</h2>
+    <% if (teamHistory && teamHistory.length > 1) { %>
+      <% // Skip the first (most recent) record and show the rest %>
+      <% teamHistory.slice(1).forEach(history => { %>
+        <% const historySeason = seasons.find(s => s.id === history.seasonId); %>
+        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+          <h3 class="text-xl font-bold mb-2">Season <%= historySeason.seasonNum %></h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p>Record: <%= history.wins %> - <%= history.losses %></p>
+              <p>Games: <%= history.gamesWon %> - <%= history.gamesLost %></p>
+              <p>Points: <%= history.pointsScored %> - <%= history.pointsScoredAgainst %></p>
+            </div>
+            <div>
+              <p>Division: <%= divisions.find(d => d.id === history.divisionId)?.name || 'Unknown' %></p>
+              <p>Region: <%= regions.find(r => r.id === history.regionId)?.name || 'Unknown' %></p>
+              <p>Status: <%= history.status === 2 ? 'Ready' : history.status === 1 ? 'Pending' : 'Unready' %></p>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p class="text-gray-500 text-center">No previous season records found for this team</p>
+    <% } %>
+
   </div>
 </div>
 

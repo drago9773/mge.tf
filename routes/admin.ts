@@ -8,16 +8,24 @@ const router = express.Router();
 
 async function create_match_set(region_id: number, division_id: number) {
     try {
+        const globalSettings = await db.select().from(global).limit(1).get();
+        const paymentRequired = globalSettings?.paymentRequired === 1;
+
+        const conditions = [
+            eq(teams.regionId, region_id),
+            eq(teams.divisionId, division_id),
+            eq(teams.status, 2)
+        ];
+
+        // Add payment condition if required
+        if (paymentRequired) {
+            conditions.push(eq(teams.paymentStatus, 1));
+        }
+
         const allTeamsInMatches = db
             .select()
             .from(teams)
-            .where(
-                and(
-                    eq(teams.regionId, region_id),
-                    eq(teams.divisionId, division_id),
-                    eq(teams.status, 2)
-                )
-            )
+            .where(and(...conditions))
             .all();
         return allTeamsInMatches.sort((a, b) => {
             const winLossRatioA = a.losses === 0 ? a.wins : a.wins / (a.wins + a.losses);
@@ -115,6 +123,7 @@ router.get('/admin', async (req, res) => {
             await db.insert(global).values({ 
                 signupClosed: 0, 
                 rosterLocked: 0,
+                paymentRequired: 0,
                 naSignupSeasonId: null,
                 euSignupSeasonId: null 
             });
@@ -160,7 +169,7 @@ router.get('/admin', async (req, res) => {
             announcements: allAnnouncements,
             pendingPlayers: pendingPlayers,
             demoReports: allDemoReports,
-            punishments: allPunishments
+            punishments: allPunishments,
         });
     } catch (err) {
         console.error('Error fetching data in /admin:', (err as Error).message);
@@ -206,11 +215,11 @@ router.post('/admin/preview_match', async (req, res) => {
     if (!isAdmin(req.session?.user?.steamid)) {
         return res.status(403).redirect('/');
     }
-    const { region_id, division_id, season_no, week_no, bo_series, arena_id, match_date_time } = req.body;
-    console.log(`Region ID: ${region_id}, Division ID: ${division_id}, Season: ${season_no}, Week: ${week_no}, BO Series: ${bo_series},  arena id: ${arena_id}, Time/Date: ${match_date_time}`);
+    const { region_id, division_id, season_id, season_no, week_no, bo_series, arena_id, match_date_time } = req.body;
 
     try {
         const sortedTeams = await create_match_set(region_id, division_id);
+        const globalSettings = await db.select().from(global).limit(1).get();
 
         res.render('layout', {
             body: 'preview_match',
@@ -221,9 +230,11 @@ router.post('/admin/preview_match', async (req, res) => {
             regionId: region_id,
             boSeries: bo_series,
             weekNo: week_no,
+            seasonId: season_id,
             seasonNo: season_no,
             arenaId: arena_id,
-            matchDateTime: match_date_time
+            matchDateTime: match_date_time,
+            paymentRequired: globalSettings?.paymentRequired === 1
         });
     } catch (error) {
         console.error('Error fetching teams:', error);

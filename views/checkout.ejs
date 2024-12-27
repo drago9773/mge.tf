@@ -1,106 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="https://www.paypal.com/sdk/js?client-id=AbAm_8-1aFq77szD-D9w4Gbq_6F25gMJYTNwSXrC71cHTX3Ps8sK3isXj8qXmXdxmcO813tdPrmFqgw2&components=buttons"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Payment</title>
+    <script src="https://www.paypal.com/sdk/js?client-id=AbAm_8-1aFq77szD-D9w4Gbq_6F25gMJYTNwSXrC71cHTX3Ps8sK3isXj8qXmXdxmcO813tdPrmFqgw2&components=buttons"></script>
 </head>
 <body>
-  <header>
-    <nav>
-      <h1>Checkout</h1>
-    </nav>
-  </header>
-  <main>
-    <section id="cart-summary">
-      <h2>Your Cart</h2>
-      <ul id="cart-items">
-        <li class="cart-item">
-          <span class="item-name">Product Name</span>
-          <span class="item-quantity">x2</span>
-          <span class="item-price">$50.00</span>
-        </li>
-      </ul>
-      <div class="cart-total">
-        <strong>Total: </strong><span id="total-price">$100.00</span>
-      </div>
-    </section>
+    <div class="bg-black backdrop-blur-xl bg-opacity-90 px-6 py-8 lg:px-8">
+        <div class="max-w-2xl mx-auto py-16"> <!-- Added py-16 for top and bottom padding -->
+            <h1 class="text-4xl font-bold mb-10 text-center">Team Payment</h1>
 
-    <section id="payment-section">
-      <h2>Payment</h2>
-      <div id="paypal-button-container"></div>
-      <div id="confirmation-message" class="hidden"></div>
-    </section>
-  </main>
+            <% if (locals.error) { %>
+                <div class="bg-red-500 text-white p-4 rounded">
+                    <%= error %>
+                </div>
+            <% } else if (!locals.team || !locals.division) { %>
+                <div class="bg-yellow-500 text-white p-4 rounded">
+                    No payment information available.
+                </div>
+            <% } else { %>
+                <div class="bg-gray-700 rounded-lg p-6 space-y-4">
+                    <h2 class="text-2xl font-semibold text-center mb-4">Payment Details</h2>
+                    
+                    <div class="flex items-center p-4 bg-gray-800 rounded-lg shadow">
+                        <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-16 w-16 rounded-full object-cover mr-4">
+                        <div>
+                            <p class="text-xl font-semibold"><%= team.name %></p>
+                        </div>
+                    </div>
 
-  <footer>
-    <p>&copy; 2024 Your Company</p>
-  </footer>
+                    <div class="space-y-2 bg-gray-800 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-gray-400 mr-2">Division:</span>
+                            <span class="font-semibold"><%= division.name %></span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-400 mr-2">Registration Cost:</span>
+                            <span class="font-bold text-green-500">$<%= division.signupCost.toFixed(2) %></span>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <div id="paypal-button-container"></div>
+                            <div id="confirmation-message" class="hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
 
-  <script>
-    const cart = [
-      { id: 'product-1', name: 'Product 1', quantity: 1, price: 50 },
-      { id: 'product-2', name: 'Product 2', quantity: 2, price: 25 }
-    ];
-    const cartItemsContainer = document.getElementById('cart-items');
-    const totalPriceEl = document.getElementById('total-price');
-    const confirmationMessageEl = document.getElementById('confirmation-message');
-
-    let totalPrice = 0;
-    cart.forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'cart-item';
-      li.innerHTML = `
-        <span class="item-name">${item.name}</span>
-        <span class="item-quantity">x${item.quantity}</span>
-        <span class="item-price">$${(item.price * item.quantity).toFixed(2)}</span>
-      `;
-      cartItemsContainer.appendChild(li);
-      totalPrice += item.price * item.quantity;
-    });
-    totalPriceEl.textContent = `$${totalPrice.toFixed(2)}`;
-
-    paypal.Buttons({
-      createOrder: async () => {
-        try {
-          const response = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cart })
-          });
-
-          const orderData = await response.json();
-          if (!orderData.id) throw new Error('Failed to create order.');
-          return orderData.id;
-        } catch (error) {
-          console.error('Error creating order:', error);
-          alert('Something went wrong while creating the order.');
+    <script>
+        // Wait for PayPal SDK to be ready
+        if (typeof paypal !== 'undefined') {
+            initPayPalButton();
+        } else {
+            // If PayPal isn't loaded yet, wait for it
+            window.addEventListener('paypal-sdk-loaded', initPayPalButton);
+            // Fallback in case the event doesn't fire
+            setTimeout(initPayPalButton, 1000);
         }
-      },
-      onApprove: async (data) => {
-        try {
-          const response = await fetch(`/api/orders/${data.orderID}/capture`, {
-            method: 'POST'
-          });
-
-          const captureData = await response.json();
-          if (captureData.error) throw new Error('Payment failed.');
-
-          confirmationMessageEl.textContent = `Payment Successful! Transaction ID: ${captureData.id}`;
-          confirmationMessageEl.classList.remove('hidden');
-          document.getElementById('paypal-button-container').style.display = 'none';
-        } catch (error) {
-          console.error('Error capturing order:', error);
-          alert('Payment failed. Please try again.');
+    
+        function initPayPalButton() {
+            if (typeof paypal === 'undefined') return;
+            
+            paypal.Buttons({
+                createOrder: async () => {
+                    try {
+                        const response = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                teamId: '<%= team.id %>',
+                                amount: '<%= division.signupCost %>',
+                                divisionName: '<%= division.name %>'
+                            })
+                        });
+            
+                        const orderData = await response.json();
+                        if (!orderData.id) throw new Error('Failed to create order.');
+                        return orderData.id;
+                    } catch (error) {
+                        console.error('Error creating order:', error);
+                        alert('Something went wrong while creating the order.');
+                    }
+                },
+                onApprove: async (data) => {
+                    try {
+                        const response = await fetch(`/api/orders/${data.orderID}/capture`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                teamId: '<%= team.id %>'
+                            })
+                        });
+            
+                        const captureData = await response.json();
+                        if (captureData.error) throw new Error('Payment failed.');
+            
+                        const confirmationMessage = document.getElementById('confirmation-message');
+                        confirmationMessage.textContent = 'Payment Successful! Redirecting...';
+                        confirmationMessage.classList.remove('hidden');
+                        document.getElementById('paypal-button-container').style.display = 'none';
+                        
+                        setTimeout(() => {
+                            window.location.href = '/team_page/<%= team.id %>';
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error capturing order:', error);
+                        alert('Payment failed. Please try again.');
+                    }
+                },
+                onError: (err) => {
+                    console.error('PayPal Button Error:', err);
+                    alert('Something went wrong with the payment. Please try again.');
+                }
+            }).render('#paypal-button-container');
         }
-      },
-      onError: (err) => {
-        console.error('PayPal Button Error:', err);
-        alert('Something went wrong with the payment. Please try again.');
-      }
-    }).render('#paypal-button-container');
-  </script>
+    </script>
 </body>
 </html>

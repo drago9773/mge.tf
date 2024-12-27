@@ -1,5 +1,8 @@
-select * from teams_history;
 select * from teams;
+drop table if exists threads;
+drop table if exists posts;
+select * from payments;
+
 CREATE TABLE IF NOT EXISTS`activity` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`thread_count` integer NOT NULL,
@@ -8,7 +11,7 @@ CREATE TABLE IF NOT EXISTS`activity` (
 	`owner` text,
 	FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
---> statement-breakpoint
+
 CREATE TABLE IF NOT EXISTS `announcements` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`content` text NOT NULL,
@@ -88,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `global` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`signup_closed` integer DEFAULT 0,
 	`roster_locked` integer DEFAULT 0,
+	`payment_required` integer DEFAULT 0,
 	`na_signup_season_id` integer,
 	`eu_signup_season_id` integer,
 	FOREIGN KEY (`na_signup_season_id`) REFERENCES `seasons`(`id`) ON UPDATE no action ON DELETE no action,
@@ -114,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `matches` (
 	`winner_score` integer,
 	`loser_score` integer,
 	`season_id` integer NOT NULL,
+	`season_no` integer NOT NULL,
 	`week_no` integer NOT NULL,
 	`bo_series` integer,
 	`match_date_time` text,
@@ -140,8 +145,10 @@ CREATE TABLE IF NOT EXISTS `payments` (
 	`currency` text,
 	`purchase_date` text NOT NULL,
 	`description` text,
+	`team_id` integer,
 	FOREIGN KEY (`purchased_for`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`purchased_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`purchased_by`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `pending_players` (
@@ -274,6 +281,7 @@ CREATE TABLE IF NOT EXISTS `threads` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`content` text NOT NULL,
+	`categories` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP,
 	`bumped_at` text DEFAULT CURRENT_TIMESTAMP,
 	`owner` text,
@@ -299,7 +307,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`name_override` integer DEFAULT 0 NOT NULL
 );
 
-CREATE TRIGGER IF NOT EXISTS mirror_insert_teams
+-- Drop existing triggers
+DROP TRIGGER IF EXISTS mirror_insert_teams;
+
+-- Create new insert trigger
+CREATE TRIGGER IF NOT EXISTS mirror_insert_teams 
 AFTER INSERT ON teams
 FOR EACH ROW
 BEGIN
@@ -311,49 +323,69 @@ BEGIN
   VALUES (
     NEW.id, NEW.name, NEW.acronym, NEW.avatar, NEW.wins, NEW.losses, NEW.games_won, NEW.games_lost,
     NEW.points_scored, NEW.points_scored_against, NEW.division_id, NEW.region_id, NEW.season_id,
-    NEW.is_1v1, NEW.status, NEW.payment_status, NEW.join_password, NEW.created_at
+    NEW.is_1v1, NEW.status, NEW.payment_status, NEW.join_password, CURRENT_TIMESTAMP
   );
 END;
 
-CREATE TRIGGER mirror_update_teams
+-- Drop and recreate the update trigger with simpler logic
+DROP TRIGGER IF EXISTS mirror_update_teams;
+select * from teams_history;
+
+CREATE TRIGGER IF NOT EXISTS mirror_update_teams 
 AFTER UPDATE ON teams
 FOR EACH ROW
+WHEN NEW.name != OLD.name 
+   OR NEW.acronym != OLD.acronym 
+   OR NEW.avatar != OLD.avatar 
+   OR NEW.wins != OLD.wins 
+   OR NEW.losses != OLD.losses 
+   OR NEW.games_won != OLD.games_won 
+   OR NEW.games_lost != OLD.games_lost 
+   OR NEW.points_scored != OLD.points_scored 
+   OR NEW.points_scored_against != OLD.points_scored_against 
+   OR NEW.division_id != OLD.division_id 
+   OR NEW.status != OLD.status 
+   OR NEW.payment_status != OLD.payment_status
+   OR NEW.join_password != OLD.join_password
 BEGIN
-  IF NEW.season_id != OLD.season_id THEN
-    INSERT INTO teams_history (
-      team_id, name, acronym, avatar, wins, losses, games_won, games_lost,
-      points_scored, points_scored_against, division_id, region_id, season_id,
-      is_1v1, status, payment_status, join_password, created_at
-    )
-    VALUES (
-      NEW.id, NEW.name, NEW.acronym, NEW.avatar, NEW.wins, NEW.losses, NEW.games_won, NEW.games_lost,
-      NEW.points_scored, NEW.points_scored_against, NEW.division_id, NEW.region_id, NEW.season_id,
-      NEW.is_1v1, NEW.status, NEW.payment_status, NEW.join_password, CURRENT_TIMESTAMP
-    );
-  ELSE
     UPDATE teams_history
-    SET
-      name = NEW.name,
-      acronym = NEW.acronym,
-      avatar = NEW.avatar,
-      wins = NEW.wins,
-      losses = NEW.losses,
-      games_won = NEW.games_won,
-      games_lost = NEW.games_lost,
-      points_scored = NEW.points_scored,
-      points_scored_against = NEW.points_scored_against,
-      division_id = NEW.division_id,
-      region_id = NEW.region_id,
-      is_1v1 = NEW.is_1v1,
-      status = NEW.status,
-      payment_status = NEW.payment_status,
-      join_password = NEW.join_password
-    WHERE team_id = NEW.id AND season_id = OLD.season_id;
-  END IF;
+    SET 
+        name = NEW.name,
+        acronym = NEW.acronym,
+        avatar = NEW.avatar,
+        wins = NEW.wins,
+        losses = NEW.losses,
+        games_won = NEW.games_won,
+        games_lost = NEW.games_lost,
+        points_scored = NEW.points_scored,
+        points_scored_against = NEW.points_scored_against,
+        division_id = NEW.division_id,
+        status = NEW.status,
+        payment_status = NEW.payment_status,
+        join_password = NEW.join_password
+    WHERE team_id = NEW.id 
+    AND season_id = NEW.season_id;
+END;
+
+drop trigger if exists mirror_new_season;
+CREATE TRIGGER IF NOT EXISTS mirror_new_season
+AFTER UPDATE ON teams 
+FOR EACH ROW
+WHEN NEW.season_id != OLD.season_id
+BEGIN
+  INSERT INTO teams_history (
+    team_id, name, acronym, avatar, wins, losses, games_won, games_lost,
+    points_scored, points_scored_against, division_id, region_id, season_id,
+    is_1v1, status, payment_status, join_password, created_at
+  )
+  VALUES (
+    NEW.id, NEW.name, NEW.acronym, NEW.avatar, NEW.wins, NEW.losses, NEW.games_won, NEW.games_lost,
+    NEW.points_scored, NEW.points_scored_against, NEW.division_id, NEW.region_id, NEW.season_id,
+    NEW.is_1v1, NEW.status, NEW.payment_status, NEW.join_password, CURRENT_TIMESTAMP
+  );
 END;
 
 UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 INSERT INTO `moderators` (`steam_id`)VALUES ('76561198082657536');
-
 UPDATE users SET permission_level = 3 WHERE steam_id = 76561199668472297;
 INSERT INTO `moderators` (`steam_id`)VALUES ('76561199668472297');
