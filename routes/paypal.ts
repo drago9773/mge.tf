@@ -16,7 +16,6 @@ import { and, eq } from 'drizzle-orm';
 dotenv.config();
 const PAYPAL_CLIENT_ID = 'AbAm_8-1aFq77szD-D9w4Gbq_6F25gMJYTNwSXrC71cHTX3Ps8sK3isXj8qXmXdxmcO813tdPrmFqgw2';
 const PAYPAL_CLIENT_SECRET = 'ED5WD0ezPGQf-0HHapbix0fGBNmmINDG3-YnUEK6WSL7WtplMl-PKfg-wURPr3crKRVERJtebD6-VvfV';
-console.log(PAYPAL_CLIENT_SECRET);
 
 if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
   throw new Error('PayPal client credentials are missing.');
@@ -37,44 +36,38 @@ const ordersController = new OrdersController(client);
 router.get('/checkout/:teamId', async (req, res) => {
     const userSteamId = req.session?.user?.steamid;
     if (!userSteamId) {
+        console.log('No user logged in');
         return res.redirect('/');
     }
 
     const teamId = parseInt(req.params.teamId);
     if (isNaN(teamId)) {
+        console.log('Invalid team ID');
         return res.redirect('/');
     }
 
     try {
-        // First check if user is team owner
-        const playerTeam = await db.select()
-            .from(players_in_teams)
-            .where(and(
-                eq(players_in_teams.teamId, teamId),
-                eq(players_in_teams.playerSteamId, userSteamId),
-                eq(players_in_teams.permissionLevel, 2)
-            ))
-            .get();
-
-        if (!playerTeam) {
-            return res.render("layout", {
-                body: "checkout",
-                title: "Team Payment",
-                announcements: [],
-                session: req.session,
-                team: null,
-                division: null,
-                error: "You must be a team owner to make payment"
-            });
-        }
-
-        // Check team status and payment status
         const team = await db.select()
             .from(teams)
             .where(eq(teams.id, teamId))
             .get();
 
-        if (!team || team.status !== 2 || team.paymentStatus !== 0) {
+        if (!team) {
+            console.log('Team not found');
+            return res.redirect('/');
+        }
+
+        const playerTeam = await db.select()
+            .from(players_in_teams)
+            .where(and(
+                eq(players_in_teams.teamId, teamId),
+                eq(players_in_teams.playerSteamId, userSteamId),
+                eq(players_in_teams.active, 1)
+            ))
+            .get();
+
+        if (!playerTeam) {
+            console.log('User not in team');
             return res.render("layout", {
                 body: "checkout",
                 title: "Team Payment",
@@ -82,7 +75,7 @@ router.get('/checkout/:teamId', async (req, res) => {
                 session: req.session,
                 team: null,
                 division: null,
-                error: "Team is not eligible for payment at this time"
+                error: "You must be a member of this team to make payment"
             });
         }
 
@@ -92,14 +85,19 @@ router.get('/checkout/:teamId', async (req, res) => {
             .get();
 
         if (!division) {
-            return res.redirect('/');
+            console.log('Division not found');
+            return res.render("layout", {
+                body: "checkout",
+                title: "Team Payment",
+                announcements: [],
+                session: req.session,
+                team: null,
+                division: null,
+                error: "Division not found"
+            });
         }
-        console.log("Division: ", division);
 
-        let allGlobal = await db.select().from(global);
-        if (!allGlobal[0].paymentRequired) {
-            return res.redirect('/');
-        }
+        const globalSettings = await db.select().from(global).get();
 
         res.render("layout", {
             body: "checkout",
@@ -181,10 +179,10 @@ router.post('/api/orders', async (req, res) => {
       const request = {
           body: {
               intent: "CAPTURE",
-              purchaseUnits: [{  // Changed back to snake_case
+              purchaseUnits: [{
                   description: `Division ${divisionName} Registration`,
                   amount: {
-                      currencyCode: "USD",  // Changed back to snake_case
+                      currencyCode: "USD",
                       value: amount.toString()
                   }
               }]
@@ -208,7 +206,7 @@ router.post('/api/orders', async (req, res) => {
 router.post('/api/orders/:orderID/capture', async (req, res) => {
   try {
     const { orderID } = req.params;
-    const { teamId } = req.body;  // Get teamId from request body
+    const { teamId } = req.body;
 
     if (!orderID || !teamId) {
       return res.status(400).json({ error: 'Missing order ID or team ID' });
@@ -229,7 +227,6 @@ router.post('/api/orders/:orderID/capture', async (req, res) => {
       return res.status(400).json({ error: 'No purchase units found' });
     }
 
-    // Extract amount from captures array
     const amount = purchaseUnits[0].payments.captures[0].amount;
     
     console.log("OrderID: ", orderID);
@@ -237,12 +234,10 @@ router.post('/api/orders/:orderID/capture', async (req, res) => {
     console.log("amount.currency_code: ", amount.currency_code);
     console.log("user steam ID: ", userSteamID);
 
-    // Update team payment status
     await db.update(teams)
       .set({ paymentStatus: 1 })
       .where(eq(teams.id, parseInt(teamId)));
 
-    // Record the payment with teamId
     await db.insert(payments).values({
       paymentId: orderID,
       purchasedFor: userSteamID,
@@ -258,7 +253,6 @@ router.post('/api/orders/:orderID/capture', async (req, res) => {
   } catch (error) {
     console.error('Error capturing PayPal order:', error);
     
-    // More detailed error logging
     if (error instanceof Error) {
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);

@@ -1,0 +1,104 @@
+<div class="bg-black backdrop-blur-xl bg-opacity-90 px-6 py-32 lg:px-8">
+  <div class="mx-auto max-w-4xl text-base leading-7 text-white">
+    <div class="space-y-8">
+      <% if (fightNight.card) { %>
+        <img src="<%= fightNight.card %>" class="w-full rounded-lg shadow-2xl" alt="Fight Night Card">
+      <% } %>
+      
+      <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+        <p class="text-gray-300"><%= fightNight.description %></p>
+      </div>
+
+      <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold">Prize Pool: $<span id="prizeAmount"><%= fightNight.prizepool || 0 %></span></h3>
+          <% if (session.user?.permissionLevel >= 2) { %>
+            <input type="number" id="prizeInput" class="bg-gray-700 text-white px-3 py-1 rounded mr-2" step="0.01" min="0">
+            <button onclick="updatePrizePool()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">Update</button>
+          <% } %>
+          <a href="https://streamlabs.com/mgetf/tip" target="_blank" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded ml-2">Contribute</a>
+        </div>
+        <div class="bg-gray-700 h-4 rounded-full overflow-hidden">
+          <div class="bg-purple-600 h-full" style="width: <%= Math.min((fightNight.prizepool || 0) / 100 * 100, 100) %>%"></div>
+        </div>
+      </div>
+
+      <div class="space-y-6 max-w-2xl mx-auto">
+        <h3 class="text-2xl font-bold">Matchups</h3>
+        <div id="matchupsList" class="space-y-4">
+          <% if (matchups && matchups.length > 0) { %>
+            <% matchups.forEach(function(matchup) { %>
+              <div class="bg-gray-800 rounded-lg shadow-xl p-4">
+                <div class="flex justify-between items-center">
+                  <a href="/player_page/<%= matchup.player1SteamId %>" class="flex items-center hover:bg-gray-200 text-white hover:text-black p-2 rounded transition-colors">
+                    <% const player1 = allUsers.find(u => u.steamId === matchup.player1SteamId) %>
+                    <img src="<%= player1?.steamAvatar %>" class="w-12 h-12 rounded-full mr-2">
+                    <p><%= player1?.steamUsername %></p>
+                  </a>
+                  <div class="text-xl text-white font-bold px-4">VS</div>
+                  <a href="/player_page/<%= matchup.player2SteamId %>" class="flex items-center hover:bg-gray-200 text-white hover:text-black p-2 rounded transition-colors">
+                    <% const player2 = allUsers.find(u => u.steamId === matchup.player2SteamId) %>
+                    <img src="<%= player2?.steamAvatar %>" class="w-12 h-12 rounded-full mr-2">
+                    <p><%= player2?.steamUsername %></p>
+                  </a>
+                </div>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+
+        <% if (session.user?.permissionLevel >= 2) { %>
+          <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+            <form action="/fightnight/<%= fightNight.id %>/matchup" method="POST" class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Player 1</label>
+                  <select name="player1" required class="w-full bg-gray-700 text-white rounded px-3 py-2">
+                    <option value="">Select Player</option>
+                    <% allUsers.forEach(function(user) { %>
+                      <option value="<%= user.steamId %>"><%= user.steamUsername %></option>
+                    <% }); %>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Player 2</label>
+                  <select name="player2" required class="w-full bg-gray-700 text-white rounded px-3 py-2">
+                    <option value="">Select Player</option>
+                    <% allUsers.forEach(function(user) { %>
+                      <option value="<%= user.steamId %>"><%= user.steamUsername %></option>
+                    <% }); %>
+                  </select>
+                </div>
+              </div>
+              <input type="hidden" name="orderNum" value="<%= matchups ? matchups.length : 0 %>">
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded">Add Matchup</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+
+      <a href="/fightnights" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+        Back to Fight Nights
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function updatePrizePool() {
+  const amount = document.getElementById('prizeInput').value;
+  try {
+    const response = await fetch(`/fightnight/<%= fightNight.id %>/prizepool`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: parseFloat(amount) })
+    });
+    if (response.ok) {
+      document.getElementById('prizeAmount').textContent = amount;
+      document.getElementById('prizeInput').value = '';
+    }
+  } catch (error) {
+    console.error('Failed to update prize pool:', error);
+  }
+}
+</script>

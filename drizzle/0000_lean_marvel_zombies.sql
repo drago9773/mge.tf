@@ -289,13 +289,38 @@ CREATE TABLE IF NOT EXISTS `threads` (
 	FOREIGN KEY (`owner`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
+drop table if exists tournaments;
+select * from tournaments;
 CREATE TABLE IF NOT EXISTS `tournaments` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`started_at` text DEFAULT CURRENT_TIMESTAMP,
 	`description` text,
 	`avatar` text,
-	`bracket_link` text
+	`bracket_link` text,
+	`winner1_steam_id` text,
+	`winner2_steam_id` text,
+	`is_team_tournament` integer,
+	FOREIGN KEY (`winner1_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`winner2_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
+);
+
+CREATE TABLE IF NOT EXISTS `fight_night` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`card` text,
+	`description` text,
+	`prizepool` real
+);
+
+CREATE TABLE IF NOT EXISTS `fight_night_matchups` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`fight_night_id` text,
+	`player1_steam_id` text,
+	`player2_steam_id` text,
+	`order_num` integer NOT NULL,
+	FOREIGN KEY (`fight_night_id`) REFERENCES `fight_night`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`player1_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`player1_steam_id`) REFERENCES `users`(`steam_id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `users` (
@@ -387,5 +412,22 @@ END;
 
 UPDATE users SET permission_level = 3 WHERE steam_id = 76561198082657536;
 INSERT INTO `moderators` (`steam_id`)VALUES ('76561198082657536');
+INSERT INTO `users` (`steam_id`)VALUES ('76561198049311931');
 UPDATE users SET permission_level = 3 WHERE steam_id = 76561199668472297;
 INSERT INTO `moderators` (`steam_id`)VALUES ('76561199668472297');
+UPDATE users SET permission_level = 3 WHERE steam_id = 76561198049311931;
+INSERT INTO `moderators` (`steam_id`)VALUES ('76561198049311931');
+select * from users;
+INSERT INTO `users` (
+    `steam_id`, 
+    `steam_username`, 
+    `permission_level`, 
+    `ban_status`, 
+    `name_override`
+) VALUES (
+    '76561198049311931', 
+    'Stiggy', 
+    3, 
+    0, 
+    0
+);

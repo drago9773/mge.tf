@@ -1,0 +1,37 @@
+<div class="bg-black backdrop-blur-xl bg-opacity-90 px-6 py-32 lg:px-8">
+    <div class="mx-auto max-w-2xl text-base leading-7 text-white">
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl mb-8">Create Fight Night</h2>
+      
+      <form action="/create_fightnight" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div>
+          <label for="description" class="block text-sm font-medium mb-2">Description</label>
+          <textarea 
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+            id="description" 
+            name="description" 
+            rows="4" 
+            required
+          ></textarea>
+        </div>
+        
+        <div>
+          <label for="card" class="block text-sm font-medium mb-2">Fight Night Card Image</label>
+          <input 
+            type="file" 
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+            id="card" 
+            name="card" 
+            accept="image/*" 
+            required
+          > 
+        </div>
+        
+        <button 
+          type="submit" 
+          class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Create Fight Night
+        </button>
+      </form>
+    </div>
+  </div>

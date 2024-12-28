@@ -306,10 +306,28 @@ export const demo_report = sqliteTable('demo_report', {
 export const tournaments = sqliteTable('tournaments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  startedAt: text('started_at').default(sql`CURRENT_TIMESTAMP`),
   description: text('description'),
+  bracketLink: text('bracket_link'),
   avatar: text('avatar'),
-  bracketLink: text('bracket_link')
+  startedAt: text('started_at'),
+  winner1SteamId: text('winner1_steam_id'),
+  winner2SteamId: text('winner2_steam_id'),
+  isTeamTournament: integer('is_team_tournament', { mode: 'boolean' }).default(false)
+});
+
+export const fight_night = sqliteTable('fight_night', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  card: text('card'),
+  description: text('description'),
+  prizepool: real('prizepool').default(0)
+});
+
+export const fight_night_matchups = sqliteTable('fight_night_matchups', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  fightNightId: integer('fight_night_id').references(() => fight_night.id),
+  player1SteamId: text('player1_steam_id').references(() => users.steamId),
+  player2SteamId: text('player2_steam_id').references(() => users.steamId),
+  orderNum: integer('order_num').notNull()
 });
 
 export const payments = sqliteTable('payments', {

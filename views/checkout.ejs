@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="bg-black backdrop-blur-xl bg-opacity-90 px-6 py-8 lg:px-8">
-        <div class="max-w-2xl mx-auto py-16"> <!-- Added py-16 for top and bottom padding -->
+        <div class="max-w-2xl mx-auto py-16">
             <h1 class="text-4xl font-bold mb-10 text-center">Team Payment</h1>
 
             <% if (locals.error) { %>
@@ -24,7 +24,7 @@
                     <h2 class="text-2xl font-semibold text-center mb-4">Payment Details</h2>
                     
                     <div class="flex items-center p-4 bg-gray-800 rounded-lg shadow">
-                        <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-16 w-16 rounded-full object-cover mr-4">
+                        <img src="/images/team_avatars/<%= team.avatar %>" alt="Team Avatar" class="h-16 rounded-md object-cover mr-4">
                         <div>
                             <p class="text-xl font-semibold"><%= team.name %></p>
                         </div>
@@ -51,13 +51,10 @@
     </div>
 
     <script>
-        // Wait for PayPal SDK to be ready
         if (typeof paypal !== 'undefined') {
             initPayPalButton();
         } else {
-            // If PayPal isn't loaded yet, wait for it
             window.addEventListener('paypal-sdk-loaded', initPayPalButton);
-            // Fallback in case the event doesn't fire
             setTimeout(initPayPalButton, 1000);
         }
     

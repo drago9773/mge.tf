@@ -1,113 +1,163 @@
-<div class="w-full  flex flex-col justify-center align-middle">
-  <ul id="w-full">
-    <% if (user && userIsMod) { %>
-    <form action="/tournaments" method="POST" class="mb-8 space-y-4 w-full text-black">
-      <div class="text-black">
-        <label for="name" class="block text-sm font-medium text-black">Tournament Name</label>
-        <input 
-          type="text" 
-          name="name" 
-          id="name" 
-          required
-          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-        >
-      </div>
-      <div>
-        <label for="description" class="block text-sm font-medium text-zinc-100">Description</label>
-        <textarea
-          name="description"
-          id="description"
-          rows="3"
-          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-        ></textarea>
-      </div>
-      <div>
-        <label for="bracket_link" class="block text-sm font-medium text-zinc-100">Bracket URL</label>
-        <input
-          type="url"
-          name="bracket_link"
-          id="bracket_link"
-          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-        >
-      </div>
-      <div>
-        <label for="avatar" class="block text-sm font-medium text-zinc-100">Avatar URL</label>
-        <input
-          type="url" 
-          name="avatar"
-          id="avatar"
-          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-        >
-      </div>
-      <div>
-        <label for="startedAt" class="block text-sm font-medium text-zinc-100">Tournament Date</label>
-        <input
-          type="date"
-          name="startedAt"
-          id="startedAt"
-          required
-          class="mt-1 block w-full rounded-md border-zinc-700 bg-zinc-800/50 text-black shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-        >
-      </div>
-      <div>
-        <button 
-          type="submit"
-          class="inline-flex justify-center rounded-md border border-transparent bg-cyan-600 py-2 px-4 text-sm font-medium text-black shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-        >
-          Create Tournament
-        </button>
-      </div>
-    </form>
-    <% } %>
-    <% tournaments.forEach((tournament, index)=> { %>
-    <li id="card-<%= index %>" class="relative group bg-zinc-900/40 h-auto min-h-[120px] w-full border border-zinc-800 mb-4 transition-all hover:border-zinc-700">
-      <% if (tournament.bracket_link) { %>
-        <a href="<%= tournament.bracket_link %>" target="_blank" rel="noopener noreferrer" class="block h-full cursor-pointer">
+<div class="bg-black backdrop-blur-xl bg-opacity-90 px-6 py-32 lg:px-8">
+  <div class="mx-auto max-w-4xl text-base leading-7 text-white">
+    <div class="space-y-8">
+      <% if (user && userIsMod) { %>
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+          <form action="/tournaments" method="POST" class="space-y-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-white">Tournament Name</label>
+              <input 
+                type="text" 
+                name="name" 
+                id="name" 
+                required
+                class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+              >
+            </div>
+            <div>
+              <label for="description" class="block text-sm font-medium text-white">Description</label>
+              <textarea
+                name="description"
+                id="description"
+                rows="3"
+                class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+              ></textarea>
+            </div>
+            <div>
+              <label for="bracketLink" class="block text-sm font-medium text-white">Bracket URL</label>
+              <input
+                type="url"
+                name="bracketLink"
+                id="bracketLink"
+                class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-cyan-500 focus:ring-cyan-500">
+            </div>
+            <div>
+              <label for="avatar" class="block text-sm font-medium text-white">Avatar URL</label>
+              <input
+                type="url" 
+                name="avatar"
+                id="avatar"
+                class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+              >
+            </div>
+            <div>
+              <label for="startedAt" class="block text-sm font-medium text-white">Tournament Date</label>
+              <input
+                type="date"
+                name="startedAt"
+                id="startedAt"
+                required
+                class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-cyan-500 focus:ring-cyan-500">
+            </div>
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                name="isTeamTournament"
+                id="isTeamTournament"
+                class="h-4 w-4 rounded bg-gray-700 border-gray-600 text-cyan-500 focus:ring-cyan-500"
+              >
+              <label for="isTeamTournament" class="ml-2 block text-sm font-medium text-white">
+                Team Tournament (2v2)
+              </label>
+            </div>
+            <button 
+              type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded text-white">
+              Create Tournament
+            </button>
+          </form>
+        </div>
       <% } %>
-      <div class="p-6">
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between items-start">
-            <h3 id="tournaments_name" class="text-lg text-zinc-100 font-semibold">
-              <%= tournament.name %>
-            </h3>
-            <% if (user && userIsMod) { %>
-              <form action="/tournaments/<%= tournament.id %>" method="POST" class="inline ml-4">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="text-zinc-400 hover:text-red-400 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </form>
-            <% } %>
-          </div>
-          
-          <% if (tournament.description) { %>
-            <p class="text-zinc-300 text-sm whitespace-pre-line">
-              <%= tournament.description %>
-            </p>
-          <% } %>
 
-          <% if (tournament.bracket_link) { %> 
-            <div class="flex items-center gap-2 text-sm text-zinc-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
-              </svg>
-              View Bracket
-            </div>
-          <% } %>
+      <div class="space-y-6 max-w-2xl mx-auto">
+        <h3 class="text-2xl font-bold">Tournaments</h3>
+        <div class="space-y-4">
+          <% tournaments.forEach((tournament, index) => { %>
+              <div class="p-6 bg-gray-800 rounded-lg shadow-xl relative group hover:bg-gray-700 transition-colors">
+                <a href="<%= tournament.bracketLink || '#' %>" target="_blank" class="block">
+                  <div class="flex justify-between items-start">
+                    <div class="space-y-2 flex-grow">
+                      <h3 class="text-lg font-semibold text-white"><%= tournament.name %></h3>
+                      <% if (tournament.startedAt) { %>
+                        <div class="text-sm text-gray-400">
+                          <%= new Date(tournament.startedAt).toLocaleDateString() %>
+                        </div>
+                      <% } %>
+                      <% if (tournament.description) { %>
+                        <p class="text-gray-300 mt-2"><%= tournament.description %></p>
+                      <% } %>
+                    </div>
 
-          <% if (tournament.startedAt) { %>
-            <div class="text-sm text-zinc-400">
-              <%= new Date(tournament.startedAt).toLocaleDateString() %>
+                    <% if (tournament.winner1SteamId || tournament.winner2SteamId) { %>
+                      <div class="flex items-center gap-4 ml-4">
+                        <div class="text-right">
+                          <div class="text-emerald-400 font-medium mb-1">🏆 Winner<%= tournament.winner2SteamId ? 's' : '' %></div>
+                          <div class="flex items-center gap-2">
+                            <% if (tournament.winner1User) { %>
+                              <a href="/player/<%= tournament.winner1SteamId %>" class="flex items-center gap-2 hover:bg-gray-700 rounded p-1 transition-colors">
+                                <img src="<%= tournament.winner1User.steamAvatar %>" alt="Winner 1" class="w-8 h-8 rounded-full">
+                                <span class="text-emerald-300 hover:text-emerald-200">
+                                  <%= tournament.winner1User.steamUsername %>
+                                </span>
+                              </a>
+                            <% } %>
+                            <% if (tournament.winner2User) { %>
+                              <a href="/player/<%= tournament.winner2SteamId %>" class="flex items-center gap-2 hover:bg-gray-700 rounded p-1 transition-colors">
+                                <img src="<%= tournament.winner2User.steamAvatar %>" alt="Winner 2" class="w-8 h-8 rounded-full">
+                                <span class="text-emerald-300 hover:text-emerald-200">
+                                  <%= tournament.winner2User.steamUsername %>
+                                </span>
+                              </a>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    <% } %>
+                  </div>
+                </a>
+
+                <% if (user && userIsMod) { %>
+                  <div class="mt-4" onclick="event.stopPropagation()">
+                    <form action="/tournaments/<%= tournament.id %>/winners" method="POST" class="mt-4 space-y-2">
+                      <div class="flex gap-4">
+                        <div class="flex-1">
+                          <label class="block text-sm font-medium text-gray-300">Winner 1</label>
+                          <input type="text" name="winner1SteamId" placeholder="Steam ID" 
+                                 class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600">
+                        </div>
+                        <% if (tournament.isTeamTournament) { %>
+                          <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-300">Winner 2</label>
+                            <input type="text" name="winner2SteamId" placeholder="Steam ID"
+                                   class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600">
+                          </div>
+                        <% } %>
+                      </div>
+                      <button type="submit" 
+                              class="w-full bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded text-white">
+                        Set Winner(s)
+                      </button>
+                    </form>
+                  </div>
+                <% } %>
+
+                <% if (user && userIsMod) { %>
+                  <form action="/tournaments/<%= tournament.id %>" method="POST" 
+                        class="absolute top-4 right-4 z-10"
+                        onclick="event.stopPropagation()">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="text-gray-400 hover:text-red-400 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </form>
+                <% } %>
+              </div>
             </div>
-          <% } %>
+          <% }); %>
         </div>
       </div>
-      <% if (tournament.bracket_link) { %>
-        </a>
-      <% } %>
-    </li>
-    <% }); %>
-  </ul>
+    </div>
+  </div>
 </div>
